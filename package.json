@@ -4,7 +4,7 @@
     "description": "Top notch syntax highlighting for Racket.",
     "version": "0.1.0",
     "galleryBanner": {
-        "color": "#B4C8FF",
+        "color": "#3654A1",
         "theme": "light"
     },
     "icon": "images/icon.png",
