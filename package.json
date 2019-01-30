@@ -1,0 +1,68 @@
+{
+    "name": "magic-racket",
+    "displayName": "Magic Racket",
+    "description": "Top notch syntax highlighting for Racket.",
+    "version": "0.1.0",
+    "galleryBanner": {
+        "color": "#B4C8FF",
+        "theme": "light"
+    },
+    "icon": "images/icon.png",
+    "engines": {
+        "vscode": "^1.22.0"
+    },
+    "licence": "SEE LICENSE IN LICENSE",
+    "homepage": "https://github.com/Eugleo/magic-racket/blob/master/README.md",
+    "bugs": {
+        "url": "https://github.com/Eugleo/magic-racket/issues",
+        "email": "wybitul.evzen@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Eugleo/magic-racket.git"
+    },
+    "categories": [
+        "Programming Languages",
+        "Snippets"
+    ],
+    "keywords": [
+        "racket",
+        "drracket",
+        "lisp",
+        "scheme"
+    ],
+    "publisher": "evzen-wybitul",
+    "author": {
+        "name": "Evžen Wybitul"
+    },
+    "contributes": {
+        "configurationDefaults": {
+            "[racket]": {
+                "editor.rulers": [
+                    102
+                ],
+                "editor.tabSize": 2
+            }
+        },
+        "languages": [
+            {
+                "id": "racket",
+                "aliases": [
+                    "Racket",
+                    "racket"
+                ],
+                "extensions": [
+                    ".rkt"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "racket",
+                "scopeName": "source.racket",
+                "path": "./syntaxes/racket.tmLanguage.json"
+            }
+        ]
+    }
+}
