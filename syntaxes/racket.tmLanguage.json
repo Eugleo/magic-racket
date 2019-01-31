@@ -1499,8 +1499,8 @@
             "patterns": [
                 {
                     "name": "string.here.racket",
-                    "begin": "<<#(.*)$",
-                    "end": "\\1"
+                    "begin": "#<<(.*)$",
+                    "end": "^\\1$"
                 }
             ]
         },
