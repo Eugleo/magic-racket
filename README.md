@@ -15,9 +15,13 @@ _The theme used in the screenshots is Atom One Dark. The code samples are just m
 
 Here is a sample file, showcasing various types of valid Racket syntax, highlighted using the package listed as first result when searching for *Racket* on the VSCode extension marketplace.
 
-![Bad highlighting](images/pmkary.png)And here you can see the same snippet of code highlighted with Magic Racket. 
+![Bad highlighting](images/pmkary.png)
+
+And here you can see the same snippet of code highlighted with Magic Racket.
 
 ![Better highlighting](images/magic.png)
+
+The highlighting is not only "more colorful", it strives to be _correct_. In particular, if your number isn't getting highlighted, it's most likely due to it being wrong, and it probably won't be accepted by the Racket reader.
 
 ## Todo
 
