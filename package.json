@@ -1,7 +1,7 @@
 {
     "name": "magic-racket",
     "displayName": "Magic Racket",
-    "description": "Top notch syntax highlighting for Racket.",
+    "description": "Top notch syntax highlighting for Racket",
     "version": "0.1.1",
     "galleryBanner": {
         "color": "#FFFFFF",
@@ -22,8 +22,7 @@
         "url": "https://github.com/Eugleo/magic-racket.git"
     },
     "categories": [
-        "Programming Languages",
-        "Snippets"
+        "Programming Languages"
     ],
     "keywords": [
         "racket",
