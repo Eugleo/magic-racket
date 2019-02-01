@@ -40,6 +40,10 @@
                 {
                     "name": "keyword.control.racket",
                     "match": "(?x) (?<=^|[()\\[\\]{}\\\",'`;\\s])\n  (?: \\#[cC][iI] | \\#[cC][sS])\n(?=\\s)\n"
+                },
+                {
+                    "name": "support.function.racket",
+                    "match": "(?x) (?<=^|[()\\[\\]{}\\\",'`;\\s])\n  (?: \\#&)\n"
                 }
             ]
         },

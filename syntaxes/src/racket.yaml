@@ -25,6 +25,11 @@ repository:
           (?x) (?<=^|[()\[\]{}\",'`;\s])
             (?: \#[cC][iI] | \#[cC][sS])
           (?=\s)
+      - name: support.function.racket
+        match: |
+          (?x) (?<=^|[()\[\]{}\",'`;\s])
+            (?: \#&)
+
   quote:
     patterns:
       - name: support.function.racket
