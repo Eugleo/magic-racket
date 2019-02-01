@@ -16,7 +16,7 @@ From now on, if your number isn't getting highlighted, it's most likely due to i
 
 Fixed handling of here strings, which were previously incorrectly delimited by `<<#` instead of `#<<`. Also fixed the here string terminating sequence.
 
-## 0.3.0 - 1st January, 2019
+## 0.3.0 - 1st February, 2019
 
 The first symbol in list is no longer scoped as a function. This fixes numerous inconsistencies (such as in let-bindings) and makes the behavior closer to that of DrRacket. On the other hand, functions exported from `racket` are now highlighted wherever they appear, even in the middle of a list.
 
