@@ -13,27 +13,29 @@ This package is being worked on; the first two points from the abovementioned th
 
 _The theme used in the screenshots is Atom One Dark. The code samples are just my gibberish._
 
-Here is a sample file, showcasing various types of valid Racket syntax, highlighted using the package listed as first result when searching for *Racket* on the VSCode extension marketplace.
+I've built a simple file showcasing various types of valid Racket syntax. The next image shows a comparison of the file highlighted using a popular Racket VSCode extension (left side) and the same file highlighted by Magic Racket.
 
-![Bad highlighting](images/pmkary.png)
+![Bad highlighting](images/magic-vs-other.png)
 
-And here you can see the same snippet of code highlighted with Magic Racket.
+The highlighting is not only *more colorful*, it strives to be _correct_ and *consistent*. In many ways, this extension was inspired by the highlighting in DrRacket itself, however, in some aspects it aims to be less minimalistic.
 
-![Better highlighting](images/magic.png)
+If something isn't highlighted correctly, it's probably because it isn't valid syntax. In particular, if your number isn't getting highlighted, it's most likely due to it being wrong, and it won't be accepted by the Racket reader either. 
 
-The highlighting is not only "more colorful", it strives to be _correct_. In particular, if your number isn't getting highlighted, it's most likely due to it being wrong, and it probably won't be accepted by the Racket reader.
+*Nonetheless, if you think you found a bug, please open an issue — see Contributing.*
 
 ## Todo
 
 This is a list of this which are not yet implemented/don't work as well as they should. It's mostly some weird syntax which I've never seen in the wild:
 
-- [ ] sexp-comments: `;#[...]`
-- [ ] boxes: `#&`
-- [ ] graphs
+- [x] sexp comments: `;#[...]` (partial support done, and it's the best I can do with regexes)
+- [x] boxes: `#&` (partial support, same as with sexp comments)
+- [ ] graphs (AFAIK nobody uses this anyway)
 - [ ] structs with weird names: `this| is name of the struct|`
 
 ## Contributing
 
-If you find any issues with the highlighting, please [open an issue](https://github.com/Eugleo/magic-racket/issues) or better, submit a pull request. This project is still mostly untested and thus there will be probably many bugs at first.
+If you'd like to implement this in another editor, especially an editor like Atom, please contact me. We can join forces, work the grammar I've already built, and then package it for Atom.
 
-If you have any feature requests or other ideas, please open an issue as well. I hope to make this package a complete Racket experience someday, so don't be afraid to discuss any ideas you have.
+If you find any issues with the highlighting, please [open an issue](https://github.com/Eugleo/magic-racket/issues) or better, submit a pull request. 
+
+If you have any feature requests or other ideas, please open an issue as well. I hope to make this package a complete Racket experience someday, so don't be afraid to discuss any ideas you have. If you know something about how indentation works in VSCode — please contact me. I could use a little help with this one.
