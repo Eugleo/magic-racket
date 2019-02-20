@@ -24,4 +24,4 @@ The behavior of quotes is now consistent. Quoted symbols are scoped as single-qu
 
 ## 0.3.1 — 20th February, 2019
 
-FIxed the highlighting of `,symbol` and `,@symbol`. Previously, `,` and `,@` weren't correctly highlighted as functions, but this has now been fixed.
+Fixed the highlighting of `,symbol` and `,@symbol`. Previously, `,` and `,@` weren't correctly highlighted as functions, but this has now been fixed.
