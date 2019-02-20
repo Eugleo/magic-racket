@@ -2,7 +2,7 @@
     "name": "magic-racket",
     "displayName": "Magic Racket",
     "description": "Top notch syntax highlighting for Racket",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "galleryBanner": {
         "color": "#FFFFFF",
         "theme": "light"
