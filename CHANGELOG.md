@@ -21,3 +21,7 @@ Fixed handling of here strings, which were previously incorrectly delimited by `
 The first symbol in list is no longer scoped as a function. This fixes numerous inconsistencies (such as in let-bindings) and makes the behavior closer to that of DrRacket. On the other hand, functions exported from `racket` are now highlighted wherever they appear, even in the middle of a list.
 
 The behavior of quotes is now consistent. Quoted symbols are scoped as single-quoted strings.
+
+## 0.3.1 — 20th February, 2019
+
+FIxed the highlighting of `,symbol` and `,@symbol`. Previously, `,` and `,@` weren't correctly highlighted as functions, but this has now been fixed.
