@@ -1253,6 +1253,7 @@ repository:
             (?: u[\da-fA-F]{1,4}) |
             (?: U[\da-fA-F]{1,8})
            )
+      - include: '#escape-char-error'
 
   escape-char-base:
     patterns:
@@ -1264,4 +1265,9 @@ repository:
             (?: [0-7]{1,3}) |
             (?: x[\da-fA-F]{1,2})
           )
+
+  escape-char-error:
+    patterns:
+      - name: invalid.illegal.escape.racket
+        match: '\\.'
 ...

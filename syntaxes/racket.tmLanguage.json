@@ -1615,6 +1615,9 @@
                 {
                     "name": "constant.character.escape.racket",
                     "match": "(?x) \\\\\n  (?:\n   (?: u[\\da-fA-F]{1,4}) |\n   (?: U[\\da-fA-F]{1,8})\n  )\n"
+                },
+                {
+                    "include": "#escape-char-error"
                 }
             ]
         },
@@ -1623,6 +1626,14 @@
                 {
                     "name": "constant.character.escape.racket",
                     "match": "(?x) \\\\\n  (?:\n   (?: [abtnvfre\"'\\\\]) |\n   (?: [0-7]{1,3}) |\n   (?: x[\\da-fA-F]{1,2})\n )\n"
+                }
+            ]
+        },
+        "escape-char-error": {
+            "patterns": [
+                {
+                    "name": "invalid.illegal.escape.racket",
+                    "match": "\\\\."
                 }
             ]
         }
