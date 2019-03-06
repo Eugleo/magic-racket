@@ -29,3 +29,7 @@ Fixed the highlighting of `,symbol` and `,@symbol`. Previously, `,` and `,@` wer
 ## 0.3.2 — 1st March, 2019
 
 Added a new scope for invalid escape characters in string sequences. A valid escape sequence is, for example, `\n`, while `\O` is an invalid one—it triggers a runtime error. The second one will now be colored red in supported themes (most themes, actually), to help prevent these stupid errors.
+
+## 0.3.3 — 6th March, 2019
+
+Fixed the highlighting of `#\(` and similar characters, which were previously not recognized as characters at all.
