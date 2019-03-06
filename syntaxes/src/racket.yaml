@@ -1161,10 +1161,11 @@ repository:
               (?:
                 (?:
                   null? | newline | linefeed | backspace | vtab | page |
-                  return | space | rubout | (?: [^\w\s] | \w | \d)
+                  return | space | rubout | (?: [^\w\s] | \d)
                 )
                 (?![a-zA-Z])
-              )
+              ) |
+              (?: [^\W\d](?=[\W\d]) | \W )
             )
 
   string:
