@@ -39,8 +39,7 @@
             "[racket]": {
                 "editor.rulers": [
                     102
-                ],
-                "editor.tabSize": 2
+                ]
             }
         },
         "languages": [
