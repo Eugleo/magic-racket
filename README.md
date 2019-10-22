@@ -32,7 +32,7 @@ If something isn't highlighted correctly, it's probably because it isn't valid s
 
 ### REPL support
 
-There are four new commands in VS Code, which you can find upon pressing `Cmd+Shift+P` (or `Ctrl+Shift+P` if you're on Linux or Windows):
+There are four new commands in VS Code, which you can find upon pressing <kbd>`Cmd+Shift+P`</kbd> (or <kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows):
 
 - Racket: Execute selection in REPL (shortcut <kbd>Alt+Enter</kbd>)
 - Racket: Load file into REPL (shortcut <kbd>Cmd+Shift+R</kbd>, or <kbd>Ctrl+Shift+R</kbd> on Windows and Linux)
