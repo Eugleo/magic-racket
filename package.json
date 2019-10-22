@@ -1,66 +1,147 @@
 {
-    "name": "magic-racket",
-    "displayName": "Magic Racket",
-    "description": "Top notch syntax highlighting for Racket",
-    "version": "0.3.2",
-    "galleryBanner": {
-        "color": "#FFFFFF",
-        "theme": "light"
-    },
-    "icon": "images/icon.png",
-    "engines": {
-        "vscode": "^1.22.0"
-    },
-    "licence": "SEE LICENSE IN LICENSE",
-    "homepage": "https://github.com/Eugleo/magic-racket/blob/master/README.md",
-    "bugs": {
-        "url": "https://github.com/Eugleo/magic-racket/issues",
-        "email": "wybitul.evzen@gmail.com"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Eugleo/magic-racket.git"
-    },
-    "categories": [
-        "Programming Languages"
-    ],
-    "keywords": [
-        "racket",
-        "drracket",
-        "lisp",
-        "scheme"
-    ],
-    "publisher": "evzen-wybitul",
-    "author": {
-        "name": "Evžen Wybitul"
-    },
-    "contributes": {
-        "configurationDefaults": {
-            "[racket]": {
-                "editor.rulers": [
-                    102
-                ]
-            }
-        },
-        "languages": [
-            {
-                "id": "racket",
-                "aliases": [
-                    "Racket",
-                    "racket"
-                ],
-                "extensions": [
-                    ".rkt"
-                ],
-                "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "racket",
-                "scopeName": "source.racket",
-                "path": "./syntaxes/racket.tmLanguage.json"
-            }
+  "name": "magic-racket",
+  "displayName": "Magic Racket",
+  "description": "REPL + syntax highlighting support for Racket",
+  "version": "1.0.0",
+  "activationEvents": [
+    "onCommand:magic-racket.loadFileIntoRepl",
+    "onCommand:magic-racket.runFileInTerminal",
+    "onCommand:magic-racket.executeSelectionInRepl",
+    "onCommand:magic-racket.focusOnRepl"
+  ],
+  "main": "./out/extension.js",
+  "galleryBanner": {
+    "color": "#FFFFFF",
+    "theme": "light"
+  },
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.22.0"
+  },
+  "licence": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/Eugleo/magic-racket/",
+  "bugs": {
+    "url": "https://github.com/Eugleo/magic-racket/issues",
+    "email": "wybitul.evzen@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Eugleo/magic-racket.git"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "racket",
+    "drracket",
+    "lisp",
+    "scheme",
+    "repl"
+  ],
+  "publisher": "evzen-wybitul",
+  "author": {
+    "name": "Evžen Wybitul"
+  },
+  "contributes": {
+    "configurationDefaults": {
+      "[racket]": {
+        "editor.rulers": [
+          102
         ]
-    }
+      }
+    },
+    "languages": [
+      {
+        "id": "racket",
+        "aliases": [
+          "Racket",
+          "racket"
+        ],
+        "extensions": [
+          ".rkt"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "racket",
+        "scopeName": "source.racket",
+        "path": "./syntaxes/racket.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Magic Racket",
+      "properties": {
+        "magic-racket.focusCorrectRepl": {
+          "type": "boolean",
+          "default": false,
+          "description": "Every file has, potentially, its own repl. This option specifies whether VS Code should focus on the repl of the current file automatically (when swicthing files)."
+        },
+        "magic-racket.racketPath": {
+          "type": "string",
+          "default": "racket",
+          "description": "The path to the racket executable (used to run the file and open the REPL)."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "magic-racket.loadFileIntoRepl",
+        "title": "Racket: Load file into REPL"
+      },
+      {
+        "command": "magic-racket.runFileInTerminal",
+        "title": "Racket: Run file in terminal"
+      },
+      {
+        "command": "magic-racket.executeSelectionInRepl",
+        "title": "Racket: Execute selection in REPL"
+      },
+      {
+        "command": "magic-racket.focusOnRepl",
+        "title": "Racket: Focus on REPL of the current file"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceLangId == racket && editorHasSelection",
+          "command": "magic-racket.executeSelectionInRepl",
+          "group": "z_commands"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "magic-racket.executeSelectionInRepl",
+        "key": "Alt+Enter",
+        "when": "resourceLangId == racket && editorHasSelection"
+      },
+      {
+        "command": "magic-racket.loadFileIntoRepl",
+        "key": "Ctrl+Shift+r",
+        "mac": "Cmd+Shift+r",
+        "when": "resourceLangId == racket && editorFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^10.12.21",
+    "@types/vscode": "^1.39.0",
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "typescript": "^3.3.1",
+    "tslint": "^5.12.1",
+    "vscode-test": "^1.2.0"
+  }
 }
