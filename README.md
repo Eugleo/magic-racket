@@ -1,4 +1,4 @@
-# Magic Racket for VSCode
+# Magic Racket for VS Code
 
 This extension adds support for [Racket](http://www.racket-lang.org) syntax highlighting and REPL.
 
@@ -14,7 +14,7 @@ This package aims to:
 - Don't get in the way (no useless snippets, no colorization just for the sake of it).
 - Be easily convertible to other formats.
 
-Eventually, I'd like to be able to include support for Racket LSP as well — in the meantime, you can at least comfortably use the REPL with Magic Racket.
+Eventually, I'd like to be able to include support for Racket LSP as well; in the meantime, you can at least comfortably use the REPL with Magic Racket.
 
 ### Syntax highlighting
 
@@ -33,9 +33,9 @@ There are four new commands in VS Code, which you can find upon pressing <kbd>`C
 - Racket: Execute selection in REPL (shortcut <kbd>Alt+Enter</kbd>)
 - Racket: Load file into REPL (shortcut <kbd>Cmd+Shift+R</kbd>, or <kbd>Ctrl+Shift+R</kbd> on Windows and Linux)
 - Racket: Run file in terminal
-- Racket: Focus on current REPL
+- Racket: Focus on REPL of the current file
 
-When you load the file into the REPL, all of the bindings of that file will be made available (the Racket function `enter!` is used). However, if you'd try to load another file into the *same* REPL, the bindings from the previous file would become lost. That's why in Magic Racket, every file will be loaded in its own Racket REPL. You can execute the command `Racket: Focus on current REPL` to switch to the terminal with the appopriate REPL for the file you are currently editing.
+When you load the file into the REPL, all of the bindings of that file will be made available (the Racket function `enter!` is used). However, if you'd try to load another file into the *same* REPL, the bindings from the previous file would become lost. That's why in Magic Racket, every file will be loaded in its own Racket REPL. You can execute the command `Racket: Focus on REPL of the current file` to switch to the terminal with the appopriate REPL for the file you are currently editing.
 
 There is also a setting which allows VS Code to switch between terminals automatically, so that always the right REPL is in focus.
 
