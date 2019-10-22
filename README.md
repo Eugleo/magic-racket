@@ -26,10 +26,6 @@ I've built a simple file showcasing various types of valid Racket syntax. The im
 
 As you can see, the highlighting strives to be _correct_ and _consistent_ — and it supports most of the language's features as well. In many ways, this extension was inspired by the highlighting in DrRacket itself, however, in some aspects it aims to be less minimalistic.
 
-If something isn't highlighted correctly, it's probably because it isn't valid syntax. In particular, if your number isn't getting highlighted, it's most likely due to it being wrong, and it won't be accepted by the Racket reader either.
-
-*Nonetheless, if you think you found a bug, please open an issue — see Contributing.*
-
 ### REPL support
 
 There are four new commands in VS Code, which you can find upon pressing <kbd>`Cmd+Shift+P`</kbd> (or <kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows):
@@ -43,10 +39,12 @@ When you load the file into the REPL, all of the bindings of that file will be m
 
 There is also a setting which allows VS Code to switch between terminals automatically, so that always the right REPL is in focus.
 
-## Contributing
+## Extension Settings
 
-If you'd like to implement this in another editor, especially an editor like Atom, please contact me. We can join forces, work the grammar I've already built, and then package it for Atom.
+This extesion provides two settings:
+- `magic-racket.focusCurrentRepl` determines wheter the terminals should be automatically switch so that the terminal with REPL for the current file is always shown.
+- `magic-racket.racketPath` is the path to the Racket executable.
 
-If you find any issues with the highlighting, please [open an issue](https://github.com/Eugleo/magic-racket/issues) or better, submit a pull request.
+## Release Notes
 
-If you have any feature requests or other ideas, please open an issue as well. I hope to make this package a complete Racket experience someday, so don't be afraid to discuss any ideas you have. If you know something about how indentation works in VSCode — please contact me. I could use a little help with this one.
+Please see the [changelog](CHANGELOG.md) for the information about the latest updates.
