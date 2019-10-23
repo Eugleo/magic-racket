@@ -23,15 +23,12 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  let runFile = vscode.commands.registerCommand(
-    "magic-racket.runFileInTerminal",
-    () => {
-      let editor = getActiveEditor();
-      if (editor) {
-        runFileInTerminal(editor.document.fileName);
-      }
+  let runFile = vscode.commands.registerCommand("magic-racket.runFile", () => {
+    let editor = getActiveEditor();
+    if (editor) {
+      runFileInTerminal(editor.document.fileName);
     }
-  );
+  });
 
   let executeSelection = vscode.commands.registerCommand(
     "magic-racket.executeSelectionInRepl",

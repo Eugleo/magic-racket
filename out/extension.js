@@ -16,7 +16,7 @@ function activate(context) {
             }
         }
     });
-    let runFile = vscode.commands.registerCommand("magic-racket.runFileInTerminal", () => {
+    let runFile = vscode.commands.registerCommand("magic-racket.runFile", () => {
         let editor = getActiveEditor();
         if (editor) {
             runFileInTerminal(editor.document.fileName);

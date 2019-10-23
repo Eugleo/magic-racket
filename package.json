@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "activationEvents": [
     "onCommand:magic-racket.loadFileIntoRepl",
-    "onCommand:magic-racket.runFileInTerminal",
+    "onCommand:magic-racket.runFile",
     "onCommand:magic-racket.executeSelectionInRepl",
     "onCommand:magic-racket.focusOnRepl"
   ],
@@ -88,11 +88,19 @@
     "commands": [
       {
         "command": "magic-racket.loadFileIntoRepl",
-        "title": "Racket: Load file into REPL"
+        "title": "Racket: Load file into REPL",
+        "icon": {
+          "light": "images/repl-light.svg",
+          "dark": "images/repl-dark.svg"
+        }
       },
       {
-        "command": "magic-racket.runFileInTerminal",
-        "title": "Racket: Run file in terminal"
+        "command": "magic-racket.runFile",
+        "title": "Racket: Run file",
+        "icon": {
+          "light": "images/run.svg",
+          "dark": "images/run.svg"
+        }
       },
       {
         "command": "magic-racket.executeSelectionInRepl",
@@ -104,6 +112,18 @@
       }
     ],
     "menus": {
+      "editor/title": [
+        {
+          "when": "editorLangId == racket",
+          "command": "magic-racket.runFile",
+          "group": "navigation"
+        },
+        {
+          "when": "editorLangId == racket",
+          "command": "magic-racket.loadFileIntoRepl",
+          "group": "navigation"
+        }
+      ],
       "editor/context": [
         {
           "when": "resourceLangId == racket && editorHasSelection",

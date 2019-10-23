@@ -5,10 +5,10 @@ This extension adds support for [Racket](http://www.racket-lang.org) syntax high
 ## Features
 
 This package aims to:
-
+****
 - Have nearly complete support for every valid Racket syntax, including byte strings, quotes and define clauses.
 - Have the `#lang racket` built-in functions fully implemented and highlighted.
-
+****
 ...but at the same time:
 
 - Don't get in the way (no useless snippets, no colorization just for the sake of it).
