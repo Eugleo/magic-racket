@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] 24th October 2019
 
+- Update word separators, so that `enter!` is taken as a one word.
+
+## [0.4.0] 24th October 2019
+
 - You can now load the current file into a Racket REPL.
 - You can now run the whole file in a terminal.
 - You can execute selection in the REPL.

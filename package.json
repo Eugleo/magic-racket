@@ -2,7 +2,7 @@
   "name": "magic-racket",
   "displayName": "Magic Racket",
   "description": "REPL + syntax highlighting support for Racket",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "activationEvents": [
     "onCommand:magic-racket.loadFileIntoRepl",
     "onCommand:magic-racket.runFile",
@@ -48,7 +48,7 @@
         "editor.rulers": [
           102
         ],
-        "editor.wordSeparators": "`#&()-=+[{]}\\|;:'\",.<>/"
+        "editor.wordSeparators": "()[]{}\",'`;#"
       }
     },
     "languages": [
