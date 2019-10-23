@@ -16,7 +16,7 @@
   },
   "icon": "images/icon.png",
   "engines": {
-    "vscode": "^1.22.0"
+    "vscode": "^1.39.0"
   },
   "licence": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/Eugleo/magic-racket/",
