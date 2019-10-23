@@ -76,7 +76,7 @@
         "magic-racket.focusCorrectRepl": {
           "type": "boolean",
           "default": false,
-          "description": "Every file has, potentially, its own repl. This option specifies whether VS Code should focus on the repl of the current file automatically (when swicthing files)."
+          "description": "Every file has, potentially, its own repl. This option specifies whether VS Code should focus on the repl of the current file automatically (when swicthing files). This feature is in beta."
         },
         "magic-racket.racketPath": {
           "type": "string",
