@@ -35,6 +35,8 @@ There are four new commands in VS Code, which you can find upon pressing <kbd>`C
 - Racket: Run file in terminal
 - Racket: Focus on REPL of the current file
 
+![REPL showcase](images/repl.gif)
+
 When you load the file into the REPL, all of the bindings of that file will be made available (the Racket function `enter!` is used). However, if you'd try to load another file into the *same* REPL, the bindings from the previous file would become lost. That's why in Magic Racket, every file will be loaded in its own Racket REPL. You can execute the command `Racket: Focus on REPL of the current file` to switch to the terminal with the appopriate REPL for the file you are currently editing.
 
 There is also a setting which allows VS Code to switch between terminals automatically, so that always the right REPL is in focus.
