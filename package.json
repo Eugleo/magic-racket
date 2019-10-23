@@ -47,7 +47,8 @@
       "[racket]": {
         "editor.rulers": [
           102
-        ]
+        ],
+        "editor.wordSeparators": "`#&()-=+[{]}\\|;:'\",.<>/"
       }
     },
     "languages": [
