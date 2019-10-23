@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.2] 24th October 2019
+## [0.4.2], [0.4.3], [0.4.4] 24th October 2019
 
-- Minor changes.
+- Minor changes to README and the marketplace page of Magic Racket.
 
 ## [0.4.1] 24th October 2019
 
