@@ -60,7 +60,7 @@
         "extensions": [
           ".rkt"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "language-configuration.json"
       }
     ],
     "grammars": [
