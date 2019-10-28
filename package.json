@@ -144,6 +144,22 @@
         "key": "Ctrl+Shift+r",
         "mac": "Cmd+Shift+r",
         "when": "resourceLangId == racket && editorFocus"
+      },
+      {
+        "key": "Ctrl+/",
+        "mac": "Cmd+/",
+        "command": "editor.action.insertSnippet",
+        "when": "resourceLangId == racket && editorTextFocus",
+        "args": {
+          "langId": "racket",
+          "name": "lambda"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "racket",
+        "path": "./snippets/racket.json"
       }
     ]
   },
