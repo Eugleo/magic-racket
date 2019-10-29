@@ -26,14 +26,20 @@ As you can see, the highlighting strives to be _correct_ and _consistent_ — an
 
 ### REPL support
 
-There are four new commands in VS Code, and you can find them upon pressing <kbd>`Cmd+Shift+P`</kbd> (or <kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows):
+There are five new commands in VS Code, and you can find them upon pressing <kbd>`Cmd+Shift+P`</kbd> (or <kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows):
 
-- Racket: Execute selection in REPL (shortcut <kbd>Alt+Enter</kbd>)
-- Racket: Load file into REPL (shortcut <kbd>Cmd+Shift+R</kbd>, or <kbd>Ctrl+Shift+R</kbd> on Windows and Linux)
-- Racket: Run file (in terminal, outside of REPL)
-- Racket: Focus on REPL of the current file
+- `Racket: Execute selection in REPL`
+  - Executes the selection(s) in the REPL. Available also by right-clicking the selection or by using the shortcut <kbd>Alt+Enter</kbd>.
+- `Racket: Launch a new REPL`
+  - Launches a new, blank REPL (and doesn't load any file into it).
+- `Racket: Load file into the current REPL`
+  - If a REPL is open and in focus, loads the current file into it. Otherwise creates a new REPL and loads the file into that one.
+- `Racket: Load file into a new REPL`
+  - This command is just a convenient shortcut for `Racket: Launch a new REPL` followed by `Racket: Load file into the current REPL`.
+- `Racket: Run file in terminal`
+  - Runs the whole file in a terminal, outside of REPL environment.
 
-For you convenience, there are also buttons which run `Racket: Execute selection in REPL` and `Racket: Load file into REPL`.
+There are two buttons in the top-right corner of the editor window which stand for  `Racket: Load file into the current REPL` and `Racket: Run file in terminal`.
 
 ![REPL showcase](images/repl.gif)
 
@@ -45,7 +51,7 @@ There is also a setting which allows VS Code to switch between terminals automat
 
 These aren't game-changers, but they certainly help.
 
-- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Cmd+/</kbd> (or <kbd>Ctrl+/</kbd> on Windows).
+- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Cmd+/</kbd> (or <kbd>Ctrl+/</kbd> on Windows and Linux).
   - If anybody knows how to bind it to <kbd>Cmd+\\</kbd>, let me know.
 - VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Alt+Left</kbd> and <kbd>Alt+Right</kbd> works as expected, and so does the word selection by clicking it twice
 
