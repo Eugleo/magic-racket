@@ -43,9 +43,7 @@ There are two buttons in the top-right corner of the editor window which stand f
 
 ![REPL showcase](images/repl.gif)
 
-When you load the file into the REPL, all of the bindings of that file will be made available in the REPL (the Racket function `enter!` is used). However, if you'd try to load another file into the *same* REPL, the bindings from the previous file would be lost. That's why in Magic Racket, every file will be loaded in its own Racket REPL. You can execute the command `Racket: Focus on REPL of the current file` to switch to the terminal with the appopriate REPL for the file you are currently editing.
-
-There is also a setting which allows VS Code to switch between terminals automatically, so that always the right REPL is in focus for the current file.
+**Watch out:** If you load a file into the REPL, all of the bindings of that file will be made available in the REPL (this is handled by the Racket function `enter!`). However, if you'll try to load another file into the *same* REPL, the bindings from the previous file will be lost.
 
 ### Minor QoL features
 
@@ -53,7 +51,7 @@ These aren't game-changers, but they certainly help.
 
 - You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Cmd+/</kbd> (or <kbd>Ctrl+/</kbd> on Windows and Linux).
   - If anybody knows how to bind it to <kbd>Cmd+\\</kbd>, let me know.
-- VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Alt+Left</kbd> and <kbd>Alt+Right</kbd> works as expected, and so does the word selection by clicking it twice
+- VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Alt+Left</kbd> and <kbd>Alt+Right</kbd> works as expected, and so does the double-click word selection.
 
 ## Extension Settings
 
