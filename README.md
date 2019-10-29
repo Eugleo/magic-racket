@@ -41,6 +41,14 @@ When you load the file into the REPL, all of the bindings of that file will be m
 
 There is also a setting which allows VS Code to switch between terminals automatically, so that always the right REPL is in focus for the current file.
 
+### Minor QoL features
+
+These aren't game-changers, but they certainly help.
+
+- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Cmd+/</kbd> (or <kbd>Ctrl+/</kbd> on Windows).
+  - If anybody knows how to bind it to <kbd>Cmd+\\</kbd>, let me know.
+- VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Alt+Left</kbd> and <kbd>Alt+Right</kbd> works as expected, and so does the word selection by clicking it twice
+
 ## Extension Settings
 
 This extesion provides two settings:
