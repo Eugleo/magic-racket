@@ -1,107 +1,112 @@
 import * as vscode from "vscode";
 
-interface IDictionary {
-  [key: string]: vscode.Terminal;
-}
-
-let REPLS: IDictionary = {};
-
 export function activate(context: vscode.ExtensionContext) {
-  let loadFile = vscode.commands.registerCommand(
+  let loadFileIntoCurrent = vscode.commands.registerCommand(
     "magic-racket.loadFileIntoRepl",
     () => {
-      let editor = getActiveEditor();
+      let editor = vscode.window.activeTextEditor;
       if (editor) {
         let filePath = editor.document.fileName;
-        let repl = getReplForFile(filePath);
-        if (repl !== undefined) {
+        let repl = getCurrentRepl();
+        if (repl) {
           loadFileInRepl(repl, filePath);
         } else {
-          noRacketExecError();
+          raiseMustHaveRacketExecutable();
         }
+      } else {
+        raiseMustHaveEditor("load");
+      }
+    }
+  );
+
+  let loadFileIntoNew = vscode.commands.registerCommand(
+    "magic-racket.loadFileIntoNewRepl",
+    () => {
+      let editor = vscode.window.activeTextEditor;
+      if (editor) {
+        let filePath = editor.document.fileName;
+        let repl = makeRepl();
+        if (repl) {
+          loadFileInRepl(repl, filePath);
+        } else {
+          raiseMustHaveRacketExecutable();
+        }
+      } else {
+        raiseMustHaveEditor("load");
       }
     }
   );
 
   let runFile = vscode.commands.registerCommand("magic-racket.runFile", () => {
-    let editor = getActiveEditor();
+    let editor = vscode.window.activeTextEditor;
     if (editor) {
       runFileInTerminal(editor.document.fileName);
+    } else {
+      raiseMustHaveEditor("run");
     }
   });
 
   let executeSelection = vscode.commands.registerCommand(
     "magic-racket.executeSelectionInRepl",
     () => {
-      let editor = getActiveEditor();
+      let editor = vscode.window.activeTextEditor;
       if (editor) {
         let filePath = editor.document.fileName;
-        let repl = getReplForFile(filePath);
+        let repl = getCurrentRepl();
         if (repl !== undefined) {
           executeSelectionInRepl(repl, editor);
         } else {
-          noRacketExecError();
+          raiseMustHaveRacketExecutable();
         }
       }
     }
   );
 
-  let focusOnRepl = vscode.commands.registerCommand(
-    "magic-racket.focusOnRepl",
+  let openRepl = vscode.commands.registerCommand(
+    "magic-racket.openRepl",
     () => {
-      let editor = getActiveEditor();
-      if (editor) {
-        let filePath = editor.document.fileName;
-        let repl = getReplForFile(filePath);
-        if (repl !== undefined) {
-          repl.show();
-        } else {
-          noRacketExecError();
-        }
+      let repl = makeRepl();
+      if (repl) {
+        repl.show();
+      } else {
+        raiseMustHaveRacketExecutable();
       }
     }
   );
 
-  vscode.window.onDidChangeActiveTextEditor(editor => {
-    if (
-      vscode.workspace.getConfiguration("magic-racket").get("focusCorrectRepl")
-    ) {
-      if (editor) {
-        let filePath = editor.document.fileName;
-        if (REPLS[filePath]) {
-          let repl = REPLS[filePath];
-          repl.show();
-        }
-      }
-    }
-  });
-
-  vscode.window.onDidCloseTerminal(t => {
-    for (let i = 0; i < Object.keys(REPLS).length; i++) {
-      if (Object.values(REPLS)[i] === t) {
-        delete REPLS[Object.keys(REPLS)[i]];
-      }
-    }
-  });
-
-  context.subscriptions.push(loadFile, runFile, executeSelection, focusOnRepl);
+  context.subscriptions.push(
+    loadFileIntoNew,
+    loadFileIntoCurrent,
+    runFile,
+    executeSelection,
+    openRepl
+  );
 }
 
-function getReplForFile(filePath: string) {
-  if (REPLS[filePath]) {
-    return REPLS[filePath];
+function makeRepl() {
+  let racket = getRacketExecutable();
+  if (racket !== undefined) {
+    let terminal = vscode.window.createTerminal("Racket REPL");
+    terminal.sendText(racket);
+    return terminal;
   } else {
-    let racket = getRacketExecutable();
-    if (racket !== undefined) {
-      let terminal = vscode.window.createTerminal("Racket REPL");
-      terminal.sendText(racket);
-      REPLS[filePath] = terminal;
-      return terminal;
-    } else {
-      noRacketExecError();
-      return undefined;
-    }
+    return undefined;
   }
+}
+
+function getCurrentRepl() {
+  let currentTerminal = vscode.window.activeTerminal;
+  if (currentTerminal && /Racket REPL.*/.test(currentTerminal.name)) {
+    return currentTerminal;
+  } else {
+    return makeRepl();
+  }
+}
+
+function raiseMustHaveEditor(verb: string) {
+  vscode.window.showErrorMessage(
+    `You have to have a file opened to be able to ${verb} it.`
+  );
 }
 
 function getRacketExecutable() {
@@ -112,18 +117,6 @@ function getRacketExecutable() {
     racket = undefined;
   }
   return racket;
-}
-
-function getActiveEditor() {
-  let editor = vscode.window.activeTextEditor;
-  if (editor === undefined) {
-    vscode.window.showErrorMessage(
-      "You have to have a file opened to be able to send it into REPL."
-    );
-    return undefined;
-  } else {
-    return editor;
-  }
 }
 
 function runFileInTerminal(filePath: string) {
@@ -156,7 +149,7 @@ function executeSelectionInRepl(
   }
 }
 
-function noRacketExecError() {
+function raiseMustHaveRacketExecutable() {
   vscode.window.showErrorMessage(
     "No Racket executable specified. Please add the path to the Racket executable in settings."
   );

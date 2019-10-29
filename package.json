@@ -4,10 +4,11 @@
   "description": "Language support for Racket: top notch syntax highlighting and REPL integration.",
   "version": "0.4.4",
   "activationEvents": [
+    "onCommand:magic-racket.loadFileIntoNewRepl",
     "onCommand:magic-racket.loadFileIntoRepl",
     "onCommand:magic-racket.runFile",
     "onCommand:magic-racket.executeSelectionInRepl",
-    "onCommand:magic-racket.focusOnRepl"
+    "onCommand:magic-racket.openRepl"
   ],
   "main": "./out/extension.js",
   "galleryBanner": {
@@ -74,11 +75,6 @@
     "configuration": {
       "title": "Magic Racket",
       "properties": {
-        "magic-racket.focusCorrectRepl": {
-          "type": "boolean",
-          "default": false,
-          "description": "Every file has, potentially, its own repl. This option specifies whether VS Code should focus on the repl of the current file automatically (when swicthing files). This feature is in beta."
-        },
         "magic-racket.racketPath": {
           "type": "string",
           "default": "racket",
@@ -89,15 +85,19 @@
     "commands": [
       {
         "command": "magic-racket.loadFileIntoRepl",
-        "title": "Racket: Load file into REPL",
+        "title": "Racket: Load file into the current REPL",
         "icon": {
           "light": "images/repl-light.svg",
           "dark": "images/repl-dark.svg"
         }
       },
       {
+        "command": "magic-racket.loadFileIntoNewRepl",
+        "title": "Racket: Load file into a new REPL"
+      },
+      {
         "command": "magic-racket.runFile",
-        "title": "Racket: Run file",
+        "title": "Racket: Run file in terminal",
         "icon": {
           "light": "images/run.svg",
           "dark": "images/run.svg"
@@ -108,8 +108,8 @@
         "title": "Racket: Execute selection in REPL"
       },
       {
-        "command": "magic-racket.focusOnRepl",
-        "title": "Racket: Focus on REPL of the current file"
+        "command": "magic-racket.openRepl",
+        "title": "Racket: Launch a new repl"
       }
     ],
     "menus": {
@@ -138,12 +138,6 @@
         "command": "magic-racket.executeSelectionInRepl",
         "key": "Alt+Enter",
         "when": "resourceLangId == racket && editorHasSelection"
-      },
-      {
-        "command": "magic-racket.loadFileIntoRepl",
-        "key": "Ctrl+Shift+r",
-        "mac": "Cmd+Shift+r",
-        "when": "resourceLangId == racket && editorFocus"
       },
       {
         "key": "Ctrl+/",
