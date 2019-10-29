@@ -2,7 +2,7 @@
   "name": "magic-racket",
   "displayName": "Magic Racket",
   "description": "Language support for Racket: top notch syntax highlighting and REPL integration.",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "activationEvents": [
     "onCommand:magic-racket.loadFileIntoNewRepl",
     "onCommand:magic-racket.loadFileIntoRepl",

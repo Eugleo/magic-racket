@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.5], [0.4.3], [0.4.4] 29th October 2019
+
+- It is now possible to open a REPL without needing to have a file open first.
+- Changes to how REPL handling works (see the README for in-depth description).
+- You can now type the lambda symbol by using the new snippet `lmb` or via a shortcut.
+
 ## [0.4.2], [0.4.3], [0.4.4] 24th October 2019
 
 - Minor changes to README and the marketplace page of Magic Racket.
