@@ -1,4 +1,7 @@
 import * as vscode from "vscode";
+import { LanguageClient } from 'vscode-languageclient';
+
+let langClient: LanguageClient;
 
 function getRacketExecutable() {
   let racket: string | undefined = vscode.workspace
@@ -76,10 +79,52 @@ function loadFileInRepl(repl: vscode.Terminal, filePath: string) {
   repl.sendText(`(enter! (file "${normalizeFilePath(filePath)}"))`);
 }
 
-export function deactivate() {}
+export function deactivate() {
+  if (!langClient) {
+		return undefined;
+	}
+	return langClient.stop();
+}
 
 export function activate(context: vscode.ExtensionContext) {
-  const loadFileIntoCurrent = vscode.commands.registerCommand(
+  //******* Language Client ********
+	const executable = {
+		command: 'racket',
+		args: ['--lib', 'racket-langserver'],
+	};
+
+	// If the extension is launched in debug mode then the debug server options are used
+	// Otherwise the run options are used
+	let serverOptions = {
+		run: executable,
+		debug: executable
+	};
+
+	// Options to control the language client
+	let clientOptions = {
+		// Register the server for racket documents
+		documentSelector: [{ scheme: 'file', language: 'racket' }],
+		synchronize: {
+			// Notify the server about file changes to '.clientrc files contained in the workspace
+			fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
+		}
+	};
+
+	// Create the language client and start the client.
+	langClient = new LanguageClient(
+		'magic-racket',
+		'Racket Language Client',
+		serverOptions,
+		clientOptions
+	);
+
+	// Start the client. This will also launch the server
+	langClient.start();
+
+  //******* Language Client END ********
+
+
+  let loadFileIntoCurrent = vscode.commands.registerCommand(
     "magic-racket.loadFileIntoRepl",
     () => {
       const editor = vscode.window.activeTextEditor;

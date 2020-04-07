@@ -2,13 +2,14 @@
   "name": "magic-racket",
   "displayName": "Magic Racket",
   "description": "Language support for Racket: top notch syntax highlighting and REPL integration.",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "activationEvents": [
     "onCommand:magic-racket.loadFileIntoNewRepl",
     "onCommand:magic-racket.loadFileIntoRepl",
     "onCommand:magic-racket.runFile",
     "onCommand:magic-racket.executeSelectionInRepl",
-    "onCommand:magic-racket.openRepl"
+    "onCommand:magic-racket.openRepl",
+    "onLanguage:racket"
   ],
   "main": "./out/extension.js",
   "galleryBanner": {
@@ -182,6 +183,7 @@
     "vscode-test": "^1.3.0"
   },
   "dependencies": {
-    "@types/vscode": "^1.39.0"
+    "@types/vscode": "^1.39.0",
+    "vscode-languageclient": "^6.1.3"
   }
 }
