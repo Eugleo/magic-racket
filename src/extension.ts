@@ -91,7 +91,8 @@ export function activate(context: vscode.ExtensionContext) {
 	const executable = {
 		command: 'racket',
     // args: ['--lib', 'racket-langserver'],
-    args: [context.asAbsolutePath('racket-langserver/main.rkt')],
+    // args: [context.asAbsolutePath('racket-langserver/main.rkt')],
+    args: [context.asAbsolutePath('racket-language-server/main.rkt')],
 	};
 
 	// If the extension is launched in debug mode then the debug server options are used
