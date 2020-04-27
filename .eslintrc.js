@@ -21,6 +21,6 @@ module.exports = {
   plugins: ["@typescript-eslint"],
   rules: {
     "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
-    "import/resolver": "node",
+    "import/no-unresolved": 0,
   },
 };
