@@ -127,6 +127,9 @@ function runFileInTerminal(filePath: string) {
   terminal.show();
   let racket = getRacketExecutable();
   if (racket !== undefined) {
+    if (process.platform == 'win32') {
+      filePath = filePath.replace(/\\/g, '/');
+    }
     terminal.sendText(`racket "${filePath}"`);
   } else {
     vscode.window.showErrorMessage(
