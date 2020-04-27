@@ -8,8 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
 
       - name: Set up Node.js
         uses: actions/setup-node@v1
@@ -20,8 +21,6 @@ jobs:
         run: npm install
 
       - name: Run ESLint
-        uses: ninosaurus/eslint-check@v5
+        uses: stefanoeb/eslint-action@1.0.2
         with:
-          eslint-config-path: "./.eslintrc.json"
-          custom-directory: "./src"
-          repo-token: ${{secrets.GITHUB_TOKEN}}
+          files: src/
