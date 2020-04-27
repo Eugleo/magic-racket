@@ -127,10 +127,7 @@ function runFileInTerminal(filePath: string) {
   terminal.show();
   let racket = getRacketExecutable();
   if (racket !== undefined) {
-    if (process.platform == 'win32') {
-      filePath = filePath.replace(/\\/g, '/');
-    }
-    terminal.sendText(`racket "${filePath}"`);
+    terminal.sendText(`racket "${normalizeFilePath(filePath)}"`);
   } else {
     vscode.window.showErrorMessage(
       "No Racket executable specified. Please add the path to the Racket executable in settings."
@@ -160,7 +157,14 @@ function raiseMustHaveRacketExecutable() {
 
 function loadFileInRepl(repl: vscode.Terminal, filePath: string) {
   repl.show();
-  repl.sendText(`(enter! (file "${filePath}"))`);
+  repl.sendText(`(enter! (file "${normalizeFilePath(filePath)}"))`);
+}
+
+function normalizeFilePath(filePath: string) {
+  if (process.platform == 'win32') {
+    return filePath.replace(/\\/g, '/');
+  }
+  return filePath;
 }
 
 export function deactivate() {}
