@@ -7,7 +7,14 @@ import {
   executeSelectionInRepl,
 } from "./repl";
 
-function normalizeFilePath(filePath: string) {
+function getOrDefault<K, V>(map: Map<K, V>, key: K, getDefault: Function) {
+  if (!map.has(key)) {
+    map.set(key, getDefault());
+  }
+  return map.get(key)!;
+}
+
+function normalizeFilePath(filePath: string): string {
   if (process.platform === "win32") {
     return filePath.replace(/\\/g, "/");
   }
@@ -15,12 +22,12 @@ function normalizeFilePath(filePath: string) {
 }
 
 function withRacket(func: Function) {
-  const racket = vscode.workspace.getConfiguration("magic-racket").get("racketPath");
+  const racket = vscode.workspace.getConfiguration("magic-racket.general").get("racketPath");
   if (racket !== "") {
     func(racket);
   } else {
     vscode.window.showErrorMessage(
-      "No Racket executable specified. Please add the path to the Racket executable in settings.",
+      "No Racket executable specified. Please add the path to the Racket executable in settings",
     );
   }
 }
@@ -30,27 +37,28 @@ function withEditor(func: Function) {
   if (editor) {
     func(editor);
   } else {
-    vscode.window.showErrorMessage("A file must be opened before you can do that.");
+    vscode.window.showErrorMessage("A file must be opened before you can do that");
   }
 }
 
 function withFilePath(func: Function) {
-  return func(
-    withEditor((editor: vscode.TextEditor) => normalizeFilePath(editor.document.fileName)),
-  );
-}
-
-function getOrDefault<K, V>(map: Map<K, V>, key: K, getDefault: Function) {
-  if (!map.has(key)) {
-    map.set(key, getDefault());
-  }
-  return map.get(key)!;
+  withEditor((editor: vscode.TextEditor) => func(normalizeFilePath(editor.document.fileName)));
 }
 
 export function runInTerminal(terminals: Map<string, vscode.Terminal>) {
   withFilePath((filePath: string) => {
     withRacket((racket: string) => {
-      const terminal = getOrDefault(terminals, filePath, () => createTerminal(filePath));
+      let terminal;
+      if (
+        vscode.workspace
+          .getConfiguration("magic-racket.outputTerminal")
+          .get("numberOfOutputTerminals") === "one"
+      ) {
+        terminal = getOrDefault(terminals, "one", () => createTerminal(null));
+      } else {
+        terminal = getOrDefault(terminals, filePath, () => createTerminal(filePath));
+      }
+
       runFileInTerminal(racket, filePath, terminal);
     });
   });
@@ -91,7 +99,7 @@ export function showOutput(terminals: Map<string, vscode.Terminal>) {
     if (terminal) {
       terminal.show();
     } else {
-      vscode.window.showErrorMessage("No output terminal exists for this file.");
+      vscode.window.showErrorMessage("No output terminal exists for this file");
     }
   });
 }

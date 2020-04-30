@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 
 function fileName(filePath: string) {
-  const match = filePath.match(".*/[^/]\\.[^/]$");
+  const match = filePath.match(/^.*\/([^/]+\.[^/]+)$/);
   if (match) {
-    return match[0];
+    return match[1];
   }
   vscode.window.showErrorMessage("Invalid file name.");
   return "";
@@ -29,14 +29,31 @@ export function loadFileInRepl(filePath: string, repl: vscode.Terminal) {
   repl.sendText(`(enter! (file "${filePath}"))`);
 }
 
-export function createTerminal(filePath: string) {
-  const terminal = vscode.window.createTerminal(`Output (${fileName(filePath)})`);
+export function createTerminal(filePath: string | null) {
+  let terminal;
+  if (filePath) {
+    const templateSetting: string | undefined = vscode.workspace
+      .getConfiguration("magic-racket.outputTerminal")
+      .get("outputTerminalTitle");
+    const template = templateSetting && templateSetting !== "" ? templateSetting : "Output ($name)";
+    terminal = vscode.window.createTerminal(template.replace("$name", fileName(filePath)));
+  } else {
+    const templateSetting: string | undefined = vscode.workspace
+      .getConfiguration("magic-racket.outputTerminal")
+      .get("sharedOutputTerminalTitle");
+    const template = templateSetting && templateSetting !== "" ? templateSetting : "Racket Output";
+    terminal = vscode.window.createTerminal(template);
+  }
   terminal.show();
   return terminal;
 }
 
 export function createRepl(filePath: string, racket: string) {
-  const repl = vscode.window.createTerminal(`REPL (${fileName(filePath)})`);
+  const templateSetting: string | undefined = vscode.workspace
+    .getConfiguration("magic-racket.repl")
+    .get("replTitle");
+  const template = templateSetting && templateSetting !== "" ? templateSetting : "REPL ($name)";
+  const repl = vscode.window.createTerminal(template.replace("$name", fileName(filePath)));
   repl.show();
   repl.sendText(racket);
   return repl;

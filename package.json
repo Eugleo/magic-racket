@@ -76,10 +76,37 @@
     "configuration": {
       "title": "Magic Racket",
       "properties": {
-        "magic-racket.racketPath": {
+        "magic-racket.general.racketPath": {
           "type": "string",
           "default": "racket",
-          "description": "The path to the racket executable (used to run the file and open the REPL)."
+          "markdownDescription": "Specifies the path to the `racket` executable, which is used to run the file and open the REPL."
+        },
+        "magic-racket.outputTerminal.numberOfOutputTerminals": {
+          "type": "string",
+          "enum": [
+            "one",
+            "many"
+          ],
+          "default": "one",
+          "enumDescriptions": [
+            "Runs every file in the same output terminal",
+            "Runs each file in its own output terminal"
+          ]
+        },
+        "magic-racket.outputTerminal.sharedOutputTerminalTitle": {
+          "type": "string",
+          "default": "Racket Output",
+          "markdownDescription": "Specifies the title of the the shared output terminal."
+        },
+        "magic-racket.outputTerminal.outputTerminalTitle": {
+          "type": "string",
+          "default": "Output ($name)",
+          "markdownDescription": "Specifies the template string for the title of the file-specific output terminal. Substring `$name` will get replaced by the file name."
+        },
+        "magic-racket.repl.replTitle": {
+          "type": "string",
+          "default": "REPL ($name)",
+          "markdownDescription": "Specifies the template string for the title of racket REPLs. Substring `$name` will get replaced by the file name."
         }
       }
     },
