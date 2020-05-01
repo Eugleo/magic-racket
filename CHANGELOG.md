@@ -5,19 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.5.0
+## 0.5.0 (1st May 2020)
 
 ### Added
 
 - LSP support! Now you can go to definition, see a list of defined symbols and more. See the README for the complete list of LSP features.
 - Tweaks to how brackets are autocompleted, leading to better writing experience.
-- You can now customize the "Run in terminal" behaviour
+- You can now customize the "Run in terminal" behaviour.
 
 ### Changed
 
 - Ditched the old unintuitive REPL workflow for a new `one file = one repl` one. No more REPL headaches!
 
-## 0.4.5, 0.4.3, 0.4.4 (29th October 2019)
+## 0.4.5 (29th October 2019)
 
 - It is now possible to open a REPL without needing to have a file open first.
 - Changes to how REPL handling works (see the README for in-depth description).
