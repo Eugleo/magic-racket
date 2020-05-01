@@ -81,6 +81,17 @@
           "default": "racket",
           "markdownDescription": "Specifies the path to the `racket` executable, which is used to run the file and open the REPL."
         },
+        "magic-racket.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        },
         "magic-racket.outputTerminal.numberOfOutputTerminals": {
           "type": "string",
           "enum": [
