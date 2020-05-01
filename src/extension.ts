@@ -61,6 +61,11 @@ export function activate(context: vscode.ExtensionContext) {
   const terminals: Map<string, vscode.Terminal> = new Map();
   const repls: Map<string, vscode.Terminal> = new Map();
 
+  vscode.window.onDidCloseTerminal((terminal) => {
+    terminals.forEach((val, key) => val === terminal && terminals.delete(key) && val.dispose());
+    repls.forEach((val, key) => val === terminal && repls.delete(key) && val.dispose());
+  });
+
   const loadInRepl = reg("loadFileIntoRepl", () => com.loadInRepl(repls));
   const runInTerminal = reg("runFile", () => com.runInTerminal(terminals));
   const executeSelection = reg("executeSelectionInRepl", () => com.executeSelection(repls));
