@@ -1,64 +1,77 @@
 # Magic Racket for VS Code
 
-This extension adds support for [Racket](http://www.racket-lang.org) syntax highlighting and REPL.
+This extension adds support for [Racket](http://www.racket-lang.org) to VS Code. With the newly added support for language server protocol, we're proud to say that Magic Racket is **the best** Racket extension for VS Code.
 
 ## Features
 
-Magic Racket aims to:
+Magic Racket **does**
 
-- Have nearly complete support for every valid Racket syntax. Byte strings, regexps, define clauses, vectors... You name it, we have it.
-- Support highlighting of all of the functions in `#lang racket`.
+- Support Racket LSP through [racket-langserver](https://github.com/jeapostrophe/racket-langserver), which brings jump to definition, hover information and more
+- Have nearly complete support for every valid Racket syntax: byte strings, regexps, define clauses, vectors... You name it, we have it
+- Support highlighting of all of the standart functions in `#lang racket`
+- Turn many little VS Code knobs and switches to provide you the best possible Racket-writing experience
 
-...but at the same time it doesn't want to:
+...but at the same time **doesn't**:
 
-- Get in your way (by providing useless snippets, or throwing around colorization just for the sake of it).
-- Only work in VS Code. The code is highly portable and there are plans to port Magic Racket also to Atom and Sublime Text.
+- Get in your way by providing useless snippets
+- Throw around colorization just for the sake of it
+- Try to do everything. What can be left up on the LSP, or some other package, will be. Focus is key
 
-Eventually, I'd like to be able to include support for Racket LSP as well; in the meantime, you can at least use the REPL quite comfortably by leveraging the Magic Racket REPL integration.
+### LSP Support
+
+Thanks to @JJPro Magic Racket now supports [racket-langserver](https://github.com/jeapostrophe/racket-langserver) from @jeapostrophe. The current features are:
+
+- Underline errors
+- Jump to definition
+- Find references
+- Hover information
+
+We're working on providing more details in this section: stay tuned!
 
 ### Syntax highlighting
 
 The image shows a comparison of a testing file highlighted using a popular Racket VS Code extension (on the left) and by Magic Racket (on the right).
 
-![Bad highlighting](images/magic-vs-other.png)
+![Highlighting comparison](images/magic-vs-other.png)
 
-As you can see, the highlighting strives to be _correct_ and _consistent_ — and it supports most of the language features as well. In many ways, this extension was inspired by the highlighting in DrRacket, however, in some aspects it aims to be less minimalistic.
+As you can see, Magic Racket strives to be _correct_ and _consistent_ — and it supports most of the language features as well. In many ways, this extension was inspired by the highlighting in DrRacket, however, in some aspects it aims to be less minimalistic.
 
 ### REPL support
 
-There are five new commands in VS Code, and you can find them upon pressing <kbd>`Cmd+Shift+P`</kbd> (or <kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows):
+You can load and execute files in Magic Racket by using the icons in the top right corner of your editor (see the image below), or from the commands console in VS Code. You can open the list of all commands by pressing <kbd>`Cmd+Shift+P`</kbd> (or <kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows) and then search through them by typing. All of Magic Racket's commands are prefixed by `Racket:` to make the searching easier.
 
-- `Racket: Execute selection in REPL`
-  - Executes the selection(s) in the REPL. Available also by right-clicking the selection or by using the shortcut <kbd>Alt+Enter</kbd>.
-- `Racket: Launch a new REPL`
-  - Launches a new, blank REPL (and doesn't load any file into it).
-- `Racket: Load file into the current REPL`
-  - If a REPL is open and in focus, loads the current file into it. Otherwise creates a new REPL and loads the file into that one.
-- `Racket: Load file into a new REPL`
-  - This command is just a convenient shortcut for `Racket: Launch a new REPL` followed by `Racket: Load file into the current REPL`.
-- `Racket: Run file in terminal`
-  - Runs the whole file in a terminal, outside of REPL environment.
-
-There are two buttons in the top-right corner of the editor window which stand for  `Racket: Load file into the current REPL` and `Racket: Run file in terminal`.
+In Magic Racket, each file will have its own REPL in which it'll load everytime you use the `Racket: Load file in REPL` command. You can choose to mimic this behavior also for `Racket: Run file in terminal`, or you can run all files in one output terminal.
 
 ![REPL showcase](images/repl.gif)
 
-**Watch out:** If you load a file into the REPL, all of the bindings of that file will be made available in the REPL (this is handled by the Racket function `enter!`). However, if you'll try to load another file into the *same* REPL, the bindings from the previous file will be lost.
+The list of commands added by Magic Racket:
+
+- `Racket: Execute selection in REPL`
+  - Executes the selection(s) in the REPL. Available also by right-clicking the selection or by using the shortcut <kbd>Alt+Enter</kbd>.
+- `Racket: Load file in REPL`
+  - Loads the current file into its REPL, creating a new REPL in the process if the file doesn't have one yet. Does have its icon in the top right corner.
+- `Racket: Run file in terminal`
+  - Runs the whole file in a terminal, outside of REPL environment. Depending on user settings, the terminal will be either shared among all files (default), or the one that belongs to the file.
+- `Racket: Open the REPL for the current file`
+  - Shows the REPL belonging to the current file, or opens a new one if the file doesn't have one yet.
+- `Racket: Show the output terminal for the current file`
+  - Similarly to the command above, this one shows the output terminal of the current file.
+
+You can set the names of the REPLs and output terminals in the settings.
 
 ### Minor QoL features
 
 These aren't game-changers, but they certainly help.
 
-- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Cmd+/</kbd> (or <kbd>Ctrl+/</kbd> on Windows and Linux).
-  - If anybody knows how to bind it to <kbd>Cmd+\\</kbd>, let me know.
-- VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Alt+Left</kbd> and <kbd>Alt+Right</kbd> works as expected, and so does the double-click word selection.
+- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Cmd+/</kbd> (or <kbd>Ctrl+/</kbd> on Windows and Linux)
+  - If anybody knows how to bind it to <kbd>Cmd+\\</kbd>, let me know
+- VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Ctrl+Left</kbd> and <kbd>Ctrl+Right</kbd> works as expected, and so does the double-click word selection
 
-## Extension Settings
-
-This extesion provides two settings:
-- `magic-racket.focusCurrentRepl` (beta) determines whether the terminals should be automatically switched so that the terminal with REPL for the current file is always shown.
-- `magic-racket.racketPath` is the path to the Racket executable.
-
-## Release Notes
+## Release notes
 
 Please see the [changelog](CHANGELOG.md) for the information about the latest updates.
+
+## Want to help us?
+
+Firstly — that's great, thanks!
+Please see [contributing](CONTRIBUTING.md) for the information about what we need
