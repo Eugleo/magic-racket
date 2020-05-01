@@ -66,11 +66,11 @@ export function activate(context: vscode.ExtensionContext) {
     repls.forEach((val, key) => val === terminal && repls.delete(key) && val.dispose());
   });
 
-  const loadInRepl = reg("loadFileIntoRepl", () => com.loadInRepl(repls));
+  const loadInRepl = reg("loadFileInRepl", () => com.loadInRepl(repls));
   const runInTerminal = reg("runFile", () => com.runInTerminal(terminals));
   const executeSelection = reg("executeSelectionInRepl", () => com.executeSelection(repls));
   const openRepl = reg("openRepl", () => com.openRepl(repls));
-  const showOutput = reg("showOutput", () => com.showOutput(terminals));
+  const showOutput = reg("showOutputTerminal", () => com.showOutput(terminals));
 
   context.subscriptions.push(loadInRepl, runInTerminal, executeSelection, openRepl, showOutput);
 }

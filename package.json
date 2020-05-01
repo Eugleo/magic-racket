@@ -4,11 +4,11 @@
   "description": "Language support for Racket: top notch syntax highlighting and REPL integration.",
   "version": "0.4.6",
   "activationEvents": [
-    "onCommand:magic-racket.loadFileIntoNewRepl",
-    "onCommand:magic-racket.loadFileIntoRepl",
+    "onCommand:magic-racket.loadFileInRepl",
     "onCommand:magic-racket.runFile",
     "onCommand:magic-racket.executeSelectionInRepl",
     "onCommand:magic-racket.openRepl",
+    "onCommand:magic-racket.showOutputTerminal",
     "onLanguage:racket"
   ],
   "main": "./out/extension.js",
@@ -112,16 +112,12 @@
     },
     "commands": [
       {
-        "command": "magic-racket.loadFileIntoRepl",
-        "title": "Racket: Load file into the current REPL",
+        "command": "magic-racket.loadFileInRepl",
+        "title": "Racket: Load file in REPL",
         "icon": {
           "light": "images/repl-light.svg",
           "dark": "images/repl-dark.svg"
         }
-      },
-      {
-        "command": "magic-racket.loadFileIntoNewRepl",
-        "title": "Racket: Load file into a new REPL"
       },
       {
         "command": "magic-racket.runFile",
@@ -137,7 +133,11 @@
       },
       {
         "command": "magic-racket.openRepl",
-        "title": "Racket: Launch a new repl"
+        "title": "Racket: Open the REPL for this file"
+      },
+      {
+        "command": "magic-racket.showOutputTerminal",
+        "title": "Racket: Show the terminal in which this file is run"
       }
     ],
     "menus": {
@@ -149,7 +149,7 @@
         },
         {
           "when": "editorLangId == racket",
-          "command": "magic-racket.loadFileIntoRepl",
+          "command": "magic-racket.loadFileInRepl",
           "group": "navigation"
         }
       ],
