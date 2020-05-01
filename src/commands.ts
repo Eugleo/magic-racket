@@ -58,7 +58,6 @@ export function runInTerminal(terminals: Map<string, vscode.Terminal>) {
       } else {
         terminal = getOrDefault(terminals, filePath, () => createTerminal(filePath));
       }
-      console.log(terminal);
       runFileInTerminal(racket, filePath, terminal);
     });
   });
