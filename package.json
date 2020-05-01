@@ -1,7 +1,7 @@
 {
   "name": "magic-racket",
   "displayName": "Magic Racket",
-  "description": "Language support for Racket: top notch syntax highlighting and REPL integration.",
+  "description": "Top notch syntax highlighting, REPL integration and LSP support for the coolest of LISPs!",
   "version": "0.5.0",
   "activationEvents": [
     "onCommand:magic-racket.loadFileInRepl",
