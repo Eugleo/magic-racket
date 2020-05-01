@@ -3,7 +3,12 @@
     "lineComment": ";",
     "blockComment": ["#|", "|#"]
   },
-  "brackets": [["{", "}"], ["[", "]"], ["(", ")"], ["|", "|"]],
+  "brackets": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["|", "|"]
+  ],
   "autoClosingPairs": [
     {
       "open": "{",
@@ -33,6 +38,7 @@
       "notIn": ["string"]
     }
   ],
+  "autoCloseBefore": ")]},'`;| \n\t#",
   "surroundingPairs": [
     ["{", "}"],
     ["[", "]"],
