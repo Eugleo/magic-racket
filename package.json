@@ -1,7 +1,7 @@
 {
   "name": "magic-racket",
   "displayName": "Magic Racket",
-  "description": "Top notch syntax highlighting, REPL integration and LSP support for the coolest of LISPs!",
+  "description": "LSP support, REPL integration, and top notch syntax highlighting for the coolest of LISPs!",
   "version": "0.5.0",
   "activationEvents": [
     "onCommand:magic-racket.loadFileInRepl",
@@ -133,11 +133,11 @@
       },
       {
         "command": "magic-racket.openRepl",
-        "title": "Racket: Open the REPL for this file"
+        "title": "Racket: Open the REPL for the current file"
       },
       {
         "command": "magic-racket.showOutputTerminal",
-        "title": "Racket: Show the terminal in which this file is run"
+        "title": "Racket: Show the output terminal for the current file"
       }
     ],
     "menus": {
