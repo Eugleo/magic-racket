@@ -14,7 +14,7 @@
   "main": "./out/extension.js",
   "galleryBanner": {
     "color": "#FFFFFF",
-    "theme": "light"
+    "theme": "dark"
   },
   "icon": "images/icon.png",
   "engines": {
