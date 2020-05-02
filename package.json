@@ -13,7 +13,7 @@
   ],
   "main": "./out/extension.js",
   "galleryBanner": {
-    "color": "#FFFFFF",
+    "color": "#405DA7",
     "theme": "dark"
   },
   "icon": "images/icon.png",
