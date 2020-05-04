@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { LanguageClient } from "vscode-languageclient";
 import * as com from "./commands";
+import { withRacket } from "./utils";
 
 let langClient: LanguageClient;
 
@@ -12,40 +13,42 @@ export function deactivate() {
 }
 
 function setupLSP(context: vscode.ExtensionContext) {
-  const executable = {
-    command: "racket",
-    // args: ['--lib', 'racket-langserver'],
-    args: [context.asAbsolutePath("racket-langserver/main.rkt")],
-    // args: [context.asAbsolutePath('racket-language-server/main.rkt')],
-  };
+  withRacket((racket: string) => {
+    const executable = {
+      command: racket,
+      // args: ['--lib', 'racket-langserver'],
+      args: [context.asAbsolutePath("racket-langserver/main.rkt")],
+      // args: [context.asAbsolutePath('racket-language-server/main.rkt')],
+    };
 
-  // If the extension is launched in debug mode then the debug server options are used
-  // Otherwise the run options are used
-  const serverOptions = {
-    run: executable,
-    debug: executable,
-  };
+    // If the extension is launched in debug mode then the debug server options are used
+    // Otherwise the run options are used
+    const serverOptions = {
+      run: executable,
+      debug: executable,
+    };
 
-  // Options to control the language client
-  const clientOptions = {
-    // Register the server for racket documents
-    documentSelector: [{ scheme: "file", language: "racket" }],
-    synchronize: {
-      // Notify the server about file changes to '.clientrc files contained in the workspace
-      fileEvents: vscode.workspace.createFileSystemWatcher("**/.clientrc"),
-    },
-  };
+    // Options to control the language client
+    const clientOptions = {
+      // Register the server for racket documents
+      documentSelector: [{ scheme: "file", language: "racket" }],
+      synchronize: {
+        // Notify the server about file changes to '.clientrc files contained in the workspace
+        fileEvents: vscode.workspace.createFileSystemWatcher("**/.clientrc"),
+      },
+    };
 
-  // Create the language client and start the client.
-  langClient = new LanguageClient(
-    "magic-racket",
-    "Racket Language Client",
-    serverOptions,
-    clientOptions,
-  );
+    // Create the language client and start the client.
+    langClient = new LanguageClient(
+      "magic-racket",
+      "Racket Language Client",
+      serverOptions,
+      clientOptions,
+    );
 
-  // Start the client. This will also launch the server
-  langClient.start();
+    // Start the client. This will also launch the server
+    langClient.start();
+  });
 }
 
 function reg(name: string, func: (...args: any[]) => any) {
