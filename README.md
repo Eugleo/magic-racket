@@ -2,6 +2,21 @@
 
 This extension adds support for [Racket](http://www.racket-lang.org) to VS Code. With the newly added support for language server protocol, we're proud to say that Magic Racket is **the best** Racket extension for VS Code.
 
+## Setting up
+
+1. Install Magic Racket. You can do that from the [VS Code extension marketplace](https://marketplace.visualstudio.com/items?itemName=evzen-wybitul.magic-racket).
+2. Install the [racket-langserver](https://github.com/jeapostrophe/racket-langserver) by runnning the following command:
+
+    ```bash
+    raco pkg install racket-langserver
+    ```
+
+    Or update it using
+
+    ```bash
+    raco pkg update racket-langserver
+    ```
+
 ## Features
 
 Magic Racket **does**
@@ -19,7 +34,7 @@ Magic Racket **does**
 
 ### LSP Support
 
-Thanks to @JJPro Magic Racket now supports [racket-langserver](https://github.com/jeapostrophe/racket-langserver) from @jeapostrophe. The current features are:
+Magic Racket now supports [racket-langserver](https://github.com/jeapostrophe/racket-langserver). The current features are:
 
 - Underline errors
 - Jump to definition
