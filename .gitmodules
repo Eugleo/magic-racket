@@ -1,3 +1,0 @@
-[submodule "racket-langserver"]
-	path = racket-langserver
-	url = https://github.com/Eugleo/racket-langserver.git

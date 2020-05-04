@@ -12,13 +12,11 @@ export function deactivate() {
   return langClient.stop();
 }
 
-function setupLSP(context: vscode.ExtensionContext) {
+function setupLSP() {
   withRacket((racket: string) => {
     const executable = {
       command: racket,
-      // args: ['--lib', 'racket-langserver'],
-      args: [context.asAbsolutePath("racket-langserver/main.rkt")],
-      // args: [context.asAbsolutePath('racket-language-server/main.rkt')],
+      args: ["--lib", "racket-langserver"],
     };
 
     // If the extension is launched in debug mode then the debug server options are used
@@ -56,7 +54,7 @@ function reg(name: string, func: (...args: any[]) => any) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  setupLSP(context);
+  setupLSP();
 
   // Each file has one output terminal and one repl
   // Those two are saved in terminals and repls, respectively
