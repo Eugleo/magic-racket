@@ -6,43 +6,13 @@ import {
   loadFileInRepl,
   executeSelectionInRepl,
 } from "./repl";
+import { withFilePath, withRacket, withEditor } from "./utils";
 
 function getOrDefault<K, V>(map: Map<K, V>, key: K, getDefault: Function) {
   if (!map.has(key)) {
     map.set(key, getDefault());
   }
   return map.get(key)!;
-}
-
-function normalizeFilePath(filePath: string): string {
-  if (process.platform === "win32") {
-    return filePath.replace(/\\/g, "/");
-  }
-  return filePath;
-}
-
-function withRacket(func: Function) {
-  const racket = vscode.workspace.getConfiguration("magic-racket.general").get("racketPath");
-  if (racket !== "") {
-    func(racket);
-  } else {
-    vscode.window.showErrorMessage(
-      "No Racket executable specified. Please add the path to the Racket executable in settings",
-    );
-  }
-}
-
-function withEditor(func: Function) {
-  const editor = vscode.window.activeTextEditor;
-  if (editor) {
-    func(editor);
-  } else {
-    vscode.window.showErrorMessage("A file must be opened before you can do that");
-  }
-}
-
-function withFilePath(func: Function) {
-  withEditor((editor: vscode.TextEditor) => func(normalizeFilePath(editor.document.fileName)));
 }
 
 export function runInTerminal(terminals: Map<string, vscode.Terminal>) {
