@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.5 (4th May 2020)
+
+### Changed
+- Replaced the custom LSP fork with the official version, which can be installed simply by running `raco pkg install racket-langserver`. This prevents the headaches of managing a custom forked LSP.
+
+### Fixed
+- Launching the LSP now correctly uses the value of `magic-racket.general.racketPath`.
+
 ## 0.5.4 (2nd May 2020)
 
 - Minor changes to the marketplace page of Magic Racket.
