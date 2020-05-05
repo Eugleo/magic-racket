@@ -21,7 +21,15 @@ export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.Tex
 
 export function runFileInTerminal(racket: string, filePath: string, terminal: vscode.Terminal) {
   terminal.show();
-  terminal.sendText(`${racket} '${filePath}'`);
+  const shell: string | undefined = vscode.workspace
+    .getConfiguration("terminal.integrated.shell")
+    .get("windows");
+  if (process.platform === "win32" && shell && /cmd\.exe$/.test(shell)) {
+    // cmd.exe doesn't recognize single quotes
+    terminal.sendText(`${racket} "${filePath}"`);
+  } else {
+    terminal.sendText(`${racket} '${filePath}'`);
+  }
 }
 
 export function loadFileInRepl(filePath: string, repl: vscode.Terminal) {
