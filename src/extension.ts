@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { LanguageClient } from "vscode-languageclient";
+// eslint-disable-next-line no-unused-vars
+import { LanguageClient, LanguageClientOptions } from "vscode-languageclient";
 import * as com from "./commands";
 import { withRacket } from "./utils";
 
@@ -27,12 +28,16 @@ function setupLSP() {
     };
 
     // Options to control the language client
-    const clientOptions = {
+    const clientOptions: LanguageClientOptions = {
       // Register the server for racket documents
       documentSelector: [{ scheme: "file", language: "racket" }],
       synchronize: {
         // Notify the server about file changes to '.clientrc files contained in the workspace
         fileEvents: vscode.workspace.createFileSystemWatcher("**/.clientrc"),
+      },
+      uriConverters: {
+        code2Protocol: (uri) => uri.toString(true),
+        protocol2Code: (str) => vscode.Uri.parse(str),
       },
     };
 
