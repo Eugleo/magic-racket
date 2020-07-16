@@ -21,6 +21,7 @@ export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.Tex
 
 export function runFileInTerminal(racket: string, filePath: string, terminal: vscode.Terminal) {
   terminal.show();
+  terminal.sendText(`clear`);
   const shell: string | undefined = vscode.workspace
     .getConfiguration("terminal.integrated.shell")
     .get("windows");
