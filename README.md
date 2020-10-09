@@ -78,8 +78,7 @@ You can set the names of the REPLs and output terminals in the settings.
 
 These aren't game-changers, but they certainly help.
 
-- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Cmd+/</kbd> (or <kbd>Ctrl+/</kbd> on Windows and Linux)
-  - If anybody knows how to bind it to <kbd>Cmd+\\</kbd>, let me know
+- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Cmd+\\</kbd> (or <kbd>Ctrl+\\</kbd> on Windows and Linux)
 - VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Ctrl+Left</kbd> and <kbd>Ctrl+Right</kbd> works as expected, and so does the double-click word selection
 
 ## Release notes
