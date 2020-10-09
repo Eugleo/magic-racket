@@ -179,8 +179,8 @@
         "when": "resourceLangId == racket && editorHasSelection"
       },
       {
-        "key": "Ctrl+/",
-        "mac": "Cmd+/",
+        "key": "Ctrl+\\",
+        "mac": "Cmd+\\",
         "command": "editor.action.insertSnippet",
         "when": "resourceLangId == racket && editorTextFocus",
         "args": {
