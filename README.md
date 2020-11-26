@@ -81,6 +81,19 @@ These aren't game-changers, but they certainly help.
 - You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Option+\\</kbd> (or <kbd>Alt+\\</kbd> on Windows and Linux)
 - VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Ctrl+Left</kbd> and <kbd>Ctrl+Right</kbd> works as expected, and so does the double-click word selection
 
+## Configuration
+
+Magic Racket's options can be found in the `Magic Racket` section in VSCode preferences. 
+
+However, if you would like to change some VSCode option _only_ for Racket (e.g. if you don't like the predefined editor rulers), you can do so by directly adding them into a `[racket]` section in `settings.json`:
+
+```json
+"[racket]": {
+    "editor.rulers": [],
+    // some further Racket-specifig configuration
+}
+```
+
 ## Release notes
 
 Please see the [changelog](CHANGELOG.md) for the information about the latest updates.
