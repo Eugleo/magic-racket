@@ -59,7 +59,13 @@ function reg(name: string, func: (...args: any[]) => any) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  setupLSP();
+  const enableLSP: boolean = vscode.workspace
+    .getConfiguration("magic-racket.lsp")
+    .get("enabled", true);
+
+  if (enableLSP) {
+    setupLSP();
+  }
 
   // Each file has one output terminal and one repl
   // Those two are saved in terminals and repls, respectively
