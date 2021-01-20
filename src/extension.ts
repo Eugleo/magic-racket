@@ -5,6 +5,7 @@ import * as com from "./commands";
 import { withRacket } from "./utils";
 
 let langClient: LanguageClient;
+let isLangClientRunning: boolean = false;
 
 export function deactivate() {
   if (!langClient) {
@@ -48,9 +49,6 @@ function setupLSP() {
       serverOptions,
       clientOptions,
     );
-
-    // Start the client. This will also launch the server
-    langClient.start();
   });
 }
 
@@ -58,14 +56,33 @@ function reg(name: string, func: (...args: any[]) => any) {
   return vscode.commands.registerCommand(`magic-racket.${name}`, func);
 }
 
+function configurationChanged() {
+  const enableLSP: boolean = vscode.workspace
+    .getConfiguration("magic-racket.lsp")
+    .get("enabled", true);
+
+  if (langClient) {
+    if (enableLSP && !isLangClientRunning) {
+      langClient.start();
+      isLangClientRunning = true;
+    } else {
+      langClient.stop();
+      isLangClientRunning = false;
+    }
+  }
+}
+
 export function activate(context: vscode.ExtensionContext) {
   setupLSP();
+  configurationChanged();
 
   // Each file has one output terminal and one repl
   // Those two are saved in terminals and repls, respectively
   // The file is _ran_ in the terminal and _loaded_ into a repl
   const terminals: Map<string, vscode.Terminal> = new Map();
   const repls: Map<string, vscode.Terminal> = new Map();
+
+  vscode.workspace.onDidChangeConfiguration(configurationChanged);
 
   vscode.window.onDidCloseTerminal((terminal) => {
     terminals.forEach((val, key) => val === terminal && terminals.delete(key) && val.dispose());

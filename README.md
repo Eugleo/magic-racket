@@ -17,6 +17,8 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
     raco pkg update racket-langserver
     ```
 
+    If don't want to use the lang-server at all, you don't have to. Just set `"magic-racket.lsp.enabled": false` in your configuration file. But note that if you do so, you won't get the “smart” features like autocomplete, formatting, etc.
+
 ## Features
 
 Magic Racket **does**
@@ -83,7 +85,7 @@ These aren't game-changers, but they certainly help.
 
 ## Configuration
 
-Magic Racket's options can be found in the `Magic Racket` section in VSCode preferences. 
+Magic Racket's options can be found in the `Magic Racket` section in VSCode preferences.
 
 However, if you would like to change some VSCode option _only_ for Racket (e.g. if you don't like the predefined editor rulers), you can do so by directly adding them into a `[racket]` section in `settings.json`:
 

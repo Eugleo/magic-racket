@@ -118,6 +118,11 @@
           "type": "string",
           "default": "REPL ($name)",
           "markdownDescription": "Specifies the template string for the title of racket REPLs. Substring `$name` will get replaced by the file name."
+        },
+        "magic-racket.lsp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enables language server support"
         }
       }
     },
