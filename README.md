@@ -92,7 +92,7 @@ However, if you would like to change some VSCode option _only_ for Racket (e.g. 
 ```json
 "[racket]": {
     "editor.rulers": [],
-    // some further Racket-specifig configuration
+    // some further Racket-specific configuration
 }
 ```
 
