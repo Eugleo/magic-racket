@@ -77,10 +77,15 @@
     "configuration": {
       "title": "Magic Racket",
       "properties": {
+        "magic-racket.general.REPLRacketPath": {
+          "type": "string",
+          "default": "racket",
+          "markdownDescription": "Specifies the path to the `racket` executable used to open the REPL and run the file."
+        },
         "magic-racket.general.racketPath": {
           "type": "string",
           "default": "racket",
-          "markdownDescription": "Specifies the path to the `racket` executable, which is used to run the file and open the REPL."
+          "markdownDescription": "Specifies the path to the `racket` executable used to launch the Racket language server."
         },
         "magic-racket.trace.server": {
           "scope": "window",

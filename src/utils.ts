@@ -7,10 +7,11 @@ function normalizeFilePath(filePath: string): string {
   return filePath;
 }
 
-export function withRacket(func: (racketPath: string) => void): void {
+export function withRacket(func: (racketPath: string) => void, server = false): void {
+  const racketPathKey = server ? "racketPath" : "REPLracketPath";
   const racket = vscode.workspace
     .getConfiguration("magic-racket.general")
-    .get<string>("racketPath");
+    .get<string>(racketPathKey);
   if (racket && racket !== "") {
     func(racket);
   } else {
