@@ -65,7 +65,7 @@ function configurationChanged() {
     if (enableLSP && !isLangClientRunning) {
       langClient.start();
       isLangClientRunning = true;
-    } else {
+    } else if (!enableLSP && isLangClientRunning) {
       langClient.stop();
       isLangClientRunning = false;
     }

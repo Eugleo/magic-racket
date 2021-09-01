@@ -5,7 +5,8 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
 ## Setting up
 
 1. Install Magic Racket. You can do that from the [VS Code extension marketplace](https://marketplace.visualstudio.com/items?itemName=evzen-wybitul.magic-racket).
-2. Install the [racket-langserver](https://github.com/jeapostrophe/racket-langserver) by runnning the following command:
+2. Make sure you have `raco` on your path (see below)
+3. Install the [racket-langserver](https://github.com/jeapostrophe/racket-langserver) by runnning the following command in the terminal:
 
     ```bash
     raco pkg install racket-langserver
@@ -18,6 +19,25 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
     ```
 
     If don't want to use the lang-server at all, you don't have to. Just set `"magic-racket.lsp.enabled": false` in your configuration file. But note that if you do so, you won't get the “smart” features like autocomplete, formatting, etc.
+    
+### Setting up `raco` properly
+
+We need [raco](https://docs.racket-lang.org/raco/) to install the language server package. The good news is, `raco` is automatically installed during the installation of Racket. On MacOS, it can be found in the `/Applications/[Racket folder]/bin` directory, on Windows (or so I am told) it's directly in the Racket install directory.
+
+However, after the installation, your computer doesn't _know_ where the command `raco` is, so you need to do either of the following things:
+
+- [recommended] add the directory where `raco` is located ([instructions for Unix](https://stackoverflow.com/questions/14637979/how-to-permanently-set-path-on-linux-unix), and something like [this for PowerShell on Windows](https://stackoverflow.com/questions/714877/setting-windows-powershell-environment-variables))
+- first move to the directory where `raco` is located (by using `cd`, for example), and then run it by prefixing the `raco` command with `./` (Unix) or `.\` (Windows), like this:
+
+    ```bash
+    ./raco pkg update racket-langserver
+    ```
+    
+    or, on Windows,
+    
+    ```bash
+    .\raco pkg update racket-langserver
+    ```
 
 ## Features
 
@@ -92,7 +112,7 @@ However, if you would like to change some VSCode option _only_ for Racket (e.g. 
 ```json
 "[racket]": {
     "editor.rulers": [],
-    // some further Racket-specifig configuration
+    // some further Racket-specific configuration
 }
 ```
 
