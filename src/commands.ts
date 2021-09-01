@@ -18,10 +18,14 @@ function getOrDefault<K, V>(map: Map<K, V>, key: K, getDefault: () => V): V {
   return def;
 }
 
+function saveActiveTextEditorAndRun(f: () => void) {
+  vscode.window.activeTextEditor?.document?.save().then(() => f());
+}
+
 export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
     withRacket((racket: string) => {
-      let terminal;
+      let terminal: vscode.Terminal;
       if (
         vscode.workspace
           .getConfiguration("magic-racket.outputTerminal")
@@ -31,7 +35,7 @@ export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
       } else {
         terminal = getOrDefault(terminals, filePath, () => createTerminal(filePath));
       }
-      runFileInTerminal(racket, filePath, terminal);
+      saveActiveTextEditorAndRun(() => runFileInTerminal(racket, filePath, terminal));
     });
   });
 }
@@ -40,7 +44,7 @@ export function loadInRepl(repls: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
     withRacket((racket: string) => {
       const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
-      loadFileInRepl(filePath, repl);
+      saveActiveTextEditorAndRun(() => loadFileInRepl(filePath, repl));
     });
   });
 }
