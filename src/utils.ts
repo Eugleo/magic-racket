@@ -8,7 +8,7 @@ function normalizeFilePath(filePath: string): string {
 }
 
 export function withRacket(func: (racketPath: string) => void, server = false): void {
-  const racketPathKey = server ? "racketPath" : "REPLracketPath";
+  const racketPathKey = server ? "racketPath" : "REPLRacketPath";
   const racket = vscode.workspace
     .getConfiguration("magic-racket.general")
     .get<string>(racketPathKey);
