@@ -8,14 +8,17 @@ import {
 } from "./repl";
 import { withFilePath, withRacket, withEditor } from "./utils";
 
-function getOrDefault<K, V>(map: Map<K, V>, key: K, getDefault: Function) {
-  if (!map.has(key)) {
-    map.set(key, getDefault());
+function getOrDefault<K, V>(map: Map<K, V>, key: K, getDefault: () => V): V {
+  const value = map.get(key);
+  if (value) {
+    return value;
   }
-  return map.get(key)!;
+  const def = getDefault();
+  map.set(key, def);
+  return def;
 }
 
-export function runInTerminal(terminals: Map<string, vscode.Terminal>) {
+export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
     withRacket((racket: string) => {
       let terminal;
@@ -33,7 +36,7 @@ export function runInTerminal(terminals: Map<string, vscode.Terminal>) {
   });
 }
 
-export function loadInRepl(repls: Map<string, vscode.Terminal>) {
+export function loadInRepl(repls: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
     withRacket((racket: string) => {
       const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
@@ -42,7 +45,7 @@ export function loadInRepl(repls: Map<string, vscode.Terminal>) {
   });
 }
 
-export function executeSelection(repls: Map<string, vscode.Terminal>) {
+export function executeSelection(repls: Map<string, vscode.Terminal>): void {
   withEditor((editor: vscode.TextEditor) => {
     withFilePath((filePath: string) => {
       withRacket((racket: string) => {
@@ -53,7 +56,7 @@ export function executeSelection(repls: Map<string, vscode.Terminal>) {
   });
 }
 
-export function openRepl(repls: Map<string, vscode.Terminal>) {
+export function openRepl(repls: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
     withRacket((racket: string) => {
       const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
@@ -62,7 +65,7 @@ export function openRepl(repls: Map<string, vscode.Terminal>) {
   });
 }
 
-export function showOutput(terminals: Map<string, vscode.Terminal>) {
+export function showOutput(terminals: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
     const terminal = terminals.get(filePath);
     if (terminal) {

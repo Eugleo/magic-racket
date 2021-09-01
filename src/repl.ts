@@ -9,7 +9,7 @@ function fileName(filePath: string) {
   return "";
 }
 
-export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.TextEditor) {
+export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.TextEditor): void {
   editor.selections.forEach((sel) => {
     const trimmed = editor.document.getText(sel).trim();
     if (trimmed) {
@@ -19,7 +19,11 @@ export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.Tex
   });
 }
 
-export function runFileInTerminal(racket: string, filePath: string, terminal: vscode.Terminal) {
+export function runFileInTerminal(
+  racket: string,
+  filePath: string,
+  terminal: vscode.Terminal,
+): void {
   terminal.show();
   terminal.sendText(`clear`);
   const shell: string | undefined = vscode.workspace
@@ -33,12 +37,12 @@ export function runFileInTerminal(racket: string, filePath: string, terminal: vs
   }
 }
 
-export function loadFileInRepl(filePath: string, repl: vscode.Terminal) {
+export function loadFileInRepl(filePath: string, repl: vscode.Terminal): void {
   repl.show();
   repl.sendText(`(enter! (file "${filePath}"))`);
 }
 
-export function createTerminal(filePath: string | null) {
+export function createTerminal(filePath: string | null): vscode.Terminal {
   let terminal;
   if (filePath) {
     const templateSetting: string | undefined = vscode.workspace
@@ -57,7 +61,7 @@ export function createTerminal(filePath: string | null) {
   return terminal;
 }
 
-export function createRepl(filePath: string, racket: string) {
+export function createRepl(filePath: string, racket: string): vscode.Terminal {
   const templateSetting: string | undefined = vscode.workspace
     .getConfiguration("magic-racket.repl")
     .get("replTitle");

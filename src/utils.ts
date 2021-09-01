@@ -7,9 +7,11 @@ function normalizeFilePath(filePath: string): string {
   return filePath;
 }
 
-export function withRacket(func: Function) {
-  const racket = vscode.workspace.getConfiguration("magic-racket.general").get("racketPath");
-  if (racket !== "") {
+export function withRacket(func: (racketPath: string) => void): void {
+  const racket = vscode.workspace
+    .getConfiguration("magic-racket.general")
+    .get<string>("racketPath");
+  if (racket && racket !== "") {
     func(racket);
   } else {
     vscode.window.showErrorMessage(
@@ -18,7 +20,7 @@ export function withRacket(func: Function) {
   }
 }
 
-export function withEditor(func: Function) {
+export function withEditor(func: (vscodeEditor: vscode.TextEditor) => void): void {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     func(editor);
@@ -27,6 +29,6 @@ export function withEditor(func: Function) {
   }
 }
 
-export function withFilePath(func: Function) {
+export function withFilePath(func: (filePath: string) => void): void {
   withEditor((editor: vscode.TextEditor) => func(normalizeFilePath(editor.document.fileName)));
 }

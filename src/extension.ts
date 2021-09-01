@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
 // eslint-disable-next-line no-unused-vars
-import { LanguageClient, LanguageClientOptions } from "vscode-languageclient";
+import { LanguageClient, LanguageClientOptions } from "vscode-languageclient/node";
 import * as com from "./commands";
 import { withRacket } from "./utils";
 
 let langClient: LanguageClient;
-let isLangClientRunning: boolean = false;
+let isLangClientRunning = false;
 
-export function deactivate() {
+export function deactivate(): Promise<void> {
   if (!langClient) {
-    return undefined;
+    return Promise.reject(new Error("There is no language server client to be deactivated"));
   }
   return langClient.stop();
 }
@@ -52,6 +52,7 @@ function setupLSP() {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function reg(name: string, func: (...args: any[]) => any) {
   return vscode.commands.registerCommand(`magic-racket.${name}`, func);
 }
@@ -72,7 +73,7 @@ function configurationChanged() {
   }
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): void {
   setupLSP();
   configurationChanged();
 
