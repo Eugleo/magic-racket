@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.8 (1st September 2021)
+
+- Added two separate settings for Racket path, one used for the LSP, other of the REPL
+- Fixed potential vurneabilities by updating npm packages
+
 ## 0.5.7 (20th January 2021)
 
 - Added an option to disable the LSP integration
