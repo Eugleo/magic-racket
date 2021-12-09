@@ -3,6 +3,12 @@ import * as vscode from "vscode";
 import { LanguageClient, LanguageClientOptions } from "vscode-languageclient/node";
 import * as com from "./commands";
 import { withRacket } from "./utils";
+import { FracasCompletionItemProvider } from './FracasCompletionItemProvider';
+import { FracasDefinitionProvider } from './FracasDefinitionProvider';
+import { fracasDocumentFilter } from './FracasDocumentFilter';
+import { FracasDocumentSymbolProvider } from './FracasDocumentSymbolProvider';
+import { FracasHoverProvider } from './FracasHoverProvider';
+import { FracasReferenceProvider } from './FracasReferenceProvider';
 
 let langClient: LanguageClient;
 let isLangClientRunning = false;
@@ -90,6 +96,7 @@ export function activate(context: vscode.ExtensionContext): void {
     repls.forEach((val, key) => val === terminal && repls.delete(key) && val.dispose());
   });
 
+  // Register RACKET commands
   const loadInRepl = reg("loadFileInRepl", () => com.loadInRepl(repls));
   const runInTerminal = reg("runFile", () => com.runInTerminal(terminals));
   const executeSelection = reg("executeSelectionInRepl", () => com.executeSelection(repls));
@@ -97,4 +104,17 @@ export function activate(context: vscode.ExtensionContext): void {
   const showOutput = reg("showOutputTerminal", () => com.showOutput(terminals));
 
   context.subscriptions.push(loadInRepl, runInTerminal, executeSelection, openRepl, showOutput);
+
+  // Register FRACAS language support
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider(fracasDocumentFilter, new FracasDefinitionProvider()));
+    context.subscriptions.push(
+        vscode.languages.registerReferenceProvider(fracasDocumentFilter, new FracasReferenceProvider()));
+    context.subscriptions.push(
+        vscode.languages.registerDocumentSymbolProvider(fracasDocumentFilter, new FracasDocumentSymbolProvider()));
+    context.subscriptions.push(
+        vscode.languages.registerHoverProvider(fracasDocumentFilter, new FracasHoverProvider()));
+    context.subscriptions.push(
+        vscode.languages.registerCompletionItemProvider(fracasDocumentFilter, new FracasCompletionItemProvider()));
+
 }
