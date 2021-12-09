@@ -10,13 +10,12 @@ export class FracasReferenceProvider implements vscode.ReferenceProvider {
         position: vscode.Position,
         context: vscode.ReferenceContext,
         token: vscode.CancellationToken)
-    : Promise<vscode.Location[]> {
+        : Promise<vscode.Location[]> {
         const symbol = getSelectedSymbol();
-		if (!symbol)
-		{
-			vscode.window.showErrorMessage("No symbol found at cursor position");
-			return Promise.resolve([]);
-		}
+        if (!symbol) {
+            vscode.window.showErrorMessage("No symbol found at cursor position");
+            return Promise.resolve([]);
+        }
 
         return findReferences(symbol, token);
     }

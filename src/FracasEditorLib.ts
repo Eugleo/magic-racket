@@ -2,15 +2,15 @@ import * as vscode from 'vscode';
 import { workspace } from 'vscode';
 
 
-export function getRange(ranges : (vscode.Range | vscode.Range[])) {
+export function getRange(ranges: (vscode.Range | vscode.Range[])): vscode.Range {
     return Array.isArray(ranges) ? ranges[0] : ranges;
 }
 
 export async function findTextInFiles(
     searchRx: string,
     token: vscode.CancellationToken,
-    include: vscode.GlobPattern = '**/*.frc') 
-: Promise<vscode.TextSearchMatch[]> {
+    include: vscode.GlobPattern = '**/*.frc')
+    : Promise<vscode.TextSearchMatch[]> {
     console.log(include);
     const results: vscode.TextSearchMatch[] = [];
     await workspace.findTextInFiles(
@@ -37,7 +37,7 @@ export function getSelectedSymbol(document: vscode.TextDocument | null = null, r
 }
 
 export function getSelectedSymbolRange(document: vscode.TextDocument | null = null, range: vscode.Range | null = null)
-: [string, vscode.Range] {
+    : [string, vscode.Range] {
     const activeEditor = vscode.window.activeTextEditor;
 
     if (document === null) {
@@ -56,7 +56,7 @@ export function getSelectedSymbolRange(document: vscode.TextDocument | null = nu
         range = activeEditor.selection;
     }
 
-    let highlightedText = document.getText(range);
+    const highlightedText = document.getText(range);
     if (highlightedText) {
         return [highlightedText, range];
     } else {
@@ -75,7 +75,7 @@ export function getSelectedSymbolRange(document: vscode.TextDocument | null = nu
 }
 
 export async function searchForward(uri: vscode.Uri, pos: vscode.Position, searchRx: RegExp)
-: Promise<[vscode.TextLine, RegExpExecArray] | null> {
+    : Promise<[vscode.TextLine, RegExpExecArray] | null> {
     const doc = await vscode.workspace.openTextDocument(uri);
     let lineNo = pos.line;
     let line = doc.lineAt(lineNo);
@@ -94,7 +94,7 @@ export async function searchForward(uri: vscode.Uri, pos: vscode.Position, searc
 }
 
 export async function searchBackward(uri: vscode.Uri, pos: vscode.Position, searchRx: RegExp)
-: Promise<[vscode.TextLine, RegExpExecArray] | null> {
+    : Promise<[vscode.TextLine, RegExpExecArray] | null> {
     const doc = await vscode.workspace.openTextDocument(uri);
     let lineNo = pos.line;
     let line = doc.lineAt(lineNo);
@@ -112,7 +112,7 @@ export async function searchBackward(uri: vscode.Uri, pos: vscode.Position, sear
     return null;
 }
 
-function _lastMatch(searchRx: RegExp, text: string) : RegExpExecArray | null {
+function _lastMatch(searchRx: RegExp, text: string): RegExpExecArray | null {
     let match = searchRx.exec(text);
     let prevMatch = null;
     if (searchRx.global) {

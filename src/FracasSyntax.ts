@@ -53,7 +53,8 @@ export class FracasDefinition {
 
     readonly completionKind: vscode.CompletionItemKind;
 
-    constructor(definition: vscode.Location, symbol: string, kind: FracasDefinitionKind) {;
+    constructor(definition: vscode.Location, symbol: string, kind: FracasDefinitionKind) {
+        ;
         this.location = definition;
         this.symbol = symbol;
         this.kind = kind;
@@ -62,57 +63,57 @@ export class FracasDefinition {
 
 }
 
-function _anySymbolRx(symbol: string) : string {
+function _anySymbolRx(symbol: string): string {
     return `(?<!${RX_CHAR_IDENTIFIER})(${_escapeForRegEx(symbol)})(?!${RX_CHAR_IDENTIFIER})`;
 }
 
-function _anyDefineRx() : string {
+function _anyDefineRx(): string {
     return `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(${RX_SYMBOLS_DEFINE})\\s*[${RX_CHARS_OPEN_PAREN}]?\\s*(${RX_CHAR_IDENTIFIER}+)`;
 }
 
-function _anyDefineSymbolRx(symbol: string, searchKind = SearchKind.wholeMatch) : string {
-    return searchKind === SearchKind.wholeMatch?
+function _anyDefineSymbolRx(symbol: string, searchKind = SearchKind.wholeMatch): string {
+    return searchKind === SearchKind.wholeMatch ?
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(${RX_SYMBOLS_DEFINE})\\s*[${RX_CHARS_OPEN_PAREN}]?\\s*(${_escapeForRegEx(symbol)})(?!${RX_CHAR_IDENTIFIER})` :
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(${RX_SYMBOLS_DEFINE})\\s*[${RX_CHARS_OPEN_PAREN}]?\\s*(${_escapeForRegEx(symbol)}${RX_CHAR_IDENTIFIER}*)`;
 }
 
-function _anyEnumSymbolRx(symbol: string, searchKind = SearchKind.wholeMatch) : string {
-    return searchKind === SearchKind.wholeMatch?
+function _anyEnumSymbolRx(symbol: string, searchKind = SearchKind.wholeMatch): string {
+    return searchKind === SearchKind.wholeMatch ?
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(define-enum)\\s+(${_escapeForRegEx(symbol)})(?!${RX_CHAR_IDENTIFIER})` :
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(define-enum)\\s+(${_escapeForRegEx(symbol)}${RX_CHAR_IDENTIFIER}*)`;
 }
 
-function _anyMaskSymbolRx(symbol: string, searchKind = SearchKind.wholeMatch) : string {
-    return searchKind === SearchKind.wholeMatch?
+function _anyMaskSymbolRx(symbol: string, searchKind = SearchKind.wholeMatch): string {
+    return searchKind === SearchKind.wholeMatch ?
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(define-mask)\\s+(${_escapeForRegEx(symbol)})(?!${RX_CHAR_IDENTIFIER})` :
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(define-mask)\\s+(${_escapeForRegEx(symbol)}${RX_CHAR_IDENTIFIER}*)`;
 }
 
-function _anyConstructorRx() : string {
+function _anyConstructorRx(): string {
     return `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(${RX_CHAR_IDENTIFIER}+):`;
 }
 
-function _anyFieldSymbolDeclarationRx(fieldName: string, searchKind = SearchKind.wholeMatch) : string {
-    return searchKind === SearchKind.wholeMatch?
+function _anyFieldSymbolDeclarationRx(fieldName: string, searchKind = SearchKind.wholeMatch): string {
+    return searchKind === SearchKind.wholeMatch ?
         `(?<=^\\s*[${RX_CHARS_OPEN_PAREN}])\\s*(${_escapeForRegEx(fieldName)})(?!${RX_CHAR_IDENTIFIER})` :
         `(?<=^\\s*[${RX_CHARS_OPEN_PAREN}])\\s*(${_escapeForRegEx(fieldName)}${RX_CHAR_IDENTIFIER}*)`;
 }
 
-function _anyFieldDeclarationRx() : string {
-    return`(?<=^\\s*[${RX_CHARS_OPEN_PAREN}])\\s*(?!define)(${RX_CHAR_IDENTIFIER}+)`;
+function _anyFieldDeclarationRx(): string {
+    return `(?<=^\\s*[${RX_CHARS_OPEN_PAREN}])\\s*(?!define)(${RX_CHAR_IDENTIFIER}+)`;
 }
 
-function _anyMaskOrEnumRx() : string {
-    return`(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(mask|enum)\\s+(${RX_CHAR_IDENTIFIER}+)`;
+function _anyMaskOrEnumRx(): string {
+    return `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(mask|enum)\\s+(${RX_CHAR_IDENTIFIER}+)`;
 }
 
-function _anyIdentifierRx(fieldName: string, searchKind = SearchKind.wholeMatch) : string {
-    return searchKind === SearchKind.wholeMatch?
+function _anyIdentifierRx(fieldName: string, searchKind = SearchKind.wholeMatch): string {
+    return searchKind === SearchKind.wholeMatch ?
         `(${_escapeForRegEx(fieldName)})(?!${RX_CHAR_IDENTIFIER})` :
         `(${_escapeForRegEx(fieldName)}${RX_CHAR_IDENTIFIER}*)`;
 }
 
-function _variantOptionRx(symbol: string, searchKind = SearchKind.wholeMatch) : string {
+function _variantOptionRx(symbol: string, searchKind = SearchKind.wholeMatch): string {
     // a variant option has a prefix for the variant type followed by the option name.
     // e.g., (define-variant action (movement-modifier-add ... ) appears as "action-movement-modifier-add".
     // Make an rx that drops one or more prefixes, and then match the rest of the string.
@@ -120,16 +121,16 @@ function _variantOptionRx(symbol: string, searchKind = SearchKind.wholeMatch) : 
         .split('-') // "action-movement-modifier-add" -> ["action", "movement", "modifier", "add"]
         .filter(c => c.length > 0);		// remove dangling hyphens
     const optionRx = crumbs
-        .slice(1, crumbs.length-1) 		// -> ["movement", "modifier"]
+        .slice(1, crumbs.length - 1) 		// -> ["movement", "modifier"]
         .map(s => `(${s}-)?`) 			// -> ["(movement-)?", "(modifier-)?"]
-        .join('')+crumbs[crumbs.length-1]; // -> "(movement-)?(modifier-)?add"
+        .join('') + crumbs[crumbs.length - 1]; // -> "(movement-)?(modifier-)?add"
 
-    return searchKind === SearchKind.wholeMatch?
+    return searchKind === SearchKind.wholeMatch ?
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(${optionRx})(?!${RX_CHAR_IDENTIFIER})` :
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(${optionRx})(${RX_CHAR_IDENTIFIER}*)`;
 }
 
-export function definitionKind(defToken: string) : FracasDefinitionKind {
+export function definitionKind(defToken: string): FracasDefinitionKind {
     switch (defToken) {
         case 'define-enum':
             return FracasDefinitionKind.enum;
@@ -154,7 +155,7 @@ export function definitionKind(defToken: string) : FracasDefinitionKind {
     }
 }
 
-export function completionKind(fracasKind: FracasDefinitionKind) : vscode.CompletionItemKind {
+export function completionKind(fracasKind: FracasDefinitionKind): vscode.CompletionItemKind {
     switch (fracasKind) {
         case (FracasDefinitionKind.enum):
             return vscode.CompletionItemKind.Enum;
@@ -198,7 +199,7 @@ export function completionKind(fracasKind: FracasDefinitionKind) : vscode.Comple
  * @param fracasKind The fracas type in which members are declared.
  * @returns The nesting depth at which to search for member declarations.
  */
-function _memberScopeDepth(fracasKind: FracasDefinitionKind) : vscode.CompletionItemKind {
+function _memberScopeDepth(fracasKind: FracasDefinitionKind): vscode.CompletionItemKind {
     switch (fracasKind) {
         case (FracasDefinitionKind.syntax):
         case (FracasDefinitionKind.define):
@@ -222,7 +223,7 @@ function _memberDeclRx(
     fracasKind: FracasDefinitionKind,
     memberName: string,
     searchKind: SearchKind = SearchKind.wholeMatch)
-: RegExp {
+    : RegExp {
     switch (fracasKind) {
         case (FracasDefinitionKind.key):
         case (FracasDefinitionKind.enum):
@@ -274,7 +275,7 @@ export function findOpenBracket(
     document: vscode.TextDocument,
     pos: vscode.Position,
     includeBrackets = true)
-: vscode.Position {
+    : vscode.Position {
     // first rewind to opening bracket
     let nesting = 0;
     for (let lineNo = pos.line; lineNo >= 0; --lineNo) {
@@ -309,7 +310,7 @@ export function findBracketPair(
     document: vscode.TextDocument,
     pos: vscode.Position,
     includeBrackets = true)
-: vscode.Range {
+    : vscode.Range {
     // first rewind to opening bracket
     const openParen = findOpenBracket(document, pos, includeBrackets);
     let nesting = includeBrackets ? 0 : 1; // if we're not including the brackets, we're already one nesting deep
@@ -334,14 +335,14 @@ export function findBracketPair(
             }
         }
     }
-    return new vscode.Range(openParen, new vscode.Position(document.lineCount-1, document.lineAt(document.lineCount-1).range.end.character));
+    return new vscode.Range(openParen, new vscode.Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).range.end.character));
 }
 
 function _rangesAtScope(
     document: vscode.TextDocument,
     pos: vscode.Position,
     scopeNestingDepth: number)
-: vscode.Range[] {
+    : vscode.Range[] {
     const ranges: vscode.Range[] = [];
     // first rewind to opening bracket
     const startPos = findOpenBracket(document, pos);
@@ -374,7 +375,7 @@ function _rangesAtScope(
 }
 
 export async function findEnclosingDefine(uri: vscode.Uri, pos: vscode.Position)
-: Promise<FracasDefinition | null> {
+    : Promise<FracasDefinition | null> {
     const searchRx = new RegExp(_anyDefineRx(), "g");
     const result = await searchBackward(uri, pos, searchRx);
     if (result) {
@@ -386,34 +387,34 @@ export async function findEnclosingDefine(uri: vscode.Uri, pos: vscode.Position)
 }
 
 export async function findEnclosingConstructor(document: vscode.TextDocument, pos: vscode.Position)
-: Promise<[loc: vscode.Location, typeName: string] | null> {
+    : Promise<[loc: vscode.Location, typeName: string] | null> {
     const openParen = findOpenBracket(document, pos);
     const searchRx = new RegExp(_anyConstructorRx());
     const result = searchRx.exec(document.getText(new vscode.Range(openParen, pos)));
     if (result) {
         const [_, typeName] = result;
-        const loc = new vscode.Location(document.uri, openParen.translate({characterDelta: result.index}));
+        const loc = new vscode.Location(document.uri, openParen.translate({ characterDelta: result.index }));
         return [loc, typeName];
     }
     return null;
 }
 
 export async function findEnclosingEnumOrMask(document: vscode.TextDocument, pos: vscode.Position)
-: Promise<FracasDefinition | null> {
+    : Promise<FracasDefinition | null> {
     const openParen = findOpenBracket(document, pos);
     const searchRx = new RegExp(_anyMaskOrEnumRx());
     const result = searchRx.exec(document.getText(new vscode.Range(openParen, pos)));
     if (result) {
         const [_, typeDecl, typeName] = result;
         const fracasKind = typeDecl === "enum" ? FracasDefinitionKind.enum : FracasDefinitionKind.mask;
-        const loc = new vscode.Location(document.uri, openParen.translate({characterDelta: result.index}));
+        const loc = new vscode.Location(document.uri, openParen.translate({ characterDelta: result.index }));
         return new FracasDefinition(loc, typeName, fracasKind);
     }
     return null;
 }
 
 export async function isWithinVariant(uri: vscode.Uri, pos: vscode.Position, variantName: string)
-: Promise<boolean> {
+    : Promise<boolean> {
     const fracasDef = await findEnclosingDefine(uri, pos);
     return fracasDef !== null
         && fracasDef.kind === FracasDefinitionKind.variant
@@ -424,7 +425,7 @@ export async function findTypeDefinition(
     typeName: string,
     token: vscode.CancellationToken,
     searchKind = SearchKind.wholeMatch)
-: Promise<FracasDefinition[]> {
+    : Promise<FracasDefinition[]> {
     typeName = typeName.replace(/(^-)|(-$)/g, ''); // trim leading/trailing hyphen
     const defineRxStr = _anyDefineSymbolRx(typeName, searchKind);
     return _findDefinition(defineRxStr, token);
@@ -434,7 +435,7 @@ export async function findEnumDefinition(
     typeName: string,
     token: vscode.CancellationToken,
     searchKind = SearchKind.wholeMatch)
-: Promise<FracasDefinition[]> {
+    : Promise<FracasDefinition[]> {
     const defineRxStr = _anyEnumSymbolRx(typeName, searchKind);
     return _findDefinition(defineRxStr, token);
 }
@@ -443,7 +444,7 @@ export async function findMaskDefinition(
     typeName: string,
     token: vscode.CancellationToken,
     searchKind = SearchKind.wholeMatch)
-: Promise<FracasDefinition[]> {
+    : Promise<FracasDefinition[]> {
     const defineRxStr = _anyMaskSymbolRx(typeName, searchKind);
     return _findDefinition(defineRxStr, token);
 }
@@ -451,7 +452,7 @@ export async function findMaskDefinition(
 async function _findDefinition(
     defineRxStr: string,
     token: vscode.CancellationToken)
-: Promise<FracasDefinition[]> {
+    : Promise<FracasDefinition[]> {
     // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
     const textMatches = await findTextInFiles(defineRxStr, token);
     console.debug(`Found ${textMatches.length} matches for ${defineRxStr}`);
@@ -468,7 +469,7 @@ export async function findVariantOptionDefinition(
     qualifiedVariant: string,
     token: vscode.CancellationToken,
     searchKind = SearchKind.wholeMatch)
-: Promise<FracasDefinition[]> {
+    : Promise<FracasDefinition[]> {
     // given a fully qualified "action-movement-modifier-add" find "(movement-modifier-add ... )"
     const variantOptionRxStr = _variantOptionRx(qualifiedVariant, searchKind);
     const variantRx = new RegExp(variantOptionRxStr);
@@ -504,9 +505,8 @@ export async function findFieldDefinition(
     fieldName: string,
     token: vscode.CancellationToken,
     searchKind: SearchKind = SearchKind.wholeMatch)
-: Promise<FracasDefinition[]> {
-    if (fieldName.startsWith(FIELD_PREFIX))
-    {
+    : Promise<FracasDefinition[]> {
+    if (fieldName.startsWith(FIELD_PREFIX)) {
         const activeEditor = vscode.window.activeTextEditor;
         if (activeEditor) {
             // find the constructor in which this field is declared
@@ -535,7 +535,7 @@ export async function findDefinition(
     symbol: string,
     token: vscode.CancellationToken,
     searchKind: SearchKind = SearchKind.wholeMatch)
-: Promise<FracasDefinition[]> {
+    : Promise<FracasDefinition[]> {
     let results: FracasDefinition[] = await findFieldDefinition(symbol, token, searchKind);
 
     // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
@@ -553,8 +553,7 @@ export async function findDefinition(
 }
 
 export async function findReferences(symbol: string, token: vscode.CancellationToken)
-: Promise<vscode.Location[]>
-{
+    : Promise<vscode.Location[]> {
     // Do a dumb search for all text matching the symbol
     const symbolRx = _anySymbolRx(symbol);
     const results = await findTextInFiles(symbolRx, token);
@@ -578,7 +577,7 @@ export async function findReferences(symbol: string, token: vscode.CancellationT
 }
 
 export async function findDocumentSymbols(uri: vscode.Uri, token: vscode.CancellationToken)
-: Promise<vscode.DocumentSymbol[]> {
+    : Promise<vscode.DocumentSymbol[]> {
     const defineRxStr = _anyDefineRx();
     const defineRx = new RegExp(defineRxStr);
     const textMatches = await findTextInFiles(defineRxStr, token, uri.fsPath);
@@ -601,7 +600,7 @@ export async function findCompletions(
     document: vscode.TextDocument,
     position: vscode.Position,
     token: vscode.CancellationToken)
-: Promise<vscode.CompletionItem[] | null> {
+    : Promise<vscode.CompletionItem[] | null> {
     // get the word at the cursor
     const wordRange = document.getWordRangeAtPosition(position, /[#:\w\-+*.]+/);
 
@@ -684,7 +683,7 @@ export async function findCompletions(
 }
 
 async function _toCompletionItems(definitions: FracasDefinition[], prefix: string, replaceRange: vscode.Range)
-: Promise<vscode.CompletionItem[]> {
+    : Promise<vscode.CompletionItem[]> {
     const completionItems: vscode.CompletionItem[] = await mapAsync(definitions, async definition => {
         const item = new vscode.CompletionItem(`${prefix}${definition.symbol}`, definition.completionKind);
         item.documentation = await findComment(definition.location.uri, definition.location.range.start);
@@ -699,7 +698,7 @@ export async function findMembers(
     token: vscode.CancellationToken,
     memberName: string | null = null,
     searchKind: SearchKind = SearchKind.wholeMatch)
-: Promise<FracasDefinition[]> {
+    : Promise<FracasDefinition[]> {
     const document = await vscode.workspace.openTextDocument(fracasDef.location.uri);
     const scopeNestingDepth = _memberScopeDepth(fracasDef.kind);
     const fieldRx = _memberDeclRx(fracasDef.kind, memberName || '', searchKind);
@@ -711,7 +710,7 @@ async function _findMembers(
     position: vscode.Position,
     fieldRx: RegExp,
     scopeNestingDepth: number)
-: Promise<FracasDefinition[]> {
+    : Promise<FracasDefinition[]> {
     const members: FracasDefinition[] = [];
     const ranges = await _rangesAtScope(document, position, scopeNestingDepth);
     for (const range of ranges) {
