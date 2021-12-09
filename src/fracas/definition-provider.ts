@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'; // The module 'vscode' contains the VS Code extensibility API
 import {
     getSelectedSymbol,
-} from './FracasEditorLib';
+} from '../editor-lib';
 import {
     findDefinition,
-} from './FracasSyntax';
+} from './syntax';
 
 export class FracasDefinitionProvider implements vscode.DefinitionProvider {
     public provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken)

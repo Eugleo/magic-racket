@@ -1,8 +1,6 @@
 import * as vscode from 'vscode'; // The module 'vscode' contains the VS Code extensibility API
-import {
-    getSelectedSymbol
-} from './FracasEditorLib';
-import { findReferences } from './FracasSyntax';
+import { getSelectedSymbol } from '../editor-lib';
+import { findReferences } from './syntax';
 
 export class FracasReferenceProvider implements vscode.ReferenceProvider {
     provideReferences(

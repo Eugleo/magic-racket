@@ -3,12 +3,12 @@ import * as vscode from "vscode";
 import { LanguageClient, LanguageClientOptions } from "vscode-languageclient/node";
 import * as com from "./commands";
 import { withRacket } from "./utils";
-import { FracasCompletionItemProvider } from './FracasCompletionItemProvider';
-import { FracasDefinitionProvider } from './FracasDefinitionProvider';
-import { fracasDocumentFilter } from './FracasDocumentFilter';
-import { FracasDocumentSymbolProvider } from './FracasDocumentSymbolProvider';
-import { FracasHoverProvider } from './FracasHoverProvider';
-import { FracasReferenceProvider } from './FracasReferenceProvider';
+import { FracasCompletionItemProvider } from './fracas/completion-item-provider';
+import { FracasDefinitionProvider } from './fracas/definition-provider';
+import { fracasDocumentFilter } from "./fracas/document-filter";
+import { FracasReferenceProvider } from "./fracas/reference-provider";
+import { FracasDocumentSymbolProvider } from "./fracas/document-symbol-provider";
+import { FracasHoverProvider } from "./fracas/hover-provider";
 
 let langClient: LanguageClient;
 let isLangClientRunning = false;

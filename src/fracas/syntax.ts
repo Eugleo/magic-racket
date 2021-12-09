@@ -1,10 +1,6 @@
 import * as vscode from 'vscode';
-import { flatten, mapAsync } from './Collections';
-import {
-    findTextInFiles,
-    getRange,
-    searchBackward,
-} from './FracasEditorLib';
+import { flatten, mapAsync } from '../collections';
+import { findTextInFiles, getRange, searchBackward } from '../editor-lib';
 
 export const FIELD_PREFIX = '#:';
 export const RX_CHARS_OPEN_PAREN = '\\(|\\{|\\[';

@@ -1,12 +1,10 @@
 import * as vscode from 'vscode'; // The module 'vscode' contains the VS Code extensibility API
-import { mapAsync } from './Collections';
-import {
-    getSelectedSymbolRange
-} from './FracasEditorLib';
+import { mapAsync } from '../collections';
+import { getSelectedSymbolRange } from '../editor-lib';
 import {
     findComment,
     findDefinition,
-} from './FracasSyntax';
+} from './syntax';
 
 export class FracasHoverProvider implements vscode.HoverProvider {
     provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken)
