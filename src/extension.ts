@@ -44,7 +44,7 @@ function setupLSP() {
 
     // Create the language client and start the client.
     langClient = new LanguageClient(
-      "magic-racket",
+      "vscode-fracas",
       "Racket Language Client",
       serverOptions,
       clientOptions,
@@ -54,12 +54,12 @@ function setupLSP() {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function reg(name: string, func: (...args: any[]) => any) {
-  return vscode.commands.registerCommand(`magic-racket.${name}`, func);
+  return vscode.commands.registerCommand(`vscode-fracas.${name}`, func);
 }
 
 function configurationChanged() {
   const enableLSP: boolean = vscode.workspace
-    .getConfiguration("magic-racket.lsp")
+    .getConfiguration("vscode-fracas.lsp")
     .get("enabled", true);
 
   if (langClient) {

@@ -46,13 +46,13 @@ export function createTerminal(filePath: string | null): vscode.Terminal {
   let terminal;
   if (filePath) {
     const templateSetting: string | undefined = vscode.workspace
-      .getConfiguration("magic-racket.outputTerminal")
+      .getConfiguration("vscode-fracas.outputTerminal")
       .get("outputTerminalTitle");
     const template = templateSetting && templateSetting !== "" ? templateSetting : "Output ($name)";
     terminal = vscode.window.createTerminal(template.replace("$name", fileName(filePath)));
   } else {
     const templateSetting: string | undefined = vscode.workspace
-      .getConfiguration("magic-racket.outputTerminal")
+      .getConfiguration("vscode-fracas.outputTerminal")
       .get("sharedOutputTerminalTitle");
     const template = templateSetting && templateSetting !== "" ? templateSetting : "Racket Output";
     terminal = vscode.window.createTerminal(template);
@@ -63,7 +63,7 @@ export function createTerminal(filePath: string | null): vscode.Terminal {
 
 export function createRepl(filePath: string, racket: string): vscode.Terminal {
   const templateSetting: string | undefined = vscode.workspace
-    .getConfiguration("magic-racket.repl")
+    .getConfiguration("vscode-fracas.repl")
     .get("replTitle");
   const template = templateSetting && templateSetting !== "" ? templateSetting : "REPL ($name)";
   const repl = vscode.window.createTerminal(template.replace("$name", fileName(filePath)));
