@@ -1,19 +1,30 @@
 import * as vscode from "vscode";
+import { asyncGetOrDefault } from "./collections";
+import { delay, fileName, getRacket } from "./utils";
 
-function fileName(filePath: string) {
-    const match = filePath.match(/^.*\/([^/]+\.[^/]+)$/);
-    if (match) {
-        return match[1];
+export async function withRepl(
+    repls: Map<string, vscode.Terminal>,
+    replKey: string,
+    callback: (terminal: vscode.Terminal, editor: vscode.TextEditor) => void,
+): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    const racket = getRacket();
+    if (replKey && editor && racket) {
+        const repl = await asyncGetOrDefault(repls, replKey, async () => {
+            const newRepl = createRepl(replKey, racket);
+            await delay(3000);
+            return newRepl;
+        });
+        callback(repl, editor);
     }
-    vscode.window.showErrorMessage("Invalid file name.");
-    return "";
 }
 
+
 export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.TextEditor): void {
+    repl.show();
     editor.selections.forEach((sel) => {
         const trimmed = editor.document.getText(sel).trim();
         if (trimmed) {
-            repl.show();
             repl.sendText(trimmed);
         }
     });
@@ -61,12 +72,12 @@ export function createTerminal(filePath: string | null): vscode.Terminal {
     return terminal;
 }
 
-export function createRepl(filePath: string, racket: string): vscode.Terminal {
+export function createRepl(replKey: string, racket: string): vscode.Terminal {
     const templateSetting: string | undefined = vscode.workspace
         .getConfiguration("vscode-fracas.repl")
         .get("replTitle");
-    const template = templateSetting && templateSetting !== "" ? templateSetting : "REPL ($name)";
-    const repl = vscode.window.createTerminal(template.replace("$name", fileName(filePath)));
+    const template = templateSetting || "REPL ($name)";
+    const repl = vscode.window.createTerminal(template.replace("$name", replKey));
     repl.show();
     repl.sendText(racket);
     return repl;

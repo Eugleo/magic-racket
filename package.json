@@ -1,268 +1,286 @@
 {
-  "name": "vscode-fracas",
-  "displayName": "Fracas",
-  "description": "Syntax highlighting, code navigation, and REPL support for the Fracas and Racket programming languages",
-  "version": "0.1.3",
-  "enableProposedApi": true,
-  "enabledApiProposals": [
-    "textSearchProvider",
-    "findTextInFiles"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/WSStudios/vscode-fracas.git"
-  },
-  "engines": {
-    "vscode": "^1.61.0"
-  },
-  "categories": [
-    "Programming Languages",
-    "Formatters"
-  ],
-  "activationEvents": [
-    "onLanguage:fracas",
-    "onCommand:vscode-fracas.loadFileInRepl",
-    "onCommand:vscode-fracas.runFile",
-    "onCommand:vscode-fracas.executeSelectionInRepl",
-    "onCommand:vscode-fracas.openRepl",
-    "onCommand:vscode-fracas.showOutputTerminal",
-    "onLanguage:racket"
-  ],
-  "main": "./out/extension.js",
-  "galleryBanner": {
-    "color": "#405DA7",
-    "theme": "dark"
-  },
-  "icon": "images/icon.png",
-  "licence": "SEE LICENSE IN LICENSE",
-  "homepage": "https://github.com/WSStudios/vscode-fracas/",
-  "bugs": {
-    "url": "https://github.com/WSStudios/vscode-fracas/issues",
-    "email": "wybitul.evzen@gmail.com"
-  },
-  "keywords": [
-    "fracas",
-    "racket",
-    "drracket",
-    "lisp",
-    "scheme",
-    "repl"
-  ],
-  "author": {
-    "name": "Evžen Wybitul, Jeff Shaffer, Dave Smith"
-  },
-  "contributes": {
-    "configurationDefaults": {
-      "[racket]": {
-        "editor.rulers": [
-          102
-        ],
-        "editor.wordSeparators": "()[]{}\",'`;#|"
-      }
+    "name": "vscode-fracas",
+    "displayName": "Fracas",
+    "description": "Syntax highlighting, code navigation, and REPL support for the Fracas and Racket programming languages",
+    "version": "0.1.3",
+    "enableProposedApi": true,
+    "enabledApiProposals": [
+        "textSearchProvider",
+        "findTextInFiles"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/WSStudios/vscode-fracas.git"
     },
-    "languages": [
-      {
-        "id": "fracas",
-        "aliases": [
-          "Fracas",
-          "fracas"
-        ],
-        "extensions": [
-          ".frc"
-        ],
-        "configuration": "./language-configuration.json"
-      },
-      {
-        "id": "racket",
-        "aliases": [
-          "Racket",
-          "racket"
-        ],
-        "extensions": [
-          ".rkt"
-        ],
-        "configuration": "language-configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "fracas",
-        "scopeName": "source.fracas",
-        "path": "./syntaxes/fracas.tmLanguage.json"
-      },
-      {
-        "language": "racket",
-        "scopeName": "source.racket",
-        "path": "./syntaxes/racket.tmLanguage.json"
-      }
-    ],
-    "configuration": {
-      "title": "Fracas",
-      "properties": {
-        "vscode-fracas.general.REPLRacketPath": {
-          "type": "string",
-          "default": "C:\\Progra~1\\Racket\\racket.EXE -q -U -S C:\\proj\\ws\\tdp1\\fracas\\lib -S C:\\proj\\ws\\tdp1\\wslib",
-          "markdownDescription": "Specifies the path to the `racket` executable used to open the REPL and run the file."
-        },
-        "vscode-fracas.general.racketPath": {
-          "type": "string",
-          "default": "C:\\Progra~1\\Racket\\racket.EXE",
-          "markdownDescription": "Specifies the path to the `racket` executable used to launch the Racket language server."
-        },
-        "vscode-fracas.trace.server": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "default": "off",
-          "description": "Traces the communication between VS Code and the language server."
-        },
-        "vscode-fracas.outputTerminal.numberOfOutputTerminals": {
-          "type": "string",
-          "enum": [
-            "one",
-            "many"
-          ],
-          "default": "one",
-          "enumDescriptions": [
-            "Runs every file in the same output terminal",
-            "Runs each file in its own output terminal"
-          ]
-        },
-        "vscode-fracas.outputTerminal.sharedOutputTerminalTitle": {
-          "type": "string",
-          "default": "Racket Output",
-          "markdownDescription": "Specifies the title of the the shared output terminal."
-        },
-        "vscode-fracas.outputTerminal.outputTerminalTitle": {
-          "type": "string",
-          "default": "Output ($name)",
-          "markdownDescription": "Specifies the template string for the title of the file-specific output terminal. Substring `$name` will get replaced by the file name."
-        },
-        "vscode-fracas.repl.replTitle": {
-          "type": "string",
-          "default": "REPL ($name)",
-          "markdownDescription": "Specifies the template string for the title of racket REPLs. Substring `$name` will get replaced by the file name."
-        },
-        "vscode-fracas.lsp.enabled": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Enables language server support"
-        }
-      }
+    "engines": {
+        "vscode": "^1.61.0"
     },
-    "commands": [
-      {
-        "command": "vscode-fracas.loadFileInRepl",
-        "title": "Racket: Load file in REPL",
-        "icon": {
-          "light": "images/repl-light.svg",
-          "dark": "images/repl-dark.svg"
-        }
-      },
-      {
-        "command": "vscode-fracas.runFile",
-        "title": "Racket: Run file in terminal",
-        "icon": {
-          "light": "images/run.svg",
-          "dark": "images/run.svg"
-        }
-      },
-      {
-        "command": "vscode-fracas.executeSelectionInRepl",
-        "title": "Racket: Execute selection in REPL"
-      },
-      {
-        "command": "vscode-fracas.openRepl",
-        "title": "Racket: Open the REPL for the current file"
-      },
-      {
-        "command": "vscode-fracas.showOutputTerminal",
-        "title": "Racket: Show the output terminal for the current file"
-      }
+    "categories": [
+        "Programming Languages",
+        "Formatters"
     ],
-    "menus": {
-      "editor/title": [
-        {
-          "when": "editorLangId == racket || editorLangId == fracas",
-          "command": "vscode-fracas.runFile",
-          "group": "navigation"
-        },
-        {
-          "when": "editorLangId == racket || editorLangId == fracas",
-          "command": "vscode-fracas.loadFileInRepl",
-          "group": "navigation"
-        }
-      ],
-      "editor/context": [
-        {
-          "when": "(resourceLangId == racket || resourceLangId == fracas) && editorHasSelection",
-          "command": "vscode-fracas.executeSelectionInRepl",
-          "group": "z_commands"
-        }
-      ]
+    "activationEvents": [
+        "onLanguage:fracas",
+        "onCommand:vscode-fracas.loadFileInRepl",
+        "onCommand:vscode-fracas.runFile",
+        "onCommand:vscode-fracas.executeSelectionInRepl",
+        "onCommand:vscode-fracas.openRepl",
+        "onCommand:vscode-fracas.showOutputTerminal",
+        "onLanguage:racket"
+    ],
+    "main": "./out/extension.js",
+    "galleryBanner": {
+        "color": "#405DA7",
+        "theme": "dark"
     },
-    "keybindings": [
-      {
-        "command": "vscode-fracas.executeSelectionInRepl",
-        "key": "Alt+Enter",
-        "when": "(resourceLangId == racket || resourceLangId == fracas) && editorHasSelection"
-      },
-      {
-        "key": "Alt+\\",
-        "mac": "Alt+\\",
-        "command": "editor.action.insertSnippet",
-        "when": "resourceLangId == racket && editorTextFocus",
-        "args": {
-          "langId": "racket",
-          "name": "lambda"
-        }
-      }
+    "icon": "images/icon.png",
+    "licence": "SEE LICENSE IN LICENSE",
+    "homepage": "https://github.com/WSStudios/vscode-fracas/",
+    "bugs": {
+        "url": "https://github.com/WSStudios/vscode-fracas/issues",
+        "email": "wybitul.evzen@gmail.com"
+    },
+    "keywords": [
+        "fracas",
+        "racket",
+        "drracket",
+        "lisp",
+        "scheme",
+        "repl"
     ],
-    "snippets": [
-      {
-        "language": "racket",
-        "path": "./snippets/racket.json"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "esbuild": "npm run esbuild-base -- --sourcemap",
-    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-    "test-compile": "tsc -p ./",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^14.17.33",
-    "@types/vscode": "^1.59.0",
-    "@typescript-eslint/eslint-plugin": "^4.30.0",
-    "@typescript-eslint/parser": "^4.30.0",
-    "esbuild": "^0.12.24",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.24.2",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "glob": "^7.1.7",
-    "mocha": "^9.1.3",
-    "prettier": "^2.3.2",
-    "typescript": "^4.3.2",
-    "vscode-test": "^1.5.2"
-  },
-  "dependencies": {
-    "vscode-languageclient": "^7.0.0"
-  }
+    "author": {
+        "name": "Evžen Wybitul, Jeff Shaffer, Dave Smith"
+    },
+    "contributes": {
+        "configurationDefaults": {
+            "[racket]": {
+                "editor.rulers": [
+                    102
+                ],
+                "editor.wordSeparators": "()[]{}\",'`;#|"
+            }
+        },
+        "languages": [
+            {
+                "id": "fracas",
+                "aliases": [
+                    "Fracas",
+                    "fracas"
+                ],
+                "extensions": [
+                    ".frc"
+                ],
+                "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "racket",
+                "aliases": [
+                    "Racket",
+                    "racket"
+                ],
+                "extensions": [
+                    ".rkt"
+                ],
+                "configuration": "language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "fracas",
+                "scopeName": "source.fracas",
+                "path": "./syntaxes/fracas.tmLanguage.json"
+            },
+            {
+                "language": "racket",
+                "scopeName": "source.racket",
+                "path": "./syntaxes/racket.tmLanguage.json"
+            }
+        ],
+        "configuration": {
+            "title": "Fracas",
+            "properties": {
+                "vscode-fracas.general.REPLRacketPath": {
+                    "type": "string",
+                    "default": "C:\\Progra~1\\Racket\\racket.EXE -q -U -S C:\\proj\\ws\\tdp1\\fracas\\lib -S C:\\proj\\ws\\tdp1\\wslib",
+                    "markdownDescription": "Specifies the path to the `racket` executable used to open the REPL and run the file."
+                },
+                "vscode-fracas.general.racketPath": {
+                    "type": "string",
+                    "default": "C:\\Progra~1\\Racket\\racket.EXE",
+                    "markdownDescription": "Specifies the path to the `racket` executable used to launch the Racket language server."
+                },
+                "vscode-fracas.trace.server": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "messages",
+                        "verbose"
+                    ],
+                    "default": "off",
+                    "description": "Traces the communication between VS Code and the language server."
+                },
+                "vscode-fracas.outputTerminal.numberOfOutputTerminals": {
+                    "type": "string",
+                    "enum": [
+                        "one",
+                        "many"
+                    ],
+                    "default": "one",
+                    "enumDescriptions": [
+                        "Runs every file in the same output terminal",
+                        "Runs each file in its own output terminal"
+                    ]
+                },
+                "vscode-fracas.outputTerminal.sharedOutputTerminalTitle": {
+                    "type": "string",
+                    "default": "Racket Output",
+                    "markdownDescription": "Specifies the title of the the shared output terminal."
+                },
+                "vscode-fracas.outputTerminal.outputTerminalTitle": {
+                    "type": "string",
+                    "default": "Output ($name)",
+                    "markdownDescription": "Specifies the template string for the title of the file-specific output terminal. Substring `$name` will get replaced by the file name."
+                },
+                "vscode-fracas.repl.replTitle": {
+                    "type": "string",
+                    "default": "REPL ($name)",
+                    "markdownDescription": "Specifies the template string for the title of racket REPLs. Substring `$name` will get replaced by the file name."
+                },
+                "vscode-fracas.lsp.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enables language server support"
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "vscode-fracas.loadFileInRepl",
+                "title": "Racket: Load file in REPL",
+                "icon": {
+                    "light": "images/repl-light.svg",
+                    "dark": "images/repl-dark.svg"
+                }
+            },
+            {
+                "command": "vscode-fracas.runFile",
+                "title": "Racket: Run file in terminal",
+                "icon": {
+                    "light": "images/run.svg",
+                    "dark": "images/run.svg"
+                }
+            },
+            {
+                "command": "vscode-fracas.executeSelectionInRepl",
+                "title": "Racket: Execute selection in REPL"
+            },
+            {
+                "command": "vscode-fracas.openRepl",
+                "title": "Racket: Open the REPL for the current file"
+            },
+            {
+                "command": "vscode-fracas.showOutputTerminal",
+                "title": "Racket: Show the output terminal for the current file"
+            },
+            {
+                "command": "vscode-fracas.compileFracasObject",
+                "title": "Fracas: Compile Object"
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "when": "editorLangId == racket || editorLangId == fracas",
+                    "command": "vscode-fracas.runFile",
+                    "group": "navigation"
+                },
+                {
+                    "when": "editorLangId == racket || editorLangId == fracas",
+                    "command": "vscode-fracas.loadFileInRepl",
+                    "group": "navigation"
+                }
+            ],
+            "editor/context": [
+                {
+                    "when": "resourceLangId == racket && editorHasSelection",
+                    "command": "vscode-fracas.executeSelectionInRepl",
+                    "group": "z_commands"
+                },
+                {
+                    "when": "resourceLangId == fracas && editorHasSelection",
+                    "command": "vscode-fracas.executeSelectionInRepl",
+                    "group": "z_commands"
+                }
+            ]
+        },
+        "keybindings": [
+            {
+                "command": "vscode-fracas.executeSelectionInRepl",
+                "key": "Ctrl+; Ctrl+r",
+                "when": "editorHasSelection && resourceLangId == fracas"
+            },
+            {
+                "command": "vscode-fracas.executeSelectionInRepl",
+                "key": "Ctrl+; Ctrl+r",
+                "when": "editorHasSelection && resourceLangId == racket"
+            },
+            {
+                "command": "vscode-fracas.compileFracasObject",
+                "key": "Ctrl+; Ctrl+;",
+                "when": "resourceLangId == fracas"
+            },
+            {
+                "key": "Ctrl+; Ctrl+y",
+                "command": "editor.action.insertSnippet",
+                "when": "resourceLangId == racket && editorTextFocus",
+                "args": {
+                    "langId": "racket",
+                    "name": "lambda"
+                }
+            }
+        ],
+        "snippets": [
+            {
+                "language": "racket",
+                "path": "./snippets/racket.json"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run esbuild-base -- --minify",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "test-compile": "tsc -p ./",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.3",
+        "@types/mocha": "^8.2.2",
+        "@types/node": "^14.17.33",
+        "@types/vscode": "^1.59.0",
+        "@typescript-eslint/eslint-plugin": "^4.30.0",
+        "@typescript-eslint/parser": "^4.30.0",
+        "esbuild": "^0.12.24",
+        "eslint": "^7.32.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-config-standard": "^16.0.3",
+        "eslint-plugin-import": "^2.24.2",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-promise": "^5.1.0",
+        "glob": "^7.1.7",
+        "mocha": "^9.1.3",
+        "prettier": "^2.3.2",
+        "typescript": "^4.3.2",
+        "vscode-test": "^1.5.2"
+    },
+    "dependencies": {
+        "vscode-languageclient": "^7.0.0"
+    }
 }

@@ -1,22 +1,16 @@
 import * as vscode from "vscode";
+import { getOrDefault } from "./collections";
+import { getFilePath, getSelectedSymbol, withFilePath } from "./editor-lib";
 import {
     createTerminal,
     runFileInTerminal,
     createRepl,
     loadFileInRepl,
     executeSelectionInRepl,
+    withRepl,
 } from "./repl";
-import { withFilePath, withRacket, withEditor } from "./utils";
-
-function getOrDefault<K, V>(map: Map<K, V>, key: K, getDefault: () => V): V {
-    const value = map.get(key);
-    if (value) {
-        return value;
-    }
-    const def = getDefault();
-    map.set(key, def);
-    return def;
-}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { fileName, withRacket } from "./utils";
 
 export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
     withFilePath((filePath: string) => {
@@ -39,27 +33,38 @@ export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
 export function loadInRepl(repls: Map<string, vscode.Terminal>): void {
     withFilePath((filePath: string) => {
         withRacket((racket: string) => {
-            const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
+            const repl = getOrDefault(repls, filePath, () => createRepl(fileName(filePath), racket));
             loadFileInRepl(filePath, repl);
         });
     });
 }
 
-export function executeSelection(repls: Map<string, vscode.Terminal>): void {
-    withEditor((editor: vscode.TextEditor) => {
-        withFilePath((filePath: string) => {
-            withRacket((racket: string) => {
-                const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
-                executeSelectionInRepl(repl, editor);
-            });
+export async function executeSelection(repls: Map<string, vscode.Terminal>): Promise<void> {
+    const filePath = getFilePath();
+    if (filePath) {
+        await withRepl(repls, filePath, executeSelectionInRepl);
+    }
+}
+
+export const FRACAS_COMPILE_TERMINAL = "Fracas Compile";
+export async function compileFracasObject(repls: Map<string, vscode.Terminal>): Promise<void> {
+    const fracasObject = getSelectedSymbol();
+    const filePath = getFilePath();
+    if (fracasObject && filePath) {
+        await withRepl(repls, FRACAS_COMPILE_TERMINAL, (repl, _) => {
+            repl.show();
+            repl.sendText(
+`(require fracas/make-asset-json)
+(enter! (file "${filePath}"))
+(define-asset-impl: #:value ${fracasObject} #:value-name '${fracasObject} #:key (key: ${fracasObject}))`);
         });
-    });
+    }
 }
 
 export function openRepl(repls: Map<string, vscode.Terminal>): void {
     withFilePath((filePath: string) => {
         withRacket((racket: string) => {
-            const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
+            const repl = getOrDefault(repls, filePath, () => createRepl(fileName(filePath), racket));
             repl.show();
         });
     });

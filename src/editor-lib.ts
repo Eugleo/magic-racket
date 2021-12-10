@@ -1,6 +1,27 @@
 import * as vscode from 'vscode';
 import { workspace } from 'vscode';
+import { normalizeFilePath } from './utils';
 
+export function withEditor(func: (vscodeEditor: vscode.TextEditor) => void): void {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+        func(editor);
+    } else {
+        vscode.window.showErrorMessage("A file must be opened before you can do that");
+    }
+}
+
+export function getFilePath(): string | undefined {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+        return normalizeFilePath(editor.document.fileName);
+    }
+    return undefined;
+}
+
+export function withFilePath(func: (filePath: string) => void): void {
+    withEditor((editor: vscode.TextEditor) => func(normalizeFilePath(editor.document.fileName)));
+}
 
 export function getRange(ranges: (vscode.Range | vscode.Range[])): vscode.Range {
     return Array.isArray(ranges) ? ranges[0] : ranges;
