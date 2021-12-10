@@ -181,6 +181,37 @@ export function completionKind(fracasKind: FracasDefinitionKind): vscode.Complet
     }
 }
 
+export function symbolKind(fracasKind: FracasDefinitionKind): vscode.SymbolKind {
+    switch (fracasKind) {
+        case (FracasDefinitionKind.enum):
+            return vscode.SymbolKind.Enum;
+        case (FracasDefinitionKind.gameData):
+            return vscode.SymbolKind.Module;
+        case (FracasDefinitionKind.key):
+            return vscode.SymbolKind.Variable;
+        case (FracasDefinitionKind.mask):
+            return vscode.SymbolKind.Enum;
+        case (FracasDefinitionKind.typeOptional):
+            return vscode.SymbolKind.Struct;
+        case (FracasDefinitionKind.type):
+            return vscode.SymbolKind.Struct;
+        case (FracasDefinitionKind.variant):
+            return vscode.SymbolKind.Struct;
+        case (FracasDefinitionKind.variantOption):
+            return vscode.SymbolKind.Struct;
+        case (FracasDefinitionKind.syntax):
+            return vscode.SymbolKind.Function;
+        case (FracasDefinitionKind.define):
+            return vscode.SymbolKind.Variable;
+        case (FracasDefinitionKind.field):
+            return vscode.SymbolKind.Variable;
+        case (FracasDefinitionKind.unknown):
+        default:
+            return vscode.SymbolKind.Object;
+    }
+}
+
+
 /**
  * Get the nesting depth at which members are declared for a fracas type definition (e.g., enum, variant, type, etc.).
  * For example, the following fracas type definition has two open parens before the first member, max-targets:
@@ -579,11 +610,11 @@ export async function findDocumentSymbols(uri: vscode.Uri, token: vscode.Cancell
     const textMatches = await findTextInFiles(defineRxStr, token, uri.fsPath);
     const symbols = textMatches.map(searchMatch => {
         const rxMatch = defineRx.exec(searchMatch.preview.text);
-        const typeName = rxMatch ? rxMatch[2] : searchMatch.preview.text;
+        const [_, defToken, typeName] = rxMatch || [undefined, undefined, searchMatch.preview.text];
         const symbol = new vscode.DocumentSymbol(
-            typeName,
+            typeName || 'unknown',
             searchMatch.preview.text,
-            vscode.SymbolKind.Struct,
+            symbolKind(definitionKind(defToken || 'define')),
             getRange(searchMatch.ranges),
             getRange(searchMatch.ranges)
         );
