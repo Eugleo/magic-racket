@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getOrDefault } from "./collections";
+import { getOrDefault } from "./containers";
 import { getFilePath, getSelectedSymbol, withFilePath } from "./editor-lib";
 import {
     createTerminal,

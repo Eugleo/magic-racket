@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { asyncGetOrDefault } from "./collections";
+import { asyncGetOrDefault } from "./containers";
 import { delay, fileName, getRacket } from "./utils";
 
 export async function withRepl(

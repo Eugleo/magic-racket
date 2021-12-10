@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'; // The module 'vscode' contains the VS Code extensibility API
-import { mapAsync } from '../collections';
+import { mapAsync } from '../containers';
 import { getSelectedSymbolRange } from '../editor-lib';
 import {
     findComment,
