@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { flatten, mapAsync } from '../collections';
+import { flatten, mapAsync } from '../containers';
 import { findTextInFiles, getRange, searchBackward } from '../editor-lib';
 
 export const FIELD_PREFIX = '#:';
