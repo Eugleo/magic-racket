@@ -1,4 +1,21 @@
 import * as vscode from "vscode";
+import * as cp from "child_process";
+
+export function execShell(cmd: string) : Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        cp.exec(cmd, (err, out) => {
+            if (err) {
+                vscode.window.showErrorMessage(err.message);
+                return reject(err);
+            }
+            return resolve(out);
+        });
+    });
+}
+
+export function openRacketReference(symbol: string): void {
+    vscode.env.openExternal(vscode.Uri.parse(`https://docs.racket-lang.org/search/index.html?q=${encodeURI(symbol)}`));
+}
 
 export function fileName(filePath: string): string {
     const match = filePath.match(/^.*\/([^/]+\.[^/]+)$/);

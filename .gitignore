@@ -2,3 +2,5 @@
 out/
 .DS_Store
 node_modules
+debug.log
+vsc-fracas*.vsix

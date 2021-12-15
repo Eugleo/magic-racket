@@ -97,14 +97,15 @@ export function activate(context: vscode.ExtensionContext): void {
     });
 
     // Register RACKET commands
-    const loadInRepl = reg("loadFileInRepl", () => com.loadInRepl(repls));
-    const runInTerminal = reg("runFile", () => com.runInTerminal(terminals));
-    const executeSelection = reg("executeSelectionInRepl", () => com.executeSelection(repls));
-    const compileObject = reg("compileFracasObject", () => com.compileFracasObject(repls));
-    const openRepl = reg("openRepl", () => com.openRepl(repls));
-    const showOutput = reg("showOutputTerminal", () => com.showOutput(terminals));
-
-    context.subscriptions.push(loadInRepl, runInTerminal, executeSelection, compileObject, openRepl, showOutput);
+    context.subscriptions.push(
+        reg("compileSelectedFracasObject", () => com.compileSelectedFracasObject()),
+        reg("recompileFracasObject", () => com.recompileFracasObject()),
+        reg("loadFileInRepl", () => com.loadInRepl(repls)),
+        reg("runFile", () => com.runInTerminal(terminals)),
+        reg("executeSelectionInRepl", () => com.executeSelection(repls)),
+        reg("openRepl", () => com.openRepl(repls)),
+        reg("showOutputTerminal", () => com.showOutput(terminals)),
+        reg("helpWithSelectedSymbol", () => com.helpWithSelectedSymbol()));
 
     // Register FRACAS language support
     context.subscriptions.push(

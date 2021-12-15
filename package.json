@@ -1,10 +1,11 @@
 {
     "name": "vsc-fracas",
+    "publisher": "Wonderstorm",
     "displayName": "Fracas",
     "description": "Syntax highlighting, code navigation, and REPL support for the Fracas and Racket programming languages",
     "version": "0.1.3",
     "enableProposedApi": true,
-    "enabledApiProposals": [
+        "enabledApiProposals": [
         "textSearchProvider",
         "findTextInFiles"
     ],
@@ -38,7 +39,7 @@
     "homepage": "https://github.com/WSStudios/vscode-fracas/",
     "bugs": {
         "url": "https://github.com/WSStudios/vscode-fracas/issues",
-        "email": "wybitul.evzen@gmail.com"
+        "email": "dsmith@wonderstorm.net"
     },
     "keywords": [
         "fracas",
@@ -184,8 +185,13 @@
                 "title": "Racket: Show the output terminal for the current file"
             },
             {
-                "command": "vscode-fracas.compileFracasObject",
-                "title": "Fracas: Compile Object"
+                "command": "vscode-fracas.compileSelectedFracasObject",
+                "title": "Fracas: Compile Selected Object"
+            }
+            ,
+            {
+                "command": "vscode-fracas.recompileFracasObject",
+                "title": "Fracas: Recompile Previous Object"
             }
         ],
         "menus": {
@@ -226,9 +232,24 @@
                 "when": "editorHasSelection && resourceLangId == racket"
             },
             {
-                "command": "vscode-fracas.compileFracasObject",
+                "command": "vscode-fracas.runFile",
+                "key": "Ctrl+; Ctrl+g",
+                "when": "resourceLangId == fracas || resourceLangId == racket"
+            },
+            {
+                "command": "vscode-fracas.compileSelectedFracasObject",
+                "key": "Ctrl+; Ctrl+c",
+                "when": "resourceLangId == fracas"
+            },
+            {
+                "command": "vscode-fracas.recompileFracasObject",
                 "key": "Ctrl+; Ctrl+;",
                 "when": "resourceLangId == fracas"
+            },
+            {
+                "command": "vscode-fracas.helpWithSelectedSymbol",
+                "key": "f1",
+                "when": "resourceLangId == racket || resourceLangId == fracas"
             },
             {
                 "key": "Ctrl+; Ctrl+y",
