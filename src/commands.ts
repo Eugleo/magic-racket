@@ -10,7 +10,14 @@ import {
     withRepl,
 } from "./repl";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { fileName, withRacket } from "./utils";
+import { execShell, fileName, getRacket, normalizeFilePath, openRacketReference, withRacket } from "./utils";
+
+export function helpWithSelectedSymbol(): void {
+    const fracasObject = getSelectedSymbol();
+    if (fracasObject) {
+        openRacketReference(fracasObject);
+    }
+}
 
 export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
     withFilePath((filePath: string) => {
@@ -46,19 +53,25 @@ export async function executeSelection(repls: Map<string, vscode.Terminal>): Pro
     }
 }
 
-export const FRACAS_COMPILE_TERMINAL = "Fracas Compile";
-export async function compileFracasObject(repls: Map<string, vscode.Terminal>): Promise<void> {
-    const fracasObject = getSelectedSymbol();
-    const filePath = getFilePath();
-    if (fracasObject && filePath) {
-        await withRepl(repls, FRACAS_COMPILE_TERMINAL, (repl, _) => {
-            repl.show();
-            repl.sendText(
-`(require fracas/make-asset-json)
-(enter! (file "${filePath}"))
-(define-asset-impl: #:value ${fracasObject} #:value-name '${fracasObject} #:key (key: ${fracasObject}))`);
-        });
+export async function compileFracasObject(filePath: string, fracasObject: string): Promise<void> {
+    const racket = getRacket();
+    if (fracasObject && filePath && racket) {
+        vscode.window.activeTextEditor?.document?.save();
+        const cmd = `(require fracas/make-asset-json) (enter! (file "${filePath}")) (define-asset-impl: #:value ${fracasObject} #:value-name (quote ${fracasObject}) #:key (key: ${fracasObject}))`;
+        execShell(`${racket} -e "${cmd.replace(/"/g, '\\"')}"`);
     }
+}
+
+let lastFracasObject = "";
+let lastFracasFile = "";
+export async function compileSelectedFracasObject(): Promise<void> {
+    lastFracasFile = getFilePath() || "";
+    lastFracasObject = getSelectedSymbol();
+    compileFracasObject(lastFracasFile, lastFracasObject);
+}
+
+export async function recompileFracasObject(): Promise<void> {
+    compileFracasObject(lastFracasFile, lastFracasObject);
 }
 
 export function openRepl(repls: Map<string, vscode.Terminal>): void {

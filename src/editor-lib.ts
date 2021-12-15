@@ -32,24 +32,28 @@ export async function findTextInFiles(
     token: vscode.CancellationToken,
     include: vscode.GlobPattern = '**/*.frc')
     : Promise<vscode.TextSearchMatch[]> {
-    console.log(include);
+    console.log(searchRx);
     const results: vscode.TextSearchMatch[] = [];
-    await workspace.findTextInFiles(
-        { pattern: searchRx, isRegExp: true },
-        {
-            include: include,
-            previewOptions: {
-                matchLines: 1,
-                charsPerLine: 100
-            }
-        },
-        result => {
-            const match = result as vscode.TextSearchMatch;
-            if (match) {
-                results.push(match);
-            }
-        },
-        token);
+    try {
+        await workspace.findTextInFiles(
+            { pattern: searchRx, isRegExp: true },
+            {
+                include: include,
+                previewOptions: {
+                    matchLines: 1,
+                    charsPerLine: 100
+                }
+            },
+            result => {
+                const match = result as vscode.TextSearchMatch;
+                if (match) {
+                    results.push(match);
+                }
+            },
+            token);
+    } catch (error) {
+        console.error(error);
+    }
     return results;
 }
 
@@ -81,7 +85,7 @@ export function getSelectedSymbolRange(document: vscode.TextDocument | null = nu
     if (highlightedText) {
         return [highlightedText, range];
     } else {
-        const wordRange = document.getWordRangeAtPosition(range.start, /[#:\w\-+*.]+/);
+        const wordRange = document.getWordRangeAtPosition(range.start, /[#:\w\-+*.>]+/);
         if (wordRange) {
             let word = document.getText(wordRange);
             if (word.endsWith(':')) { // strip trailing ':' for fracas constructors (hacky)
