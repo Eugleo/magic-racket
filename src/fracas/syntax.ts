@@ -7,13 +7,14 @@ export const RX_CHARS_OPEN_PAREN = '\\(|\\{|\\[';
 export const RX_CHARS_CLOSE_PAREN = '\\)|\\}|\\]';
 export const RX_CHARS_SPACE = '\\s|\\r|\\n';
 export const RX_CHAR_IDENTIFIER = '[\\w\\-\\*\\.]';
-export const RX_SYMBOLS_DEFINE = 'define-enum|define-game-data|define-key|define-mask|define-type-optional|define-syntax|define-type|define-variant|define';
+export const RX_SYMBOLS_DEFINE = 'define-enum|define-game-data|define-key|define-text|define-mask|define-type-optional|define-syntax|define-type|define-variant|define';
 export const RX_COMMENT = ';;?\\s*(.*)\\s*$';
 
 export enum FracasDefinitionKind {
     enum,
     gameData,
     key,
+    text,
     mask,
     typeOptional,
     type,
@@ -134,6 +135,8 @@ export function definitionKind(defToken: string): FracasDefinitionKind {
             return FracasDefinitionKind.gameData;
         case 'define-key':
             return FracasDefinitionKind.key;
+        case 'define-text':
+            return FracasDefinitionKind.text;
         case 'define-mask':
             return FracasDefinitionKind.mask;
         case 'define-type-optional':
@@ -158,6 +161,8 @@ export function completionKind(fracasKind: FracasDefinitionKind): vscode.Complet
         case (FracasDefinitionKind.gameData):
             return vscode.CompletionItemKind.Module;
         case (FracasDefinitionKind.key):
+            return vscode.CompletionItemKind.Variable;
+        case (FracasDefinitionKind.text):
             return vscode.CompletionItemKind.Variable;
         case (FracasDefinitionKind.mask):
             return vscode.CompletionItemKind.Enum;
@@ -201,6 +206,7 @@ function _memberScopeDepth(fracasKind: FracasDefinitionKind): vscode.CompletionI
         case (FracasDefinitionKind.define):
         case (FracasDefinitionKind.variant):
         case (FracasDefinitionKind.key):
+        case (FracasDefinitionKind.text):
         case (FracasDefinitionKind.enum):
         case (FracasDefinitionKind.mask):
             return 1;
@@ -222,6 +228,7 @@ function _memberDeclRx(
     : RegExp {
     switch (fracasKind) {
         case (FracasDefinitionKind.key):
+        case (FracasDefinitionKind.text):
         case (FracasDefinitionKind.enum):
         case (FracasDefinitionKind.mask):
             return new RegExp(_anyIdentifierRx(memberName, searchKind), "g");
