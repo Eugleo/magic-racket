@@ -1,8 +1,8 @@
 {
     "name": "vscode-fracas",
     "displayName": "Fracas",
-    "description": "Syntax highlighting, code navigation, and REPL support for the Fracas and Racket programming languages",
-    "version": "0.1.4",
+    "description": "Syntax highlighting, code navigation, document formatting, and REPL support for the Fracas and Racket programming languages",
+    "version": "0.1.6",
     "enableProposedApi": true,
     "enabledApiProposals": [
         "textSearchProvider",
