@@ -37,7 +37,7 @@ function setupLSP() {
         // Options to control the language client
         const clientOptions: LanguageClientOptions = {
             // Register the server for racket documents
-            documentSelector: [{ scheme: "file", language: "fracas" }],
+            documentSelector: [{ scheme: "file", language: "racket" }, { scheme: "file", language: "fracas" }],
             synchronize: {
                 // Notify the server about file changes to '.clientrc files contained in the workspace
                 fileEvents: vscode.workspace.createFileSystemWatcher("**/.clientrc"),
