@@ -13,7 +13,7 @@ export function withRacket(func: (racketPath: string) => void, server = false): 
     .getConfiguration("magic-racket.general")
     .get<string>(racketPathKey);
   if (racket && racket !== "") {
-    func(racket);
+    func(racket.includes(" ") ? `"${racket}"` : racket);
   } else {
     vscode.window.showErrorMessage(
       "No Racket executable specified. Please add the path to the Racket executable in settings",
