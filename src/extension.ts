@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { LanguageClient, LanguageClientOptions } from "vscode-languageclient/node";
 import * as com from "./commands";
 import { TaskProvider } from "./tasks";
-import { withLanguageServer, withRacket } from "./utils";
+import { withLanguageServer } from "./utils";
 
 let langClient: LanguageClient;
 let isLangClientRunning = false;
@@ -66,7 +66,7 @@ function reg(name: string, func: (...args: any[]) => any) {
 
 function configurationChanged() {
   const enableLSP: boolean = vscode.workspace
-    .getConfiguration("magic-racket.lsp")
+    .getConfiguration("magicRacket.languageServer")
     .get("enabled", true);
 
   if (langClient) {
@@ -92,7 +92,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   vscode.workspace.onDidChangeConfiguration(configurationChanged);
 
-  taskProvider = vscode.tasks.registerTaskProvider(TaskProvider.runTaskType, new TaskProvider());
+  taskProvider = vscode.tasks.registerTaskProvider(TaskProvider.taskType, new TaskProvider());
 
   vscode.window.onDidCloseTerminal((terminal) => {
     terminals.forEach((val, key) => val === terminal && terminals.delete(key) && val.dispose());

@@ -6,7 +6,7 @@ import {
   loadFileInRepl,
   executeSelectionInRepl,
 } from "./repl";
-import { withFilePath, withRacket, withEditor } from "./utils";
+import { withFilePath, withRacket, withEditor, withREPL } from "./utils";
 
 function getOrDefault<K, V>(map: Map<K, V>, key: K, getDefault: () => V): V {
   const value = map.get(key);
@@ -24,27 +24,33 @@ function saveActiveTextEditorAndRun(f: () => void) {
 
 export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
-    withRacket((racket: string) => {
+    withRacket((command: string[]) => {
       let terminal: vscode.Terminal;
       if (
         vscode.workspace
-          .getConfiguration("magic-racket.outputTerminal")
+          .getConfiguration("magicRacket.outputTerminal")
           .get("numberOfOutputTerminals") === "one"
       ) {
         terminal = getOrDefault(terminals, "one", () => createTerminal(null));
       } else {
         terminal = getOrDefault(terminals, filePath, () => createTerminal(filePath));
       }
-      saveActiveTextEditorAndRun(() => runFileInTerminal(racket, filePath, terminal));
+      saveActiveTextEditorAndRun(() => runFileInTerminal(command, filePath, terminal));
     });
   });
 }
 
 export function loadInRepl(repls: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
-    withRacket((racket: string) => {
-      const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
-      saveActiveTextEditorAndRun(() => loadFileInRepl(filePath, repl));
+    withREPL((command: string[]) => {
+      let loaded = true;
+      const repl = getOrDefault(repls, filePath, () => {
+        loaded = false;
+        return createRepl(filePath, command);
+      });
+      if (loaded) {
+        saveActiveTextEditorAndRun(() => loadFileInRepl(filePath, repl));
+      }
     });
   });
 }
@@ -52,8 +58,8 @@ export function loadInRepl(repls: Map<string, vscode.Terminal>): void {
 export function executeSelection(repls: Map<string, vscode.Terminal>): void {
   withEditor((editor: vscode.TextEditor) => {
     withFilePath((filePath: string) => {
-      withRacket((racket: string) => {
-        const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
+      withREPL((command: string[]) => {
+        const repl = getOrDefault(repls, filePath, () => createRepl(filePath, command));
         executeSelectionInRepl(repl, editor);
       });
     });
@@ -62,8 +68,8 @@ export function executeSelection(repls: Map<string, vscode.Terminal>): void {
 
 export function openRepl(repls: Map<string, vscode.Terminal>): void {
   withFilePath((filePath: string) => {
-    withRacket((racket: string) => {
-      const repl = getOrDefault(repls, filePath, () => createRepl(filePath, racket));
+    withREPL((command: string[]) => {
+      const repl = getOrDefault(repls, filePath, () => createRepl(filePath, command));
       repl.show();
     });
   });

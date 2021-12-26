@@ -1,24 +1,33 @@
 import * as vscode from "vscode";
 
 export class TaskProvider implements vscode.TaskProvider {
-  static runTaskType = "racket";
+  static taskType = "racket";
 
-  static runTask = new vscode.Task(
-    { type: TaskProvider.runTaskType },
+  static testAndRunTask = new vscode.Task(
+    { type: TaskProvider.taskType },
     vscode.TaskScope.Workspace,
-    "Run Racket File",
+    "Test and run file",
     "racket",
     // eslint-disable-next-line no-template-curly-in-string
-    new vscode.ShellExecution("${config:magicRacket.general.REPLRacketPath}", ["${file}"]),
+    new vscode.ShellExecution("${config:magicRacket.general.racketPath}", ["${file}"]),
+  );
+
+  static runTask = new vscode.Task(
+    { type: TaskProvider.taskType },
+    vscode.TaskScope.Workspace,
+    "Run file",
+    "racket",
+    // eslint-disable-next-line no-template-curly-in-string
+    new vscode.ShellExecution("${config:magicRacket.general.racketPath}", ["${file}"]),
   );
 
   static testTask = new vscode.Task(
-    { type: TaskProvider.runTaskType },
+    { type: TaskProvider.taskType },
     vscode.TaskScope.Workspace,
-    "Test Racket File",
+    "Test file",
     "racket",
     // eslint-disable-next-line no-template-curly-in-string
-    new vscode.ShellExecution("raco", ["test", "${file}"]),
+    new vscode.ShellExecution("${config:magicRacket.general.racoPath}", ["test", "${file}"]),
   );
 
   public async provideTasks(): Promise<vscode.Task[]> {

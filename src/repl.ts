@@ -1,3 +1,4 @@
+import { quote } from "shell-quote";
 import * as vscode from "vscode";
 
 function fileName(filePath: string) {
@@ -20,21 +21,24 @@ export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.Tex
 }
 
 export function runFileInTerminal(
-  racket: string,
+  command: string[],
   filePath: string,
   terminal: vscode.Terminal,
 ): void {
   terminal.show();
   terminal.sendText(`clear`);
-  const shell: string | undefined = vscode.workspace
-    .getConfiguration("terminal.integrated.shell")
-    .get("windows");
-  if (process.platform === "win32" && shell && /cmd\.exe$/.test(shell)) {
-    // cmd.exe doesn't recognize single quotes
-    terminal.sendText(`${racket} "${filePath}"`);
-  } else {
-    terminal.sendText(`${racket} '${filePath}'`);
-  }
+  terminal.sendText(quote([...command, filePath]));
+
+  // Leaving this here if we ever need to fix cmd.exe again
+  // const shell: string | undefined = vscode.workspace
+  //   .getConfiguration("terminal.integrated.shell")
+  //   .get("windows");
+  // if (process.platform === "win32" && shell && /cmd\.exe$/.test(shell)) {
+  //   // cmd.exe doesn't recognize single quotes
+  //   terminal.sendText(`${racket} "${filePath}"`);
+  // } else {
+  //   terminal.sendText(`${racket} '${filePath}'`);
+  // }
 }
 
 export function loadFileInRepl(filePath: string, repl: vscode.Terminal): void {
@@ -46,13 +50,13 @@ export function createTerminal(filePath: string | null): vscode.Terminal {
   let terminal;
   if (filePath) {
     const templateSetting: string | undefined = vscode.workspace
-      .getConfiguration("magic-racket.outputTerminal")
+      .getConfiguration("magicRacket.outputTerminal")
       .get("outputTerminalTitle");
     const template = templateSetting && templateSetting !== "" ? templateSetting : "Output ($name)";
     terminal = vscode.window.createTerminal(template.replace("$name", fileName(filePath)));
   } else {
     const templateSetting: string | undefined = vscode.workspace
-      .getConfiguration("magic-racket.outputTerminal")
+      .getConfiguration("magicRacket.outputTerminal")
       .get("sharedOutputTerminalTitle");
     const template = templateSetting && templateSetting !== "" ? templateSetting : "Racket Output";
     terminal = vscode.window.createTerminal(template);
@@ -61,13 +65,13 @@ export function createTerminal(filePath: string | null): vscode.Terminal {
   return terminal;
 }
 
-export function createRepl(filePath: string, racket: string): vscode.Terminal {
+export function createRepl(filePath: string, command: string[]): vscode.Terminal {
   const templateSetting: string | undefined = vscode.workspace
-    .getConfiguration("magic-racket.repl")
-    .get("replTitle");
+    .getConfiguration("magicRacket.REPL")
+    .get("title");
   const template = templateSetting && templateSetting !== "" ? templateSetting : "REPL ($name)";
   const repl = vscode.window.createTerminal(template.replace("$name", fileName(filePath)));
   repl.show();
-  repl.sendText(racket);
+  repl.sendText(quote([...command, "--eval", `(enter! (file "${filePath}"))`]));
   return repl;
 }

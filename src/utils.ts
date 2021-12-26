@@ -7,16 +7,41 @@ function normalizeFilePath(filePath: string): string {
   return filePath;
 }
 
-export function withRacket(func: (racketPath: string) => void, server = false): void {
-  const racketPathKey = server ? "racketPath" : "REPLRacketPath";
-  const racket = vscode.workspace
-    .getConfiguration("magic-racket.general")
-    .get<string>(racketPathKey);
-  if (racket && racket !== "") {
-    func(racket.includes(" ") ? `"${racket}"` : racket);
+export function withLanguageServer(func: (command: string, args: string[]) => void): void {
+  const command = vscode.workspace
+    .getConfiguration("magicRacket.languageServer")
+    .get<string>("command");
+  const args = vscode.workspace
+    .getConfiguration("magicRacket.languageServer")
+    .get<string[]>("arguments");
+  if (command !== undefined && command !== "" && args !== undefined) {
+    func(command, args);
   } else {
     vscode.window.showErrorMessage(
-      "No Racket executable specified. Please add the path to the Racket executable in settings",
+      `Invalid command for launching the language server. Please set the command in settings.`,
+    );
+  }
+}
+
+export function withRacket(func: (command: string[]) => void): void {
+  const racket = vscode.workspace.getConfiguration("magicRacket.general").get<string>("racketPath");
+  if (racket !== undefined && racket !== "") {
+    func([racket]);
+  } else {
+    vscode.window.showErrorMessage(
+      "Please configure the path to the Racket executable in settings.",
+    );
+  }
+}
+
+export function withREPL(func: (command: string[]) => void): void {
+  const racket = vscode.workspace.getConfiguration("magicRacket.general").get<string>("racketPath");
+  const args = vscode.workspace.getConfiguration("magicRacket.REPL").get<string[]>("arguments");
+  if (racket !== undefined && racket !== "" && args !== undefined) {
+    func([racket, ...args]);
+  } else {
+    vscode.window.showErrorMessage(
+      "Please configure the path to the Racket executable and the arguments for launching a REPL in settings.",
     );
   }
 }
