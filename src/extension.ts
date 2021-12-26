@@ -2,12 +2,19 @@ import * as vscode from "vscode";
 // eslint-disable-next-line no-unused-vars
 import { LanguageClient, LanguageClientOptions } from "vscode-languageclient/node";
 import * as com from "./commands";
-import { withRacket } from "./utils";
+import { TaskProvider } from "./tasks";
+import { withLanguageServer, withRacket } from "./utils";
 
 let langClient: LanguageClient;
 let isLangClientRunning = false;
 
+let taskProvider: vscode.Disposable | undefined;
+
 export function deactivate(): Promise<void> {
+  if (taskProvider) {
+    taskProvider.dispose();
+  }
+
   if (!langClient) {
     return Promise.reject(new Error("There is no language server client to be deactivated"));
   }
@@ -15,10 +22,10 @@ export function deactivate(): Promise<void> {
 }
 
 function setupLSP() {
-  withRacket((racket: string) => {
+  withLanguageServer((command: string, args: string[]) => {
     const executable = {
-      command: racket,
-      args: ["--lib", "racket-langserver"],
+      command: command,
+      args: args,
     };
 
     // If the extension is launched in debug mode then the debug server options are used
@@ -49,7 +56,7 @@ function setupLSP() {
       serverOptions,
       clientOptions,
     );
-  }, true);
+  });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,6 +91,8 @@ export function activate(context: vscode.ExtensionContext): void {
   const repls: Map<string, vscode.Terminal> = new Map();
 
   vscode.workspace.onDidChangeConfiguration(configurationChanged);
+
+  taskProvider = vscode.tasks.registerTaskProvider(TaskProvider.runTaskType, new TaskProvider());
 
   vscode.window.onDidCloseTerminal((terminal) => {
     terminals.forEach((val, key) => val === terminal && terminals.delete(key) && val.dispose());
