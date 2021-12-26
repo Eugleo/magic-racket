@@ -1221,6 +1221,8 @@ repository:
         endCaptures:
           '0':
             - name: punctuation.definition.string.end.racket
+        patterns:
+          - include: '#escape-char-base'
 
   regexp-byte-string:
     patterns:
