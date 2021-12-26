@@ -4,7 +4,7 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
 
 ## Setting up
 
-1. Install Magic Racket. You can do that from the [VS Code extension marketplace](https://marketplace.visualstudio.com/items?itemName=evzen-wybitul.magic-racket).
+1. Install Magic Racket. You can do that from the [VS Code extension marketplace](https://marketplace.visualstudio.com/items?itemName=evzen-wybitul.magic-racket), or from the [Open VSX Registry](https://open-vsx.org/extension/evzen-wybitul/magic-racket) if you're using VS Codium.
 2. Make sure you have `raco` on your path (see section Troubleshooting)
 3. Install the [racket-langserver](https://github.com/jeapostrophe/racket-langserver) by runnning the following command in the terminal:
 
