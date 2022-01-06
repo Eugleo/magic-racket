@@ -194,6 +194,8 @@ export function symbolKind(fracasKind: FracasDefinitionKind): vscode.SymbolKind 
             return vscode.SymbolKind.Module;
         case (FracasDefinitionKind.key):
             return vscode.SymbolKind.Variable;
+        case (FracasDefinitionKind.text):
+            return vscode.SymbolKind.Variable;
         case (FracasDefinitionKind.mask):
             return vscode.SymbolKind.Enum;
         case (FracasDefinitionKind.typeOptional):
