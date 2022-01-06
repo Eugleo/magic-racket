@@ -41,7 +41,7 @@ repository:
         match: >
           (?x)
           (?<=[\(|\{|\[])
-          (define-enum|define-game-data|define-key|define-mask|define-type-optional|define-syntax|define-type|define-variant|define)
+          (define-enum|define-game-data|define-key|define-text|define-mask|define-type-optional|define-syntax|define-type|define-variant|define)
           (?=[\)|\}|\]|\s])
 
   fracas-keyword-operator:
