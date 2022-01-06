@@ -5,7 +5,7 @@
     "description": "Syntax highlighting, code navigation, document formatting, and REPL support for the Fracas and Racket programming languages",
     "version": "0.1.6",
     "enableProposedApi": true,
-        "enabledApiProposals": [
+    "enabledApiProposals": [
         "textSearchProvider",
         "findTextInFiles"
     ],
@@ -187,8 +187,7 @@
             {
                 "command": "vscode-fracas.compileSelectedFracasObject",
                 "title": "Fracas: Compile Selected Object"
-            }
-            ,
+            },
             {
                 "command": "vscode-fracas.recompileFracasObject",
                 "title": "Fracas: Recompile Previous Object"
@@ -202,7 +201,7 @@
                     "group": "navigation"
                 },
                 {
-                    "when": "editorLangId == racket || editorLangId == racket",
+                    "when": "editorLangId == racket || editorLangId == fracas",
                     "command": "vscode-fracas.loadFileInRepl",
                     "group": "navigation"
                 }
