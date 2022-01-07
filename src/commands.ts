@@ -21,7 +21,7 @@ export function helpWithSelectedSymbol(): void {
 
 export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
     withFilePath((filePath: string) => {
-        withRacket((racket: string) => {
+        withRacket((racket: string, racketArgs: string[]) => {
             let terminal;
             if (
                 vscode.workspace
@@ -32,15 +32,15 @@ export function runInTerminal(terminals: Map<string, vscode.Terminal>): void {
             } else {
                 terminal = getOrDefault(terminals, filePath, () => createTerminal(filePath));
             }
-            runFileInTerminal(racket, filePath, terminal);
+            runFileInTerminal(racket, racketArgs, filePath, terminal);
         });
     });
 }
 
 export function loadInRepl(repls: Map<string, vscode.Terminal>): void {
     withFilePath((filePath: string) => {
-        withRacket((racket: string) => {
-            const repl = getOrDefault(repls, filePath, () => createRepl(fileName(filePath), racket));
+        withRacket((racket: string, racketArgs: string[]) => {
+            const repl = getOrDefault(repls, filePath, () => createRepl(fileName(filePath), racket, racketArgs));
             loadFileInRepl(filePath, repl);
         });
     });
@@ -54,11 +54,11 @@ export async function executeSelection(repls: Map<string, vscode.Terminal>): Pro
 }
 
 export async function compileFracasObject(filePath: string, fracasObject: string): Promise<void> {
-    const racket = getRacket();
+    const [racket, racketArgs] = getRacket();
     if (fracasObject && filePath && racket) {
         vscode.window.activeTextEditor?.document?.save();
         const cmd = `(require fracas/make-asset-json) (enter! (file "${filePath}")) (define-asset-impl: #:value ${fracasObject} #:value-name (quote ${fracasObject}) #:key (key: ${fracasObject}))`;
-        execShell(`${racket} -e "${cmd.replace(/"/g, '\\"')}"`);
+        execShell(`${racket} ${racketArgs.join(" ")} -e "${cmd.replace(/"/g, '\\"')}"`);
     }
 }
 
@@ -76,8 +76,8 @@ export async function recompileFracasObject(): Promise<void> {
 
 export function openRepl(repls: Map<string, vscode.Terminal>): void {
     withFilePath((filePath: string) => {
-        withRacket((racket: string) => {
-            const repl = getOrDefault(repls, filePath, () => createRepl(fileName(filePath), racket));
+        withRacket((racket: string, racketArgs: string[]) => {
+            const repl = getOrDefault(repls, filePath, () => createRepl(fileName(filePath), racket, racketArgs));
             repl.show();
         });
     });

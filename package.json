@@ -102,13 +102,18 @@
             "properties": {
                 "vscode-fracas.general.REPLRacketPath": {
                     "type": "string",
-                    "default": "C:\\Progra~1\\Racket\\racket.EXE -q -U -S C:\\proj\\ws\\tdp1\\fracas\\lib -S C:\\proj\\ws\\tdp1\\wslib",
+                    "default": "C:\\Progra~1\\Racket\\racket.EXE",
                     "markdownDescription": "Specifies the path to the `racket` executable used to open the REPL and run the file."
                 },
                 "vscode-fracas.general.racketPath": {
                     "type": "string",
                     "default": "C:\\Progra~1\\Racket\\racket.EXE",
                     "markdownDescription": "Specifies the path to the `racket` executable used to launch the Racket language server."
+                },
+                "vscode-fracas.general.racketCollectionPaths": {
+                    "type": "array",
+                    "default": ["C:\\proj\\ws\\tdp1\\wslib", "C:\\proj\\ws\\tdp1\\fracas\\lib"],
+                    "markdownDescription": "A list of paths to search for Racket collections."
                 },
                 "vscode-fracas.trace.server": {
                     "scope": "window",

@@ -51,7 +51,6 @@ export class FracasDefinition {
     readonly completionKind: vscode.CompletionItemKind;
 
     constructor(definition: vscode.Location, symbol: string, kind: FracasDefinitionKind) {
-        ;
         this.location = definition;
         this.symbol = symbol;
         this.kind = kind;
