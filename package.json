@@ -3,7 +3,7 @@
     "publisher": "Wonderstorm",
     "displayName": "Fracas",
     "description": "Syntax highlighting, code navigation, document formatting, and REPL support for the Fracas and Racket programming languages",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "enableProposedApi": true,
     "enabledApiProposals": [
         "textSearchProvider",
@@ -112,8 +112,13 @@
                 },
                 "vscode-fracas.general.racketCollectionPaths": {
                     "type": "array",
-                    "items": { "type": "string" },
-                    "default": ["C:\\proj\\ws\\tdp1\\wslib", "C:\\proj\\ws\\tdp1\\fracas\\lib"],
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "C:\\proj\\ws\\tdp1\\wslib",
+                        "C:\\proj\\ws\\tdp1\\fracas\\lib"
+                    ],
                     "markdownDescription": "A list of paths to search for Racket collections."
                 },
                 "vscode-fracas.trace.server": {
