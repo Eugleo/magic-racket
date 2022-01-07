@@ -112,6 +112,7 @@
                 },
                 "vscode-fracas.general.racketCollectionPaths": {
                     "type": "array",
+                    "items": { "type": "string" },
                     "default": ["C:\\proj\\ws\\tdp1\\wslib", "C:\\proj\\ws\\tdp1\\fracas\\lib"],
                     "markdownDescription": "A list of paths to search for Racket collections."
                 },
