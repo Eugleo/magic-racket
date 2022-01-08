@@ -97,7 +97,7 @@ export function precompileFracasFile(frcDoc: vscode.TextDocument | undefined = u
         // invoke ninja to precompile the fracas file
         const ninjaCmd = `${ninja} -f ./build/build_precompile.ninja ${zoFile}`;
         console.log(ninjaCmd);
-        execShell(ninjaCmd, "C:/proj/ws/tdp1/wslib");
+        execShell(ninjaCmd);
     }
 }
 
