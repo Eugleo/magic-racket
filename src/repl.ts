@@ -8,10 +8,10 @@ export async function withRepl(
     callback: (terminal: vscode.Terminal, editor: vscode.TextEditor) => void,
 ): Promise<void> {
     const editor = vscode.window.activeTextEditor;
-    const racket = getRacket();
+    const [racket, racketArgs] = getRacket();
     if (replKey && editor && racket) {
         const repl = await asyncGetOrDefault(repls, replKey, async () => {
-            const newRepl = createRepl(replKey, racket);
+            const newRepl = createRepl(replKey, racket, racketArgs);
             await delay(3000);
             return newRepl;
         });
@@ -32,6 +32,7 @@ export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.Tex
 
 export function runFileInTerminal(
     racket: string,
+    racketArgs: string[],
     filePath: string,
     terminal: vscode.Terminal,
 ): void {
@@ -42,9 +43,9 @@ export function runFileInTerminal(
         .get("windows");
     if (process.platform === "win32" && shell && /cmd\.exe$/.test(shell)) {
         // cmd.exe doesn't recognize single quotes
-        terminal.sendText(`${racket} "${filePath}"`);
+        terminal.sendText(`${racket} ${racketArgs.join(" ")} "${filePath}"`);
     } else {
-        terminal.sendText(`${racket} '${filePath}'`);
+        terminal.sendText(`${racket} ${racketArgs.join(" ")} '${filePath}'`);
     }
 }
 
@@ -72,13 +73,13 @@ export function createTerminal(filePath: string | null): vscode.Terminal {
     return terminal;
 }
 
-export function createRepl(replKey: string, racket: string): vscode.Terminal {
+export function createRepl(replKey: string, racket: string, racketArgs: string[]): vscode.Terminal {
     const templateSetting: string | undefined = vscode.workspace
         .getConfiguration("vscode-fracas.repl")
         .get("replTitle");
     const template = templateSetting || "REPL ($name)";
     const repl = vscode.window.createTerminal(template.replace("$name", replKey));
     repl.show();
-    repl.sendText(racket);
+    repl.sendText(`${racket} ${racketArgs.join(" ")}`);
     return repl;
 }

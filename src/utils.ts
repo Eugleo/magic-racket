@@ -1,15 +1,17 @@
 import * as vscode from "vscode";
 import * as cp from "child_process";
 
-export function execShell(cmd: string) : Promise<string> {
+export function execShell(cmd: string, workingDir: string | undefined = undefined) : Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        cp.exec(cmd, (err, out) => {
-            if (err) {
-                vscode.window.showErrorMessage(err.message);
-                return reject(err);
-            }
-            return resolve(out);
-        });
+        cp.exec(cmd, 
+            { cwd: workingDir || vscode.workspace.getConfiguration("vscode-fracas.general").get<string>("projectDir") },
+            (err, out) => {
+                if (err) {
+                    vscode.window.showErrorMessage(err.message);
+                    return reject(err);
+                }
+                return resolve(out);
+            });
     });
 }
 
@@ -37,22 +39,32 @@ export function delay(ms: number) : Promise<void> {
     return new Promise( resolve => setTimeout(resolve, ms) );
 }
 
-export function getRacket(server = false) : string | undefined {
+export function getRacket(server = false) : [string,string[]] {
     const racketPathKey = server ? "racketPath" : "REPLRacketPath";
     const racket = vscode.workspace
         .getConfiguration("vscode-fracas.general")
-        .get<string>(racketPathKey);
+        .get<string>(racketPathKey) || "racket";
     if (!racket) {
         vscode.window.showErrorMessage(
             "No Racket executable specified. Please add the path to the Racket executable in settings",
         );
     }
-    return racket;
+    const projectDir = vscode.workspace
+        .getConfiguration("vscode-fracas.general")
+        .get<string>("projectDir") || [];
+    const collectPaths = vscode.workspace
+        .getConfiguration("vscode-fracas.general")
+        .get<string[]>("racketCollectionPaths") || [];
+    const racketArgs = [];
+    for (const path of collectPaths) {
+        racketArgs.push("-S", normalizeFilePath(`${projectDir}\\${path}`));
+    }
+    return [racket, racketArgs];
 }
 
-export function withRacket(func: (racketPath: string) => void, server = false): void {
-    const racket = getRacket(server);
+export function withRacket(func: (racketPath: string, racketArgs: string[]) => void, server = false): void {
+    const [racket, racketArgs] = getRacket(server);
     if (racket) {
-        func(racket);
+        func(racket, racketArgs);
     }
 }

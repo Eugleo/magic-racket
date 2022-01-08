@@ -3,7 +3,7 @@
     "publisher": "Wonderstorm",
     "displayName": "Fracas",
     "description": "Syntax highlighting, code navigation, document formatting, and REPL support for the Fracas and Racket programming languages",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "enableProposedApi": true,
     "enabledApiProposals": [
         "textSearchProvider",
@@ -100,15 +100,41 @@
         "configuration": {
             "title": "Fracas",
             "properties": {
-                "vscode-fracas.general.REPLRacketPath": {
+                "vscode-fracas.general.projectDir": {
                     "type": "string",
-                    "default": "C:\\Progra~1\\Racket\\racket.EXE -q -U -S C:\\proj\\ws\\tdp1\\fracas\\lib -S C:\\proj\\ws\\tdp1\\wslib",
-                    "markdownDescription": "Specifies the path to the `racket` executable used to open the REPL and run the file."
+                    "default": "C:\\proj\\ws\\tdp1\\wslib",
+                    "markdownDescription": "Specifies the racket working directory and base directory for collection paths.",
+                    "order": 0
                 },
                 "vscode-fracas.general.racketPath": {
                     "type": "string",
                     "default": "C:\\Progra~1\\Racket\\racket.EXE",
-                    "markdownDescription": "Specifies the path to the `racket` executable used to launch the Racket language server."
+                    "markdownDescription": "Specifies the path to the `racket` executable used to launch the Racket language server.",
+                    "order": 1
+                },
+                "vscode-fracas.general.REPLRacketPath": {
+                    "type": "string",
+                    "default": "C:\\Progra~1\\Racket\\racket.EXE",
+                    "markdownDescription": "Specifies the path to the `racket` executable used to open the REPL and run the file.",
+                    "order": 2
+                },
+                "vscode-fracas.general.racketCollectionPaths": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        ".",
+                        "..\\fracas\\lib"
+                    ],
+                    "markdownDescription": "A list of paths to search for Racket collections.",
+                    "order": 3
+                },
+                "vscode-fracas.general.ninjaPath": {
+                    "type": "string",
+                    "default": "ninja",
+                    "markdownDescription": "Specifies the path to the `ninja` executable used to precompile racket files.",
+                    "order": 4
                 },
                 "vscode-fracas.trace.server": {
                     "scope": "window",
@@ -191,6 +217,10 @@
             {
                 "command": "vscode-fracas.recompileFracasObject",
                 "title": "Fracas: Recompile Previous Object"
+            },
+            {
+                "command": "vscode-fracas.precompileFracasFile",
+                "title": "Fracas: Precompile File"
             }
         ],
         "menus": {
