@@ -1,15 +1,17 @@
 import * as vscode from "vscode";
 import * as cp from "child_process";
 
-export function execShell(cmd: string) : Promise<string> {
+export function execShell(cmd: string, workingDir: string | undefined = undefined) : Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        cp.exec(cmd, (err, out) => {
-            if (err) {
-                vscode.window.showErrorMessage(err.message);
-                return reject(err);
-            }
-            return resolve(out);
-        });
+        cp.exec(cmd, 
+            { cwd: workingDir || vscode.workspace.getConfiguration("vscode-fracas.general").get<string>("projectDir") },
+            (err, out) => {
+                if (err) {
+                    vscode.window.showErrorMessage(err.message);
+                    return reject(err);
+                }
+                return resolve(out);
+            });
     });
 }
 
@@ -47,12 +49,15 @@ export function getRacket(server = false) : [string,string[]] {
             "No Racket executable specified. Please add the path to the Racket executable in settings",
         );
     }
+    const projectDir = vscode.workspace
+        .getConfiguration("vscode-fracas.general")
+        .get<string>("projectDir") || [];
     const collectPaths = vscode.workspace
         .getConfiguration("vscode-fracas.general")
         .get<string[]>("racketCollectionPaths") || [];
     const racketArgs = [];
     for (const path of collectPaths) {
-        racketArgs.push("-S", path);
+        racketArgs.push("-S", normalizeFilePath(`${projectDir}\\${path}`));
     }
     return [racket, racketArgs];
 }

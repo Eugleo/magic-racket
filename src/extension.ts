@@ -92,6 +92,9 @@ export function activate(context: vscode.ExtensionContext): void {
     const repls: Map<string, vscode.Terminal> = new Map();
 
     vscode.workspace.onDidChangeConfiguration(configurationChanged);
+    
+    // precompile fracas every time a file is saved
+    vscode.workspace.onDidSaveTextDocument((document) => com.precompileFracasFile(document));
 
     vscode.window.onDidCloseTerminal((terminal) => {
         terminals.forEach((val, key) => val === terminal && terminals.delete(key) && val.dispose());
@@ -102,6 +105,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         reg("compileSelectedFracasObject", () => com.compileSelectedFracasObject()),
         reg("recompileFracasObject", () => com.recompileFracasObject()),
+        reg("precompileFracasFile", () => com.precompileFracasFile()),
         reg("loadFileInRepl", () => com.loadInRepl(repls)),
         reg("runFile", () => com.runInTerminal(terminals)),
         reg("executeSelectionInRepl", () => com.executeSelection(repls)),

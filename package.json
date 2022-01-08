@@ -100,6 +100,11 @@
         "configuration": {
             "title": "Fracas",
             "properties": {
+                "vscode-fracas.general.projectDir": {
+                    "type": "string",
+                    "default": "C:\\proj\\ws\\tdp1\\wslib",
+                    "markdownDescription": "Specifies the racket working directory and base directory for collection paths."
+                },
                 "vscode-fracas.general.REPLRacketPath": {
                     "type": "string",
                     "default": "C:\\Progra~1\\Racket\\racket.EXE",
@@ -110,14 +115,19 @@
                     "default": "C:\\Progra~1\\Racket\\racket.EXE",
                     "markdownDescription": "Specifies the path to the `racket` executable used to launch the Racket language server."
                 },
+                "vscode-fracas.general.ninjaPath": {
+                    "type": "string",
+                    "default": "ninja",
+                    "markdownDescription": "Specifies the path to the `ninja` executable used to precompile racket files."
+                },
                 "vscode-fracas.general.racketCollectionPaths": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
                     "default": [
-                        "C:\\proj\\ws\\tdp1\\wslib",
-                        "C:\\proj\\ws\\tdp1\\fracas\\lib"
+                        ".",
+                        "..\\fracas\\lib"
                     ],
                     "markdownDescription": "A list of paths to search for Racket collections."
                 },
@@ -202,6 +212,10 @@
             {
                 "command": "vscode-fracas.recompileFracasObject",
                 "title": "Fracas: Recompile Previous Object"
+            },
+            {
+                "command": "vscode-fracas.precompileFracasFile",
+                "title": "Fracas: Precompile File"
             }
         ],
         "menus": {

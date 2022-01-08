@@ -1,3 +1,4 @@
+import { parse } from "path";
 import * as vscode from "vscode";
 import { getOrDefault } from "./containers";
 import { getFilePath, getSelectedSymbol, withFilePath } from "./editor-lib";
@@ -53,7 +54,7 @@ export async function executeSelection(repls: Map<string, vscode.Terminal>): Pro
     }
 }
 
-export async function compileFracasObject(filePath: string, fracasObject: string): Promise<void> {
+export function compileFracasObject(filePath: string, fracasObject: string): void {
     const [racket, racketArgs] = getRacket();
     if (fracasObject && filePath && racket) {
         vscode.window.activeTextEditor?.document?.save();
@@ -64,14 +65,40 @@ export async function compileFracasObject(filePath: string, fracasObject: string
 
 let lastFracasObject = "";
 let lastFracasFile = "";
-export async function compileSelectedFracasObject(): Promise<void> {
+export function compileSelectedFracasObject(): void {
     lastFracasFile = getFilePath() || "";
     lastFracasObject = getSelectedSymbol();
     compileFracasObject(lastFracasFile, lastFracasObject);
 }
 
-export async function recompileFracasObject(): Promise<void> {
+export function recompileFracasObject(): void {
     compileFracasObject(lastFracasFile, lastFracasObject);
+}
+
+export function precompileFracasFile(frcDoc: vscode.TextDocument | undefined = undefined): void {
+    // use the open document if none is provided
+    if (frcDoc === undefined) {
+        frcDoc = vscode.window.activeTextEditor?.document;
+    }
+
+    // if there is a fracas document, precompile it
+    if (frcDoc && frcDoc.languageId === "fracas") {
+        frcDoc.save(); // save the document before precompiling
+        
+        const ninja = vscode.workspace
+            .getConfiguration("vscode-fracas.general")
+            .get<string>("ninjaPath") || "ninja";
+        
+        // determine the .zo file from the fracas file
+        const frcPath = parse(normalizeFilePath(frcDoc.fileName));
+        const upperRoot = frcPath.root.toUpperCase(); // ninja requires that the drive letter be uppercase
+        const zoFile = `${upperRoot}${frcPath.dir.substring(upperRoot.length)}/compiled/${frcPath.name}_frc.zo`;
+
+        // invoke ninja to precompile the fracas file
+        const ninjaCmd = `${ninja} -f ./build/build_precompile.ninja ${zoFile}`;
+        console.log(ninjaCmd);
+        execShell(ninjaCmd, "C:/proj/ws/tdp1/wslib");
+    }
 }
 
 export function openRepl(repls: Map<string, vscode.Terminal>): void {
