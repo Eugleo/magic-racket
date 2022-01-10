@@ -6,7 +6,7 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
 
 1. Install Magic Racket. You can do that from the [VS Code extension marketplace](https://marketplace.visualstudio.com/items?itemName=evzen-wybitul.magic-racket), or from the [Open VSX Registry](https://open-vsx.org/extension/evzen-wybitul/magic-racket) if you're using VS Codium.
 2. Make sure you have `raco` on your path (see section Troubleshooting)
-3. Install the [racket-langserver](https://github.com/jeapostrophe/racket-langserver) by runnning the following command in the terminal:
+3. Install the [racket-langserver](https://github.com/jeapostrophe/racket-langserver) by running the following command in the terminal:
 
     ```bash
     raco pkg install racket-langserver
@@ -19,6 +19,7 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
     ```
 
     If don't want to use the lang-server at all, you don't have to. Just set `"magic-racket.lsp.enabled": false` in your configuration file. But note that if you do so, you won't get the “smart” features like autocomplete, formatting, etc.
+4. If you are running VSCode on WSL or a headless Linux server, please see the Troubleshooting section below.
 
 ## Features
 
