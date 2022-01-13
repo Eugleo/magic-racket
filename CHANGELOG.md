@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.6.2 (13th January 2021)
+
+- Fixed: Incorrect quoting of racket paths on Windows (thanks, @shocoman)
+- Fixed: Incorrect folding of code (thanks, @shocoman)
+- Fixed: Errortrace causing the REPL to be unuseable
+
 ## 0.6.1 (26th December 2021)
 
 - Fixed: Escape sequences now work in regexp bytestrings as well
