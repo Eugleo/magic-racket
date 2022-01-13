@@ -129,9 +129,7 @@
             "type": "string"
           },
           "default": [
-            "--repl",
-            "--lib",
-            "errortrace"
+            "--repl"
           ],
           "markdownDescription": "Arguments passed into `#magicRacket.general.racketPath#` when launching a REPL."
         },
