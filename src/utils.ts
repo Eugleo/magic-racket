@@ -1,7 +1,25 @@
 import * as vscode from "vscode";
 
+export const isWindowsOS: () => boolean = () => process.platform === "win32";
+export const isCmdExeShell: () => boolean = () => vscode.env.shell.endsWith("cmd.exe");
+export const isPowershellShell: () => boolean =
+  () => ["powershell.exe", "pwsh.exe", "pwsh"].some(p => vscode.env.shell.endsWith(p));
+
+export function quoteWindowsPath(path: string, isRacketExe: boolean): string {
+  if (/\s/.test(path)) { // quote the path only if it contains whitespaces
+    if (isCmdExeShell()) {
+      path = `"${path}"`;
+    } else if (isPowershellShell() && isRacketExe) {
+      path = `& '${path}'`;
+    } else {
+      path = `'${path}'`;
+    }
+  }
+  return path;
+}
+
 function normalizeFilePath(filePath: string): string {
-  if (process.platform === "win32") {
+  if (isWindowsOS()) {
     return filePath.replace(/\\/g, "/");
   }
   return filePath;

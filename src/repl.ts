@@ -1,5 +1,6 @@
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
+import { isCmdExeShell, isPowershellShell, isWindowsOS, quoteWindowsPath } from "./utils";
 
 function fileName(filePath: string) {
   const match = filePath.match(/^.*\/([^/]+\.[^/]+)$/);
@@ -26,19 +27,16 @@ export function runFileInTerminal(
   terminal: vscode.Terminal,
 ): void {
   terminal.show();
-  terminal.sendText(`clear`);
-  terminal.sendText(quote([...command, filePath]));
-
-  // Leaving this here if we ever need to fix cmd.exe again
-  // const shell: string | undefined = vscode.workspace
-  //   .getConfiguration("terminal.integrated.shell")
-  //   .get("windows");
-  // if (process.platform === "win32" && shell && /cmd\.exe$/.test(shell)) {
-  //   // cmd.exe doesn't recognize single quotes
-  //   terminal.sendText(`${racket} "${filePath}"`);
-  // } else {
-  //   terminal.sendText(`${racket} '${filePath}'`);
-  // }
+ 
+  if (isWindowsOS()) {
+    terminal.sendText(isPowershellShell() || isCmdExeShell() ? `cls` : `clear`);
+    const racketExePath = quoteWindowsPath(command[0], true);
+    filePath = quoteWindowsPath(filePath, false);
+    terminal.sendText(`${racketExePath} ${command.slice(1).join(' ')} ${filePath}`);
+  } else {
+    terminal.sendText(`clear`);
+    terminal.sendText(quote([...command, filePath]));
+  }
 }
 
 export function loadFileInRepl(filePath: string, repl: vscode.Terminal): void {
@@ -72,6 +70,21 @@ export function createRepl(filePath: string, command: string[]): vscode.Terminal
   const template = templateSetting && templateSetting !== "" ? templateSetting : "REPL ($name)";
   const repl = vscode.window.createTerminal(template.replace("$name", fileName(filePath)));
   repl.show();
-  repl.sendText(quote([...command, "--eval", `(enter! (file "${filePath}"))`]));
+
+  if (isWindowsOS()) {
+    const racketExePath = quoteWindowsPath(command[0], true);
+    let fullCommand = `${racketExePath} ${command.slice(1).join(' ')}`;
+    if (isCmdExeShell()) {
+      fullCommand += ` --eval "(enter! (file ""${filePath}""))"`;
+    } else if (isPowershellShell()) {
+      fullCommand += ` --eval '(enter! (file \\"${filePath}\\"))'`;
+    } else {
+      fullCommand += ` --eval '(enter! (file "${filePath}"))'`;
+    }
+    repl.sendText(fullCommand);
+  } else {
+    repl.sendText(quote([...command, "--eval", `(enter! (file "${filePath}"))`]));
+  }
+
   return repl;
 }
