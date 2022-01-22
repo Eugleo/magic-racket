@@ -24,7 +24,9 @@
 			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index",
+                "--disable-extensions",
+				"${workspaceFolder}/src/test/fixture"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/test/**/*.js"
