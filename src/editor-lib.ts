@@ -29,9 +29,9 @@ export function getRange(ranges: (vscode.Range | vscode.Range[])): vscode.Range 
 
 export async function findTextInFiles(
     searchRx: string,
-    token: vscode.CancellationToken,
-    include: vscode.GlobPattern = '**/*.frc')
-    : Promise<vscode.TextSearchMatch[]> {
+    token?: vscode.CancellationToken,
+    include: vscode.GlobPattern = '**/*.frc'
+): Promise<vscode.TextSearchMatch[]> {
     console.log(searchRx);
     const results: vscode.TextSearchMatch[] = [];
     try {
@@ -57,46 +57,45 @@ export async function findTextInFiles(
     return results;
 }
 
-export function getSelectedSymbol(document: vscode.TextDocument | null = null, range: vscode.Range | null = null): string {
-    return getSelectedSymbolRange(document, range)[0];
+export function getSelectedSymbol(
+    document?: vscode.TextDocument, where?: vscode.Range | vscode.Position
+): string {
+    const resolvedSymbol = resolveSymbol(document, where);
+    if (resolvedSymbol) {
+        let word = resolvedSymbol.document.getText(resolvedSymbol.range);
+        if (word.endsWith(':')) { // strip trailing ':' for fracas constructors (hacky)
+            word = word.substring(0, word.length - 1);
+        }
+        return word;
+    } else {
+        console.error("Tried to search for definition, but no text was highlighted nor could a phrase be determined from cursor position");
+        return "";
+    }
 }
 
-export function getSelectedSymbolRange(document: vscode.TextDocument | null = null, range: vscode.Range | null = null)
-    : [string, vscode.Range] {
+export function resolveSymbol(
+    document?: vscode.TextDocument, where?: (vscode.Range | vscode.Position)
+): { document: vscode.TextDocument, range: vscode.Range } | undefined {
+    // default to current editor selection if no document or range is provided
     const activeEditor = vscode.window.activeTextEditor;
+    where = where || activeEditor?.selection;
+    document = document || activeEditor?.document;
 
-    if (document === null) {
-        if (!activeEditor) {
-            console.log("Tried to search for text, but no active editor");
-            return ['', new vscode.Range(0, 0, 0, 0)];
-        }
-        document = activeEditor.document;
-    }
-
-    if (range === null) {
-        if (!activeEditor) {
-            console.log("Tried to search for text, but no active editor");
-            return ['', new vscode.Range(0, 0, 0, 0)];
-        }
-        range = activeEditor.selection;
-    }
-
-    const highlightedText = document.getText(range);
-    if (highlightedText) {
-        return [highlightedText, range];
-    } else {
-        const wordRange = document.getWordRangeAtPosition(range.start, /[#:\w\-+*.>]+/);
-        if (wordRange) {
-            let word = document.getText(wordRange);
-            if (word.endsWith(':')) { // strip trailing ':' for fracas constructors (hacky)
-                word = word.substr(0, word.length - 1);
-            }
-            return [word, wordRange];
+    if (document && where) {
+        // default to the word under the cursor if no range is provided
+        let range: vscode.Range | undefined = where as vscode.Range;
+        if (!range?.start || range.isEmpty) {
+            range = document.getWordRangeAtPosition(
+                range?.start || where as vscode.Position, /[#:\w\-+*.>]+/);
         }
 
+        // where is now a range, so get the text from it
+        if (range) {
+            return { document, range };
+        }
     }
-    console.log("Tried to search for definition, but no text was highlighted nor could a phrase be determined from cursor position");
-    return ['', new vscode.Range(0, 0, 0, 0)];
+
+    return undefined;
 }
 
 export async function searchForward(uri: vscode.Uri, pos: vscode.Position, searchRx: RegExp)
