@@ -73,18 +73,38 @@ export function getSelectedSymbol(
     }
 }
 
+/**
+ * Given a position or a range, ensure that the value is a range.
+ * @param where A position or range to convert to a range.
+ * @returns if where is a range, return he given range. If where is a position,
+ * return an empty range located at the given position.
+ */
+export function resolveRange(where: vscode.Range | vscode.Position): vscode.Range {
+    const range: vscode.Range = where as vscode.Range;
+    return range?.start ? range : new vscode.Range(where as vscode.Position, where as vscode.Position);
+}
+
+/**
+ * Find the range of the word under the cursor at the `where` position in the given document.
+ * If no document or position is given, use the selection in the active text editor.
+ * @param document (optional) the document containing the text. If not given, use the active editor's document.
+ * @param where (optional) the position or range within the document at which
+ * to find a symbol. If not given, the cursor position is used.
+ * @returns The symbol at the `where` location, or undefined if no document was given
+ * and there is no active editor, or the active editor has no word at the given position.
+ */
 export function resolveSymbol(
-    document?: vscode.TextDocument, where?: (vscode.Range | vscode.Position)
+    document?: vscode.TextDocument, where?: vscode.Range | vscode.Position
 ): { document: vscode.TextDocument, range: vscode.Range } | undefined {
     // default to current editor selection if no document or range is provided
     const activeEditor = vscode.window.activeTextEditor;
-    where = where || activeEditor?.selection;
     document = document || activeEditor?.document;
-
-    if (document && where) {
+    
+    if (document) {
         // default to the word under the cursor if no range is provided
-        let range: vscode.Range | undefined = where as vscode.Range;
-        if (!range?.start || range.isEmpty) {
+        let range: vscode.Range | undefined = // use the given value or the active editor selection
+            resolveRange(where || activeEditor?.selection || new vscode.Position(0, 0));
+        if (range.isEmpty) {
             range = document.getWordRangeAtPosition(
                 range?.start || where as vscode.Position, /[#:\w\-+*.>]+/);
         }
@@ -98,8 +118,15 @@ export function resolveSymbol(
     return undefined;
 }
 
+/**
+ * Find the first occurrence of a regex match within a document starting at the given position.
+ * @param uri The document to search
+ * @param pos The position at which to begin searching
+ * @param searchRx The regular expression to search for
+ * @returns The position of the first match, or undefined if no match was found.
+ */
 export async function searchForward(uri: vscode.Uri, pos: vscode.Position, searchRx: RegExp)
-    : Promise<[vscode.TextLine, RegExpExecArray] | null> {
+    : Promise<{line: vscode.TextLine, match: RegExpExecArray} | undefined> {
     const doc = await vscode.workspace.openTextDocument(uri);
     let lineNo = pos.line;
     let line = doc.lineAt(lineNo);
@@ -107,18 +134,26 @@ export async function searchForward(uri: vscode.Uri, pos: vscode.Position, searc
     while (lineNo < doc.lineCount) {
         const match = searchRx.exec(lineText);
         if (match) {
-            return [line, match];
+            return {line, match};
         }
 
         line = doc.lineAt(lineNo);
         lineText = line.text;
         lineNo += 1;
     }
-    return null;
+    return undefined;
 }
 
+/**
+ * Search each line of a document in reverse from the given position for the first occurrence 
+ * of a regex match.
+ * @param uri The document to search
+ * @param pos The position before which to begin searching
+ * @param searchRx The regular expression to search for
+ * @returns The position of the first match preceding pos, or undefined if no match was found.
+ */
 export async function searchBackward(uri: vscode.Uri, pos: vscode.Position, searchRx: RegExp)
-    : Promise<[vscode.TextLine, RegExpExecArray] | null> {
+    : Promise<{line: vscode.TextLine, match: RegExpExecArray} | undefined> {
     const doc = await vscode.workspace.openTextDocument(uri);
     let lineNo = pos.line;
     let line = doc.lineAt(lineNo);
@@ -126,16 +161,49 @@ export async function searchBackward(uri: vscode.Uri, pos: vscode.Position, sear
     while (lineNo >= 0) {
         const match = _lastMatch(searchRx, lineText);
         if (match) {
-            return [line, match];
+            return {line, match};
         }
 
         line = doc.lineAt(lineNo);
         lineText = line.text;
         lineNo -= 1;
     }
-    return null;
+    return undefined;
 }
 
+
+// REGEXP UTILS /////////////////////////////////////////////////////////////////
+
+/**
+ * Find the range covering a group within a regex match. For example, given /\((define-type)\s*(cool-stuff))/,
+ * calculate the range around "cool-stuff".
+ * @param match The expression containing a group to locate.
+ * @param matchPosition The document position at which the match starts.
+ * @param group The index of the group within the regex match array.
+ * @returns The range of the group
+ */
+export function regexGroupLocation(
+    match: RegExpExecArray,
+    matchPosition: vscode.Position,
+    group: number
+): vscode.Range {
+    let groupOffset = match.index;
+    for (let i = 1; i < group; ++i) {
+        groupOffset += match[i].length;
+    }
+
+    const memberStart = matchPosition.translate({characterDelta: groupOffset});
+    const memberEnd = memberStart.translate({characterDelta: match[group].length});
+    return new vscode.Range(memberStart, memberEnd);
+}
+
+/**
+ * Find the last occurrence of a regex match within a string.
+ * @param searchRx The regular expression to search for, probably with the "global" search flag set.
+ * @param text The text within which to search for matches.
+ * @returns The final matching instance of the regex, or undefined if no match was found. If the regex
+ * is not a global search, the first match is returned.
+ */
 function _lastMatch(searchRx: RegExp, text: string): RegExpExecArray | null {
     let match = searchRx.exec(text);
     let prevMatch = null;

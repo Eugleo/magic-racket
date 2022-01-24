@@ -1,6 +1,13 @@
 import * as vscode from 'vscode';
 import { flatten, mapAsync } from '../containers';
-import { findTextInFiles, getRange, getSelectedSymbol, resolveSymbol, searchBackward } from '../editor-lib';
+import { 
+    findTextInFiles, 
+    getRange, 
+    getSelectedSymbol, 
+    regexGroupLocation, 
+    resolveSymbol, 
+    searchBackward 
+} from '../editor-lib';
 
 export const FIELD_OR_PARAM_PREFIX = '#:';
 export const RX_CHARS_OPEN_PAREN = '\\(|\\{|\\[';
@@ -414,8 +421,9 @@ export async function findEnclosingDefine(uri: vscode.Uri, pos: vscode.Position
     const searchRx = new RegExp(_anyDefineRx(), "g");
     const result = await searchBackward(uri, pos, searchRx);
     if (result) {
-        const [line, [_, defToken, symbol]] = result;
-        const definePos = line.range.start.translate(0, result[1].index);
+        const {line, match} = result;
+        const [_, defToken, symbol] = match;
+        const definePos = regexGroupLocation(match, line.range.start, 2 /* rx group for the symbol */);
         return new FracasDefinition(new vscode.Location(uri, definePos), symbol, definitionKind(defToken));
     }
     return null;
@@ -492,11 +500,18 @@ async function _findDefinition(
     // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
     const textMatches = await findTextInFiles(defineRxStr, token);
     console.debug(`Found ${textMatches.length} matches for ${defineRxStr}`);
-    const defs = textMatches.map(match => {
-        const rxMatch = new RegExp(defineRxStr).exec(match.preview.text);
-        const location = new vscode.Location(match.uri, getRange(match.ranges));
-        const [_, defToken, symbol] = rxMatch || ['', 'define', match.preview.text];
-        return new FracasDefinition(location, symbol, definitionKind(defToken));
+    const defs = textMatches.map(textMatch => {
+        // extract the symbol name substring, e.g. get "range-int" from "(define-type range-int"
+        const rxMatch = new RegExp(defineRxStr).exec(textMatch.preview.text);
+        if (rxMatch) {
+            const [_, defToken, symbol] = rxMatch;
+            const location = new vscode.Location(textMatch.uri, regexGroupLocation(rxMatch, getRange(textMatch.ranges).start, 2));
+            return new FracasDefinition(location, symbol, definitionKind(defToken));
+        } else {
+            console.warn(`Failed to extract symbol name from ${textMatch.preview.text} using regex '${defineRxStr}'. An engineer should check that the regex is correct.`);
+            const location = new vscode.Location(textMatch.uri, getRange(textMatch.ranges));
+            return new FracasDefinition(location, textMatch.preview.text, definitionKind("define"));
+        }
     });
     return defs;
 }
@@ -779,10 +794,9 @@ async function _findMembers(
     for (const range of ranges) {
         const expr = document.getText(range);
         for (let match = fieldRx.exec(expr); match; match = fieldRx.global ? fieldRx.exec(expr) : null) {
-            const [_, fieldName] = match;
-            const memberStart = document.positionAt(document.offsetAt(range.start) + match.index);
-            const memberEnd = memberStart.translate({characterDelta: fieldName.length});
-            const loc = new vscode.Location(document.uri, new vscode.Range(memberStart, memberEnd));
+            const rxGroupIndex = 1;
+            const fieldName = match[rxGroupIndex];
+            const loc = new vscode.Location(document.uri, regexGroupLocation(match, range.start, rxGroupIndex));
             members.push(new FracasDefinition(loc, fieldName, FracasDefinitionKind.field));
         }
     }

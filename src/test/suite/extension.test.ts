@@ -23,7 +23,7 @@ async function showFracasDocument(
 suite("Extension Test Suite", () => {
     vscode.window.showInformationMessage("Start all tests.");
 
-    const rewardFrc = path.join((vscode.workspace.workspaceFolders || [])[0].uri.fsPath, 'reward.frc')
+    const rewardFrc = path.join((vscode.workspace.workspaceFolders || [])[0].uri.fsPath, 'reward.frc');
 
     const rewardCountTextRange = new vscode.Range(6, 9, 6, 16); // selection around "#:count"
 
@@ -34,7 +34,7 @@ suite("Extension Test Suite", () => {
     });
 
     test("getSelectedSymbol returns selection range", async () => {
-        await showFracasDocument(rewardFrc, new vscode.Range(6, 12, 6, 16));
+        await showFracasDocument(rewardFrc, new vscode.Range(6, 12, 6, 16)); // selection around "ount"
         const symbol = getSelectedSymbol();
         assert.strictEqual(symbol, "ount");
     });
@@ -47,5 +47,15 @@ suite("Extension Test Suite", () => {
         assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.Field, "field completion kind is not 'field'");
         assert.strictEqual(defs[0].symbol, "count");
         assert.deepStrictEqual(defs[0].location.range, new vscode.Range(5, 9, 5, 14), "location of definition is not correct");
+    });
+
+    test("findDefinition resolves a type def", async () => {
+        const { document } = await showFracasDocument(rewardFrc); // cursor within "(range-int: ..."
+        const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(6, 21));
+        assert.strictEqual(defs.length, 1, "single definition not found");
+        assert.strictEqual(defs[0].kind, FracasDefinitionKind.type, "type definition kind is not 'type'");
+        assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.Struct, "type completion kind is not 'Struct'");
+        assert.strictEqual(defs[0].symbol, "range-int");
+        assert.deepStrictEqual(defs[0].location.range, new vscode.Range(1, 13, 1, 22), "location of definition is not correct");
     });
 });
