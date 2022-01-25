@@ -4,12 +4,13 @@ import {
     findTextInFiles, 
     getRange, 
     getSelectedSymbol, 
-    regexGroupLocation, 
+    regexGroupDocumentLocation, 
+    regexGroupUriLocation, 
     resolveSymbol, 
     searchBackward 
 } from '../editor-lib';
 
-export const FIELD_OR_PARAM_PREFIX = '#:';
+export const KEYWORD_PREFIX = '#:';
 export const RX_CHARS_OPEN_PAREN = '\\(|\\{|\\[';
 export const RX_CHARS_CLOSE_PAREN = '\\)|\\}|\\]';
 export const RX_CHARS_SPACE = '\\s|\\r|\\n';
@@ -29,7 +30,7 @@ export enum FracasDefinitionKind {
     variantOption,
     syntax,
     define,
-    field,
+    keyword,
     unknown
 }
 
@@ -105,6 +106,17 @@ function _anyFieldSymbolDeclarationRx(fieldName: string, searchKind = SearchKind
 function _anyFieldDeclarationRx(): string {
     return `(?<=^\\s*[${RX_CHARS_OPEN_PAREN}])\\s*(?!define)(${RX_CHAR_IDENTIFIER}+)`;
 }
+
+function _anyNamedParamSymbolDeclarationRx(paramName: string, searchKind = SearchKind.wholeMatch): string {
+    return searchKind === SearchKind.wholeMatch ?
+        `(?<=#:)(${_escapeForRegEx(paramName)})(?!${RX_CHAR_IDENTIFIER})` :
+        `(?<=#:)(${_escapeForRegEx(paramName)}${RX_CHAR_IDENTIFIER}*)`;
+}
+
+function _anyNamedParamDeclarationRx(): string {
+    return `(?<=#:)(${RX_CHAR_IDENTIFIER}+)`;
+}
+
 
 function _anyMaskOrEnumRx(): string {
     return `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(mask|enum)\\s+(${RX_CHAR_IDENTIFIER}+)`;
@@ -184,8 +196,8 @@ export function completionKind(fracasKind: FracasDefinitionKind): vscode.Complet
             return vscode.CompletionItemKind.Function;
         case (FracasDefinitionKind.define):
             return vscode.CompletionItemKind.Variable;
-        case (FracasDefinitionKind.field):
-            return vscode.CompletionItemKind.Field;
+        case (FracasDefinitionKind.keyword):
+            return vscode.CompletionItemKind.Keyword;
         case (FracasDefinitionKind.unknown):
         default:
             return vscode.CompletionItemKind.Unit;
@@ -215,9 +227,9 @@ export function symbolKind(fracasKind: FracasDefinitionKind): vscode.SymbolKind 
         case (FracasDefinitionKind.syntax):
             return vscode.SymbolKind.Function;
         case (FracasDefinitionKind.define):
-            return vscode.SymbolKind.Variable;
-        case (FracasDefinitionKind.field):
-            return vscode.SymbolKind.Variable;
+            return vscode.SymbolKind.Function;
+        case (FracasDefinitionKind.keyword):
+            return vscode.SymbolKind.Property;
         case (FracasDefinitionKind.unknown):
         default:
             return vscode.SymbolKind.Object;
@@ -241,8 +253,9 @@ export function symbolKind(fracasKind: FracasDefinitionKind): vscode.SymbolKind 
  */
 function _memberScopeDepth(fracasKind: FracasDefinitionKind): vscode.CompletionItemKind {
     switch (fracasKind) {
-        case (FracasDefinitionKind.syntax):
         case (FracasDefinitionKind.define):
+            return 0;
+        case (FracasDefinitionKind.syntax):
         case (FracasDefinitionKind.variant):
         case (FracasDefinitionKind.key):
         case (FracasDefinitionKind.text):
@@ -253,7 +266,7 @@ function _memberScopeDepth(fracasKind: FracasDefinitionKind): vscode.CompletionI
         case (FracasDefinitionKind.gameData):
         case (FracasDefinitionKind.typeOptional):
         case (FracasDefinitionKind.type):
-        case (FracasDefinitionKind.field):
+        case (FracasDefinitionKind.keyword):
         case (FracasDefinitionKind.unknown):
         default:
             return 2;
@@ -263,9 +276,14 @@ function _memberScopeDepth(fracasKind: FracasDefinitionKind): vscode.CompletionI
 function _memberDeclRx(
     fracasKind: FracasDefinitionKind,
     memberName: string,
-    searchKind: SearchKind = SearchKind.wholeMatch)
-    : RegExp {
+    searchKind: SearchKind = SearchKind.wholeMatch
+): RegExp {
     switch (fracasKind) {
+        case (FracasDefinitionKind.define):
+            return new RegExp(memberName ? 
+                _anyNamedParamSymbolDeclarationRx(memberName, searchKind) :
+                _anyNamedParamDeclarationRx(), 
+                "g");
         case (FracasDefinitionKind.key):
         case (FracasDefinitionKind.text):
         case (FracasDefinitionKind.enum):
@@ -273,12 +291,11 @@ function _memberDeclRx(
             return new RegExp(_anyIdentifierRx(memberName, searchKind), "g");
         case (FracasDefinitionKind.syntax):
         case (FracasDefinitionKind.variant):
-        case (FracasDefinitionKind.define):
         case (FracasDefinitionKind.variantOption):
         case (FracasDefinitionKind.gameData):
         case (FracasDefinitionKind.typeOptional):
         case (FracasDefinitionKind.type):
-        case (FracasDefinitionKind.field):
+        case (FracasDefinitionKind.keyword):
         case (FracasDefinitionKind.unknown):
         default:
             return new RegExp(memberName ?
@@ -316,8 +333,8 @@ export async function findComment(uri: vscode.Uri, position: vscode.Position): P
 export function findOpenBracket(
     document: vscode.TextDocument,
     pos: vscode.Position,
-    includeBrackets = true)
-    : vscode.Position {
+    includeBrackets = true
+): vscode.Position {
     // first rewind to opening bracket
     let nesting = 0;
     for (let lineNo = pos.line; lineNo >= 0; --lineNo) {
@@ -351,8 +368,8 @@ export function findOpenBracket(
 export function findBracketPair(
     document: vscode.TextDocument,
     pos: vscode.Position,
-    includeBrackets = true)
-    : vscode.Range {
+    includeBrackets = true
+): vscode.Range {
     // first rewind to opening bracket
     const openParen = findOpenBracket(document, pos, includeBrackets);
     let nesting = includeBrackets ? 0 : 1; // if we're not including the brackets, we're already one nesting deep
@@ -383,8 +400,8 @@ export function findBracketPair(
 function _rangesAtScope(
     document: vscode.TextDocument,
     pos: vscode.Position,
-    scopeNestingDepth: number)
-    : vscode.Range[] {
+    scopeNestingDepth: number
+): vscode.Range[] {
     const ranges: vscode.Range[] = [];
     // first rewind to opening bracket
     const startPos = findOpenBracket(document, pos);
@@ -423,8 +440,8 @@ export async function findEnclosingDefine(uri: vscode.Uri, pos: vscode.Position
     if (result) {
         const {line, match} = result;
         const [_, defToken, symbol] = match;
-        const definePos = regexGroupLocation(match, line.range.start, 2 /* rx group for the symbol */);
-        return new FracasDefinition(new vscode.Location(uri, definePos), symbol, definitionKind(defToken));
+        const defineLoc = await regexGroupUriLocation(uri, match, line.range.start, 2 /* rx group for the symbol */);
+        return new FracasDefinition(defineLoc, symbol, definitionKind(defToken));
     }
     return null;
 }
@@ -465,7 +482,7 @@ export async function isWithinVariant(
         && fracasDef.symbol === variantName;
 }
 
-export async function findTypeDefinition(
+export async function findSymbolDefinition(
     typeName: string,
     token?: vscode.CancellationToken,
     searchKind = SearchKind.wholeMatch
@@ -500,12 +517,12 @@ async function _findDefinition(
     // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
     const textMatches = await findTextInFiles(defineRxStr, token);
     console.debug(`Found ${textMatches.length} matches for ${defineRxStr}`);
-    const defs = textMatches.map(textMatch => {
+    const defs = await mapAsync(textMatches, async textMatch => {
         // extract the symbol name substring, e.g. get "range-int" from "(define-type range-int"
         const rxMatch = new RegExp(defineRxStr).exec(textMatch.preview.text);
         if (rxMatch) {
             const [_, defToken, symbol] = rxMatch;
-            const location = new vscode.Location(textMatch.uri, regexGroupLocation(rxMatch, getRange(textMatch.ranges).start, 2));
+            const location = await regexGroupUriLocation(textMatch.uri, rxMatch, getRange(textMatch.ranges).start, 2);
             return new FracasDefinition(location, symbol, definitionKind(defToken));
         } else {
             console.warn(`Failed to extract symbol name from ${textMatch.preview.text} using regex '${defineRxStr}'. An engineer should check that the regex is correct.`);
@@ -552,7 +569,7 @@ export async function findVariantOptionDefinition(
     return variantDefs.filter(x => x !== null) as FracasDefinition[];
 }
 
-export async function findFieldDefinition(
+export async function findKeywordDefinition(
     referencingDocument?: vscode.TextDocument,
     referencingSelection?: vscode.Range,
     token?: vscode.CancellationToken,
@@ -565,8 +582,8 @@ export async function findFieldDefinition(
         return Promise.resolve([]);
     }
 
-    const fieldName = getSelectedSymbol(referencingDocument, referencingSelection);
-    if (!fieldName.startsWith(FIELD_OR_PARAM_PREFIX)) {
+    const keyword = getSelectedSymbol(referencingDocument, referencingSelection);
+    if (!keyword.startsWith(KEYWORD_PREFIX)) {
         return Promise.resolve([]);
     }
 
@@ -578,14 +595,14 @@ export async function findFieldDefinition(
 
     // find the type definition matching the constructor
     const [_, typeName] = constructorMatch;
-    let typeDefs = await findTypeDefinition(typeName, token);
-    if (typeDefs.length === 0) {
-        typeDefs = await findVariantOptionDefinition(typeName, token);
+    let symbolDefs = await findSymbolDefinition(typeName, token);
+    if (symbolDefs.length === 0) {
+        symbolDefs = await findVariantOptionDefinition(typeName, token);
     }
 
     // find the field declarations in the type definition
-    const fieldDecls = await mapAsync(typeDefs, async typeDef => {
-        return await findMembers(typeDef, token, fieldName.substring(FIELD_OR_PARAM_PREFIX.length), searchKind);
+    const fieldDecls = await mapAsync(symbolDefs, async typeDef => {
+        return await findMembers(typeDef, token, keyword.substring(KEYWORD_PREFIX.length), searchKind);
     });
     return flatten(fieldDecls);
 }
@@ -596,7 +613,7 @@ export async function findDefinition(
     token?: vscode.CancellationToken,
     searchKind: SearchKind = SearchKind.wholeMatch
 ): Promise<FracasDefinition[]> {
-    let results: FracasDefinition[] = await findFieldDefinition(
+    let results: FracasDefinition[] = await findKeywordDefinition(
         document, new vscode.Range(position, position), token, searchKind);
     if (results.length > 0) {
         return results;
@@ -605,7 +622,7 @@ export async function findDefinition(
     const symbol = getSelectedSymbol(document, position);
 
     // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
-    results = await findTypeDefinition(symbol, token, searchKind);
+    results = await findSymbolDefinition(symbol, token, searchKind);
     if (results.length > 0) {
         return results;
     }
@@ -685,15 +702,15 @@ export async function findCompletions(
         const symbol = resolvedSymbol.document.getText(symbolRange);
 
         // try to auto-complete a member field name
-        if (symbol.startsWith(FIELD_OR_PARAM_PREFIX)) {
+        if (symbol.startsWith(KEYWORD_PREFIX)) {
             // do a partial match of all field definitions matching the symbol under the cursor
-            const fieldDefs = await findFieldDefinition(
+            const keywordDefs = await findKeywordDefinition(
                 resolvedSymbol.document, symbolRange, token, SearchKind.partialMatch);
-            if (fieldDefs.length > 0) {
-                const fieldCompletions = await _toCompletionItems(
-                    fieldDefs, FIELD_OR_PARAM_PREFIX, resolvedSymbol.range);
-                console.debug(`Found ${fieldCompletions.length} fields for ${symbol}`);
-                return fieldCompletions;
+            if (keywordDefs.length > 0) {
+                const keywordCompletions = await _toCompletionItems(
+                    keywordDefs, KEYWORD_PREFIX, resolvedSymbol.range);
+                console.debug(`Found ${keywordCompletions.length} keywords for ${symbol}`);
+                return keywordCompletions;
             }
         } else {
             // if the symbol is the beginning of (mask foo thing... or (enum bar thing...
@@ -724,7 +741,7 @@ export async function findCompletions(
                 const completionItems: vscode.CompletionItem[] = [];
 
                 // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
-                const typeDefs = await findTypeDefinition(symbol, token, SearchKind.partialMatch);
+                const typeDefs = await findSymbolDefinition(symbol, token, SearchKind.partialMatch);
                 if (typeDefs.length > 0) {
                     // add the type definitions as completion items, e.g. "targeting-ga" => "targeting-gather"
                     const typeCompletions = await _toCompletionItems(typeDefs, '', resolvedSymbol.range);
@@ -778,26 +795,28 @@ export async function findMembers(
     searchKind: SearchKind = SearchKind.wholeMatch
 ): Promise<FracasDefinition[]> {
     const document = await vscode.workspace.openTextDocument(fracasDef.location.uri);
+    
+    // find the text ranges of all member declarations 
     const scopeNestingDepth = _memberScopeDepth(fracasDef.kind);
-    const fieldRx = _memberDeclRx(fracasDef.kind, memberName || '', searchKind);
-    return _findMembers(document, fracasDef.location.range.start, fieldRx, scopeNestingDepth);
-}
+    const ranges = await _rangesAtScope(document, fracasDef.location.range.start, scopeNestingDepth);
 
-async function _findMembers(
-    document: vscode.TextDocument,
-    position: vscode.Position,
-    fieldRx: RegExp,
-    scopeNestingDepth: number
-): Promise<FracasDefinition[]> {
+    // Only the first s-expression in a function definition contains members, e.g.
+    // (define (some-function #:first-param (...) #:second-param (...)) (|# function-body #|))
+    // the rest of the s-expressions are just the function body.
+    if (fracasDef.kind === FracasDefinitionKind.define) {
+        ranges.splice(1); // drop all but the first s-expression
+    }
+
+    // find members that match the given name
+    const fieldRx = _memberDeclRx(fracasDef.kind, memberName || '', searchKind);
     const members: FracasDefinition[] = [];
-    const ranges = await _rangesAtScope(document, position, scopeNestingDepth);
     for (const range of ranges) {
         const expr = document.getText(range);
         for (let match = fieldRx.exec(expr); match; match = fieldRx.global ? fieldRx.exec(expr) : null) {
             const rxGroupIndex = 1;
-            const fieldName = match[rxGroupIndex];
-            const loc = new vscode.Location(document.uri, regexGroupLocation(match, range.start, rxGroupIndex));
-            members.push(new FracasDefinition(loc, fieldName, FracasDefinitionKind.field));
+            const memberName = match[rxGroupIndex];
+            const loc = regexGroupDocumentLocation(document, match, range.start, rxGroupIndex);
+            members.push(new FracasDefinition(loc, memberName, FracasDefinitionKind.keyword));
         }
     }
     return members;

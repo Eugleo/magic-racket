@@ -182,19 +182,33 @@ export async function searchBackward(uri: vscode.Uri, pos: vscode.Position, sear
  * @param group The index of the group within the regex match array.
  * @returns The range of the group
  */
-export function regexGroupLocation(
+export function regexGroupDocumentLocation(
+    document: vscode.TextDocument,
     match: RegExpExecArray,
     matchPosition: vscode.Position,
     group: number
-): vscode.Range {
+): vscode.Location {
+    // calculate the offset of the regex group within the match
     let groupOffset = match.index;
     for (let i = 1; i < group; ++i) {
         groupOffset += match[i].length;
     }
 
-    const memberStart = matchPosition.translate({characterDelta: groupOffset});
-    const memberEnd = memberStart.translate({characterDelta: match[group].length});
-    return new vscode.Range(memberStart, memberEnd);
+    // convert the match offsets to a document range
+    const matchOffset = document.offsetAt(matchPosition);
+    const memberStart = document.positionAt(matchOffset + groupOffset);
+    const memberEnd = document.positionAt(matchOffset + groupOffset + match[group].length);
+    return new vscode.Location(document.uri, new vscode.Range(memberStart, memberEnd));
+}
+
+export async function regexGroupUriLocation(
+    uri: vscode.Uri,
+    match: RegExpExecArray,
+    matchPosition: vscode.Position,
+    group: number
+): Promise<vscode.Location> {
+    const document = await vscode.workspace.openTextDocument(uri);
+    return regexGroupDocumentLocation(document, match, matchPosition, group);
 }
 
 /**
