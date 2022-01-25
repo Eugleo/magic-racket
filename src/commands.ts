@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import { parse } from "path";
 import * as vscode from "vscode";
 import { getOrDefault } from "./containers";
@@ -94,10 +95,16 @@ export function precompileFracasFile(frcDoc: vscode.TextDocument | undefined = u
         const upperRoot = frcPath.root.toUpperCase(); // ninja requires that the drive letter be uppercase
         const zoFile = `${upperRoot}${frcPath.dir.substring(upperRoot.length)}/compiled/${frcPath.name}_frc.zo`;
 
-        // invoke ninja to precompile the fracas file
-        const ninjaCmd = `${ninja} -f ./build/build_precompile.ninja ${zoFile}`;
-        console.log(ninjaCmd);
-        execShell(ninjaCmd);
+        // If the precompiled zo file exists, invoke ninja to update it
+        fs.access(zoFile, fs.constants.R_OK, (err) => {
+            if (err) {
+                console.log(`Skipping precompile of ${zoFile} because it does not exist`);
+            } else {
+                const ninjaCmd = `${ninja} -f ./build/build_precompile.ninja ${zoFile}`;
+                console.log(ninjaCmd);
+                execShell(ninjaCmd);
+            }
+        });
     }
 }
 

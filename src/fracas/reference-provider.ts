@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'; // The module 'vscode' contains the VS Code extensibility API
-import { getSelectedSymbol } from '../editor-lib';
 import { findReferences } from './syntax';
 
 export class FracasReferenceProvider implements vscode.ReferenceProvider {
@@ -7,15 +6,9 @@ export class FracasReferenceProvider implements vscode.ReferenceProvider {
         document: vscode.TextDocument,
         position: vscode.Position,
         context: vscode.ReferenceContext,
-        token: vscode.CancellationToken)
-        : Promise<vscode.Location[]> {
-        const symbol = getSelectedSymbol();
-        if (!symbol) {
-            vscode.window.showErrorMessage("No symbol found at cursor position");
-            return Promise.resolve([]);
-        }
-
-        return findReferences(symbol, token);
+        token: vscode.CancellationToken
+    ): Promise<vscode.Location[]> {
+        return findReferences(document, position, token);
     }
 
 }

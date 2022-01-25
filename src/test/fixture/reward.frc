@@ -1,0 +1,7 @@
+#lang fracas
+(define-type range-int #:export-constructor ((min int) (max int)))
+(define-type reward
+    (
+        (item-key key)
+        (count range-int #:default (range-int: #:min 1 #:max 1))))
+(reward: #:count (range-int: #:min 1 #:max 1) #:item-key 'item-material-sun-small))

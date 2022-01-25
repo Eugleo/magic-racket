@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'; // The module 'vscode' contains the VS Code extensibility API
 import { mapAsync } from '../containers';
-import { getSelectedSymbolRange } from '../editor-lib';
+import { resolveSymbol } from '../editor-lib';
 import {
     findComment,
     findDefinition,
@@ -12,13 +12,22 @@ export class FracasHoverProvider implements vscode.HoverProvider {
         return this._searchComment(document, position, token);
     }
 
-    private async _searchComment(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken)
-        : Promise<vscode.Hover | null> {
-        const [symbol, range] = getSelectedSymbolRange(document, new vscode.Range(position, position));
-        const definitions = await findDefinition(symbol, token);
+    private async _searchComment(
+        document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken
+    ): Promise<vscode.Hover | null> {
+        // search for comments preceding the definition for the symbol at the cursor
+        const definitions = await findDefinition(document, position, token);
         const comments = await mapAsync(definitions, async (definition) => {
             return await findComment(definition.location.uri, definition.location.range.end);
         });
-        return comments.length === 0 ? null : new vscode.Hover(comments.join("\n"), range);
+
+        // return a hover containing the comments, if any.
+        const positionAsRange = new vscode.Range(position, position);
+        if (comments.length > 0) {
+            const resolvedSymbol = resolveSymbol(document, position);
+            return new vscode.Hover(comments.join("\n"), resolvedSymbol?.range || positionAsRange);
+        } else {
+            return new vscode.Hover("No code comments found.", positionAsRange);;
+        }
     }
 }
