@@ -1,0 +1,48 @@
+#lang fracas
+
+(define ability-npc-creature-magmacrab-explode-detonate-actions
+  (list
+   (action-block-targeted: ;; This is an option of the action-block variant
+    #:targeting ability-npc-creature-magmacrab-explode-targeting
+    #:found-actions
+    (list
+     (action-damage: #:data ability-npc-creature-magmacrab-explode-damage)
+     )
+    )
+   (action-block-targeted:
+    #:targeting *targeting-self*
+    #:found-actions
+    (list
+     (action-status-effect-remove: #:key status-effect-key-splat-warning)
+     (action-cue-assets:
+      asset-actionable-border-crystal-explosive-vfx
+      asset-actionable-border-crystal-explosive-audio
+      asset-npc-creature-magmacrab-death-splat-vfx
+      #:attach-data (attach-to-actor-world-space:)
+      )
+     (action-damage: #:data ability-npc-creature-magmacrab-explode-damage-self)
+     )
+    )
+   )
+  )
+  
+(define ability-npc-creature-magmacrab-carrier-goo-proj-hit-actions
+  (list
+   (action-block-targeted:
+    #:targeting *targeting-contextual*
+    #:found-actions
+    (list
+     (action-cue-tag: *tag-cue.character.shared.hitspark.light*)
+     )
+    )
+   (action-block-targeted:
+    #:targeting *targeting-contextual-enemies*
+    #:found-actions
+    (list
+     (action-status-effect-add: #:key status-effect-key-slow)
+     (action-camera-shake: #:net-playback-mode *net-owning-client* #:data *camera-shake-small*)
+     )
+    )
+   *self-destruct*
+   )
+  )

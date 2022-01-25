@@ -1,0 +1,51 @@
+#lang fracas
+
+;; Actions are always performed in the order they appear in the arrays below
+(define-variant action-block
+  #:u-data-asset
+  (targeted ;; apply actions to a targeted set of actors ;; FIND action-block-targeted
+   (
+    (name key #:default *key-none* #:constructor name->id) ;; ID for this action block  - usually left blank, unless there is a specific animation event that is intended to run these actions (see `ability-state-data.anim-actions`)
+    (targeting targeting-data) ;; gathers actors upon which the other Action types operate on
+    (actions (array action) #:default '()) ;; run no matter how many actors are found by the targeting check; context: any actors found by the targeting
+    (miss-actions (array action) #:default '()) ;; run only if no actors are found by the targeting check; context: owner (if targeting finds no actors)
+    (found-actions (array action) #:default '()) ;; run only if > 0 actors are found by the targeting check; context: any actors found by the targeting
+    (condition ability-condition #:default (ability-condition-true-value:)) ;; actions are only run if conditions evaluates to true
+    )
+   )
+  (no-target ;; apply actions without specifying a target ;; FIND action-block-no-target
+   (
+    (name key #:default *key-none* #:constructor name->id)
+    (actions (array action) #:default '())
+    (condition ability-condition #:default (ability-condition-true-value:)) ;; actions are only run if conditions evaluates to true
+    )
+   )
+  )
+
+(define (action-camera-shake: #:data shake-spec
+                              #:key (key *key-none*)
+                              #:net-playback-mode (net-playback-mode *net-local-client*)
+                              #:scale (scale 1.0)
+
+                              #:world-space (world-space #f)
+                              #:inner-radius (inner-radius 0)
+                              #:outer-radius (outer-radius 0)
+                              #:falloff (falloff 1.0)
+                              )
+  (action-camera-shake-start:
+   #:key key
+   #:data
+   (camera-shake-data:
+    #:shake-spec shake-spec
+    #:params
+    (shake-params:
+     #:net-playback-mode net-playback-mode
+     #:scale scale
+     #:world-space world-space
+     #:inner-radius inner-radius
+     #:outer-radius outer-radius
+     #:falloff falloff)
+    )
+   )
+  )
+  
