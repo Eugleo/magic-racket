@@ -20,10 +20,12 @@ export const RX_COMMENT = ';;?\\s*(.*)\\s*$';
 
 export enum FracasDefinitionKind {
     enum,
+    enumMember,
     gameData,
     key,
     text,
     mask,
+    maskMember,
     typeOptional,
     type,
     variant,
@@ -172,30 +174,41 @@ export function definitionKind(defToken: string): FracasDefinitionKind {
     }
 }
 
+export function definitionMemberKind(typeKind: FracasDefinitionKind): FracasDefinitionKind {
+    switch (typeKind) {
+        case FracasDefinitionKind.enum:
+            return FracasDefinitionKind.enumMember;
+        case FracasDefinitionKind.mask:
+            return FracasDefinitionKind.maskMember;
+        case FracasDefinitionKind.variant:
+            return FracasDefinitionKind.variantOption;
+        default:
+            return FracasDefinitionKind.keyword;
+    }
+}
+
 export function completionKind(fracasKind: FracasDefinitionKind): vscode.CompletionItemKind {
     switch (fracasKind) {
         case (FracasDefinitionKind.enum):
-            return vscode.CompletionItemKind.Enum;
+        case (FracasDefinitionKind.mask):
+                return vscode.CompletionItemKind.Enum;
+        case (FracasDefinitionKind.enumMember):
+        case (FracasDefinitionKind.maskMember):
+                return vscode.CompletionItemKind.EnumMember;
         case (FracasDefinitionKind.gameData):
             return vscode.CompletionItemKind.Module;
         case (FracasDefinitionKind.key):
-            return vscode.CompletionItemKind.Variable;
         case (FracasDefinitionKind.text):
             return vscode.CompletionItemKind.Variable;
-        case (FracasDefinitionKind.mask):
-            return vscode.CompletionItemKind.Enum;
         case (FracasDefinitionKind.typeOptional):
-            return vscode.CompletionItemKind.Struct;
         case (FracasDefinitionKind.type):
-            return vscode.CompletionItemKind.Struct;
         case (FracasDefinitionKind.variant):
-            return vscode.CompletionItemKind.Struct;
         case (FracasDefinitionKind.variantOption):
             return vscode.CompletionItemKind.Struct;
         case (FracasDefinitionKind.syntax):
-            return vscode.CompletionItemKind.Function;
+            return vscode.CompletionItemKind.Unit;
         case (FracasDefinitionKind.define):
-            return vscode.CompletionItemKind.Variable;
+            return vscode.CompletionItemKind.Function;
         case (FracasDefinitionKind.keyword):
             return vscode.CompletionItemKind.Keyword;
         case (FracasDefinitionKind.unknown):
@@ -207,32 +220,30 @@ export function completionKind(fracasKind: FracasDefinitionKind): vscode.Complet
 export function symbolKind(fracasKind: FracasDefinitionKind): vscode.SymbolKind {
     switch (fracasKind) {
         case (FracasDefinitionKind.enum):
-            return vscode.SymbolKind.Enum;
+        case (FracasDefinitionKind.mask):
+                return vscode.SymbolKind.Enum;
+        case (FracasDefinitionKind.enumMember):
+        case (FracasDefinitionKind.maskMember):
+                return vscode.SymbolKind.EnumMember;
         case (FracasDefinitionKind.gameData):
             return vscode.SymbolKind.Module;
         case (FracasDefinitionKind.key):
-            return vscode.SymbolKind.Variable;
         case (FracasDefinitionKind.text):
             return vscode.SymbolKind.Variable;
-        case (FracasDefinitionKind.mask):
-            return vscode.SymbolKind.Enum;
         case (FracasDefinitionKind.typeOptional):
-            return vscode.SymbolKind.Struct;
         case (FracasDefinitionKind.type):
-            return vscode.SymbolKind.Struct;
         case (FracasDefinitionKind.variant):
-            return vscode.SymbolKind.Struct;
         case (FracasDefinitionKind.variantOption):
             return vscode.SymbolKind.Struct;
         case (FracasDefinitionKind.syntax):
-            return vscode.SymbolKind.Function;
+            return vscode.SymbolKind.Operator;
         case (FracasDefinitionKind.define):
             return vscode.SymbolKind.Function;
         case (FracasDefinitionKind.keyword):
-            return vscode.SymbolKind.Property;
+            return vscode.SymbolKind.Field;
         case (FracasDefinitionKind.unknown):
         default:
-            return vscode.SymbolKind.Object;
+            return vscode.SymbolKind.Null;
     }
 }
 
@@ -434,7 +445,7 @@ function _rangesAtScope(
 }
 
 export async function findEnclosingDefine(uri: vscode.Uri, pos: vscode.Position
-): Promise<FracasDefinition | null> {
+): Promise<FracasDefinition | undefined> {
     const searchRx = new RegExp(_anyDefineRx(), "g");
     const result = await searchBackward(uri, pos, searchRx);
     if (result) {
@@ -443,41 +454,41 @@ export async function findEnclosingDefine(uri: vscode.Uri, pos: vscode.Position
         const defineLoc = await regexGroupUriLocation(uri, match, line.range.start, 2 /* rx group for the symbol */);
         return new FracasDefinition(defineLoc, symbol, definitionKind(defToken));
     }
-    return null;
+    return undefined;
 }
 
 export async function findEnclosingConstructor(document: vscode.TextDocument, pos: vscode.Position
-): Promise<[loc: vscode.Location, typeName: string] | null> {
+): Promise<{location: vscode.Location, typeName: string} | undefined> {
     const openParen = findOpenBracket(document, pos);
     const searchRx = new RegExp(_anyConstructorRx());
     const result = searchRx.exec(document.getText(new vscode.Range(openParen, pos)));
     if (result) {
         const [_, typeName] = result;
-        const loc = new vscode.Location(document.uri, openParen.translate({ characterDelta: result.index }));
-        return [loc, typeName];
+        const location = new vscode.Location(document.uri, openParen.translate({ characterDelta: result.index }));
+        return {location, typeName};
     }
-    return null;
+    return undefined;
 }
 
 export async function findEnclosingEnumOrMask(document: vscode.TextDocument, pos: vscode.Position
-): Promise<FracasDefinition | null> {
+): Promise<FracasDefinition | undefined> {
     const openParen = findOpenBracket(document, pos);
     const searchRx = new RegExp(_anyMaskOrEnumRx());
     const result = searchRx.exec(document.getText(new vscode.Range(openParen, pos)));
     if (result) {
         const [_, typeDecl, typeName] = result;
         const fracasKind = typeDecl === "enum" ? FracasDefinitionKind.enum : FracasDefinitionKind.mask;
-        const loc = new vscode.Location(document.uri, openParen.translate({ characterDelta: result.index }));
-        return new FracasDefinition(loc, typeName, fracasKind);
+        const location = regexGroupDocumentLocation(document, result, openParen, 2 /* rx group for the enum name */);
+        return new FracasDefinition(location, typeName, fracasKind);
     }
-    return null;
+    return undefined;
 }
 
 export async function isWithinVariant(
     uri: vscode.Uri, pos: vscode.Position, variantName: string
 ): Promise<boolean> {
     const fracasDef = await findEnclosingDefine(uri, pos);
-    return fracasDef !== null
+    return fracasDef !== undefined
         && fracasDef.kind === FracasDefinitionKind.variant
         && fracasDef.symbol === variantName;
 }
@@ -562,39 +573,39 @@ export async function findVariantOptionDefinition(
             }
             // console.log(`"${variantName}" ${bMatchingVariant ? "FOUND in" : "not found in "} ${result.uri.path.substring(result.uri.path.lastIndexOf('/')+1)}:${startPos.line}: ${result.preview.text}`);
         }
-        return null;
+        return undefined;
     });
     // console.log(results);
 
-    return variantDefs.filter(x => x !== null) as FracasDefinition[];
+    return variantDefs.filter(x => x !== undefined) as FracasDefinition[];
 }
 
 export async function findKeywordDefinition(
     referencingDocument?: vscode.TextDocument,
-    referencingSelection?: vscode.Range,
+    documentSelection?: vscode.Range,
     token?: vscode.CancellationToken,
     searchKind: SearchKind = SearchKind.wholeMatch
 ): Promise<FracasDefinition[]> {
     const activeEditor = vscode.window.activeTextEditor;
     referencingDocument = referencingDocument || activeEditor?.document;
-    referencingSelection = referencingSelection || activeEditor?.selection;
-    if (!referencingDocument || !referencingSelection) {
-        return Promise.resolve([]);
+    documentSelection = documentSelection || activeEditor?.selection;
+    if (!referencingDocument || !documentSelection) {
+        return [];
     }
 
-    const keyword = getSelectedSymbol(referencingDocument, referencingSelection);
+    const keyword = getSelectedSymbol(referencingDocument, documentSelection);
     if (!keyword.startsWith(KEYWORD_PREFIX)) {
-        return Promise.resolve([]);
+        return [];
     }
 
     // find the constructor in which this field is declared
-    const constructorMatch = await findEnclosingConstructor(referencingDocument, referencingSelection.start);
+    const constructorMatch = await findEnclosingConstructor(referencingDocument, documentSelection.start);
     if (!constructorMatch) {
-        return Promise.resolve([]);
+        return [];
     }
 
     // find the type definition matching the constructor
-    const [_, typeName] = constructorMatch;
+    const {typeName} = constructorMatch;
     let symbolDefs = await findSymbolDefinition(typeName, token);
     if (symbolDefs.length === 0) {
         symbolDefs = await findVariantOptionDefinition(typeName, token);
@@ -607,31 +618,82 @@ export async function findKeywordDefinition(
     return flatten(fieldDecls);
 }
 
+export async function findEnumOrMaskMembers(
+    referencingDocument?: vscode.TextDocument,
+    documentPosition?: vscode.Position,
+    enumMemberOrTypeName?: string,
+    token?: vscode.CancellationToken,
+    searchKind: SearchKind = SearchKind.wholeMatch
+): Promise<FracasDefinition[]> {
+    const activeEditor = vscode.window.activeTextEditor;
+    referencingDocument = referencingDocument || activeEditor?.document;
+    documentPosition = documentPosition || activeEditor?.selection?.active;
+    if (!referencingDocument || !documentPosition) {
+        return [];
+    }
+
+    // if the symbol is the beginning of (mask foo thing... or (enum bar thing...
+    // then try to auto-complete from the enum/mask definition
+    const enclosingEnum = await findEnclosingEnumOrMask(referencingDocument, documentPosition);
+    if (!enclosingEnum) {
+        return [];
+    }
+
+    const results: FracasDefinition[] = [];
+    // find the definition of the enum/mask
+    const enumDefs = enclosingEnum.kind === FracasDefinitionKind.enum ?
+        await findEnumDefinition(enclosingEnum.symbol, token, SearchKind.partialMatch) :
+        await findMaskDefinition(enclosingEnum.symbol, token, SearchKind.partialMatch);
+    await mapAsync(enumDefs, async enumDef => {
+        // add matching enum values to the list
+        const enumMembers = await findMembers(enumDef, token, enumMemberOrTypeName, searchKind);
+
+        // add the define-enum type definition to the results if it matches.
+        if (enumMemberOrTypeName) {
+            if ((searchKind === SearchKind.wholeMatch && enumDef.symbol === enumMemberOrTypeName) ||
+                (searchKind === SearchKind.partialMatch && enumDef.symbol.startsWith(enumMemberOrTypeName))) 
+            {
+                results.push(enumDef);
+            }
+        }
+        results.push(...enumMembers);
+    });
+
+    return results;
+}
+
 export async function findDefinition(
     document: vscode.TextDocument,
     position: vscode.Position,
     token?: vscode.CancellationToken,
     searchKind: SearchKind = SearchKind.wholeMatch
 ): Promise<FracasDefinition[]> {
-    let results: FracasDefinition[] = await findKeywordDefinition(
+    const keywords: FracasDefinition[] = await findKeywordDefinition(
         document, new vscode.Range(position, position), token, searchKind);
-    if (results.length > 0) {
-        return results;
+    if (keywords.length > 0) {
+        return keywords;
     }
 
+    // git the symbol at the cursor
     const symbol = getSelectedSymbol(document, position);
 
+    // if the cursor is within a (mask ...) or (enum ...) declaration, search for matching enum members
+    const enumMembers = await findEnumOrMaskMembers(document, position, symbol, token, searchKind);
+    if (enumMembers.length > 0) {
+        return enumMembers;
+    }
+
     // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
-    results = await findSymbolDefinition(symbol, token, searchKind);
-    if (results.length > 0) {
-        return results;
+    const symbolDefs = await findSymbolDefinition(symbol, token, searchKind);
+    if (symbolDefs.length > 0) {
+        return symbolDefs;
     }
 
     // search for a variant option matching the symbol
     // given a fully qualified "action-movement-modifier-add" find "(movement-modifier-add ... )"
-    results = await findVariantOptionDefinition(symbol, token, searchKind);
+    const variantOptionDefs = await findVariantOptionDefinition(symbol, token, searchKind);
 
-    return results;
+    return variantOptionDefs;
 }
 
 export async function findReferences(
@@ -715,55 +777,36 @@ export async function findCompletions(
         } else {
             // if the symbol is the beginning of (mask foo thing... or (enum bar thing...
             // then try to auto-complete from the enum/mask definition
-            const enclosingEnum = await findEnclosingEnumOrMask(resolvedSymbol.document, position);
-            if (enclosingEnum) {
-                // find the definition of the enum/mask
-                const enumDefs = enclosingEnum.kind === FracasDefinitionKind.enum ?
-                    await findEnumDefinition(enclosingEnum.symbol, token, SearchKind.partialMatch) :
-                    await findMaskDefinition(enclosingEnum.symbol, token, SearchKind.partialMatch);
-                const enumCompletions: vscode.CompletionItem[] = [];
-                await mapAsync(enumDefs, async enumDef => {
-                    // add matching enum values to the completion list
-                    const enumMembers = await findMembers(enumDef, token, symbol, SearchKind.partialMatch);
-                    const oneEnumCompletions = await _toCompletionItems(enumMembers, '', resolvedSymbol.range);
-                    enumCompletions.push(...oneEnumCompletions);
-
-                    // add the enum name to the completion list if it matches.
-                    if (enumDef.symbol.startsWith(symbol)) {
-                        const enumNameCompletion = await _toCompletionItems([enumDef], '', resolvedSymbol.range);
-                        enumCompletions.push(...enumNameCompletion);
-                    }
-                });
-
+            const enumMatches = await findEnumOrMaskMembers(document, position, symbol, token, SearchKind.partialMatch);
+            if (enumMatches.length > 0) {
+                const enumCompletions = await _toCompletionItems(enumMatches, '', resolvedSymbol.range);
                 return enumCompletions;
+            } 
+            
+            const completionItems: vscode.CompletionItem[] = [];
+            // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
+            const typeDefs = await findSymbolDefinition(symbol, token, SearchKind.partialMatch);
+            if (typeDefs.length > 0) {
+                // add the type definitions as completion items, e.g. "targeting-ga" => "targeting-gather"
+                const typeCompletions = await _toCompletionItems(typeDefs, '', resolvedSymbol.range);
 
-            } else {
-                const completionItems: vscode.CompletionItem[] = [];
+                // also suggest variant options as completions for matching variant types.
+                // e.g., targeting-gat => targeting-gather-self, targeting-gather-saved-actor, etc.
+                const variantDefs = typeDefs.filter(x => x.kind === FracasDefinitionKind.variant);
+                const variantOptionCompletions = flatten(await mapAsync(variantDefs, async variantDef => {
+                    const options = await findMembers(variantDef, token);
+                    const optionCompletions = await _toCompletionItems(options, `${variantDef.symbol}-`, resolvedSymbol.range);
+                    return optionCompletions;
+                }));
 
-                // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
-                const typeDefs = await findSymbolDefinition(symbol, token, SearchKind.partialMatch);
-                if (typeDefs.length > 0) {
-                    // add the type definitions as completion items, e.g. "targeting-ga" => "targeting-gather"
-                    const typeCompletions = await _toCompletionItems(typeDefs, '', resolvedSymbol.range);
-
-                    // also suggest variant options as completions for matching variant types.
-                    // e.g., targeting-gat => targeting-gather-self, targeting-gather-saved-actor, etc.
-                    const variantDefs = typeDefs.filter(x => x.kind === FracasDefinitionKind.variant);
-                    const variantCompletions = flatten(await mapAsync(variantDefs, async variantDef => {
-                        const options = await findMembers(variantDef, token);
-                        const optionCompletions = await _toCompletionItems(options, `${variantDef.symbol}-`, resolvedSymbol.range);
-                        return optionCompletions;
-                    }));
-
-                    console.debug(`Found ${typeDefs.length} types and ${variantCompletions.length} variant options for ${symbol}`);
-                    completionItems.push(...typeCompletions);
-                    completionItems.push(...variantCompletions);
-                }
+                console.debug(`Found ${typeDefs.length} types and ${variantOptionCompletions.length} variant options for ${symbol}`);
+                completionItems.push(...typeCompletions);
+                completionItems.push(...variantOptionCompletions);
 
                 // find variant options matching the symbol, e.g. targeting-gather-sa => targeting-gather-saved-actor
                 const variantOptions = await findVariantOptionDefinition(symbol, token, SearchKind.partialMatch);
                 const variantCompletions = await _toCompletionItems(variantOptions, '', resolvedSymbol.range);
-                console.debug(`Found ${variantCompletions.length} variant options for ${symbol}`);
+                console.debug(`Found ${variantOptionCompletions.length} variant options for ${symbol}`);
 
                 completionItems.push(...variantCompletions);
                 return completionItems;
@@ -791,7 +834,7 @@ async function _toCompletionItems(
 export async function findMembers(
     fracasDef: FracasDefinition,
     token?: vscode.CancellationToken,
-    memberName: string | null = null,
+    memberName?: string,
     searchKind: SearchKind = SearchKind.wholeMatch
 ): Promise<FracasDefinition[]> {
     const document = await vscode.workspace.openTextDocument(fracasDef.location.uri);
@@ -816,7 +859,7 @@ export async function findMembers(
             const rxGroupIndex = 1;
             const memberName = match[rxGroupIndex];
             const loc = regexGroupDocumentLocation(document, match, range.start, rxGroupIndex);
-            members.push(new FracasDefinition(loc, memberName, FracasDefinitionKind.keyword));
+            members.push(new FracasDefinition(loc, memberName, definitionMemberKind(fracasDef.kind)));
         }
     }
     return members;

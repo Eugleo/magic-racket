@@ -22,6 +22,7 @@ async function showFracasDocument(
 
 const testFixtureDir = (vscode.workspace.workspaceFolders || [])[0].uri.fsPath;
 const rewardFrc = path.join(testFixtureDir, 'reward.frc');
+const factionsFrc = path.join(testFixtureDir, 'factions.frc');
 const abilityFrc = path.join(testFixtureDir, 'ability.frc');
 const abilityActionDefinesFrc = path.join(testFixtureDir, 'ability-action-defines.frc');
 
@@ -43,7 +44,40 @@ suite("Editor Lib Tests", () => {
 
 suite("Find Definition Tests", () => {
     vscode.window.showInformationMessage("Start findDefinition tests.");
-    
+
+    test("findDefinition resolves an enum member at scope depth 1", async () => {
+        const { document } = await showFracasDocument(factionsFrc);
+        const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(79, 46)); // cursor within "friendly" faction-stance
+        assert.strictEqual(defs.length, 1, "single definition not found");
+        assert.strictEqual(defs[0].kind, FracasDefinitionKind.enumMember, "type definition kind is not 'enum'");
+        assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.EnumMember, "type completion kind is not 'EnumMember'");
+        assert.strictEqual(defs[0].symbol, "friendly");
+        assert.strictEqual(defs[0].location.uri.fsPath, factionsFrc);
+        assert.deepStrictEqual(defs[0].location.range, new vscode.Range(25, 3, 25, 11), "location of enum member is not correct");
+    });
+
+    test("findDefinition resolves an enum definition", async () => {
+        const { document } = await showFracasDocument(factionsFrc);
+        const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(59, 63)); // cursor within "faction-type"
+        assert.strictEqual(defs.length, 1, "single definition not found");
+        assert.strictEqual(defs[0].kind, FracasDefinitionKind.enum, "type definition kind is not 'enum'");
+        assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.Enum, "type completion kind is not 'Enum'");
+        assert.strictEqual(defs[0].symbol, "faction-type");
+        assert.strictEqual(defs[0].location.uri.fsPath, factionsFrc);
+        assert.deepStrictEqual(defs[0].location.range, new vscode.Range(8, 13, 8, 25), "location of enum type is not correct");
+    });
+
+    test("findDefinition resolves a mask definition", async () => {
+        const { document } = await showFracasDocument(factionsFrc);
+        const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(59, 63)); // cursor within "faction-type"
+        assert.strictEqual(defs.length, 1, "single definition not found");
+        assert.strictEqual(defs[0].kind, FracasDefinitionKind.enum, "type definition kind is not 'enum'");
+        assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.Enum, "type completion kind is not 'Enum'");
+        assert.strictEqual(defs[0].symbol, "faction-type");
+        assert.strictEqual(defs[0].location.uri.fsPath, factionsFrc);
+        assert.deepStrictEqual(defs[0].location.range, new vscode.Range(8, 13, 8, 25), "location of enum type is not correct");
+    });
+
     test("findDefinition resolves a named parameter", async () => {
         const { document } = await showFracasDocument(abilityFrc);
         const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(42, 38)); // cursor within "#:net-playback-mode"
