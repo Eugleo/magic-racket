@@ -25,6 +25,7 @@ const rewardFrc = path.join(testFixtureDir, 'reward.frc');
 const factionsFrc = path.join(testFixtureDir, 'factions.frc');
 const collisionDefinesFrc = path.join(testFixtureDir, 'collision-defines.frc');
 const abilityFrc = path.join(testFixtureDir, 'ability.frc');
+const abilityDataDefinesFrc = path.join(testFixtureDir, 'ability-data-defines.frc');
 const abilityActionDefinesFrc = path.join(testFixtureDir, 'ability-action-defines.frc');
 
 suite("Editor Lib Tests", () => {
@@ -46,11 +47,22 @@ suite("Editor Lib Tests", () => {
 suite("Find Definition Tests", () => {
     vscode.window.showInformationMessage("Start findDefinition tests.");
 
+    test("findDefinition resolves an enum member at scope depth 2", async () => {
+        const { document } = await showFracasDocument(abilityDataDefinesFrc);
+        const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(228,64)); // cursor within "on-ability-action" ability-commit-mode
+        assert.strictEqual(defs.length, 1, "single definition not found");
+        assert.strictEqual(defs[0].kind, FracasDefinitionKind.enumMember, "type definition kind is not 'enumMember'");
+        assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.EnumMember, "type completion kind is not 'EnumMember'");
+        assert.strictEqual(defs[0].symbol, "on-ability-action");
+        assert.strictEqual(defs[0].location.uri.fsPath, abilityDataDefinesFrc);
+        assert.deepStrictEqual(defs[0].location.range, new vscode.Range(223, 4, 223, 21), "location of enum member is not correct");
+    });
+
     test("findDefinition resolves an enum member at scope depth 1", async () => {
         const { document } = await showFracasDocument(factionsFrc);
         const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(79, 46)); // cursor within "friendly" faction-stance
         assert.strictEqual(defs.length, 1, "single definition not found");
-        assert.strictEqual(defs[0].kind, FracasDefinitionKind.enumMember, "type definition kind is not 'enum'");
+        assert.strictEqual(defs[0].kind, FracasDefinitionKind.enumMember, "type definition kind is not 'enumMember'");
         assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.EnumMember, "type completion kind is not 'EnumMember'");
         assert.strictEqual(defs[0].symbol, "friendly");
         assert.strictEqual(defs[0].location.uri.fsPath, factionsFrc);

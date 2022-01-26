@@ -1,0 +1,425 @@
+#lang fracas
+
+(import
+ fracas/utils/ws-math
+ fracas/utils/utils-collections
+ fracas/utils/utils-hashing
+ unreal-defines
+ ability-action-defines
+ ability-condition-defines
+ ability-keys-defines
+ ability-state-transition-defines
+ ability-state-transition-types
+
+ animation-defines
+ ability-state-transition-defines
+ condition-defines
+ spawn-actor-defines
+ damage-data-types
+ defense-effect-types
+ ui-particle-defines
+ movement-defines
+ targeting-types
+ resource-defines
+ input-types
+ value-defines
+
+ projectile-data-defines
+ status-effect-types
+ gameplay-tag-defines
+ event-defines
+ localization-defines
+
+ fracas/tags/char-shared-tags
+ fracas/tags/status-tags
+ )
+
+(provide (all-defined-out))
+
+;; DEPRECATED - we now use `gameplay-tag-data` to classify abilities, which is a tree-based data structure of tags (rather than a flat mask)
+(define-mask ability-flags
+  (
+   enable-debug
+   require-affinity
+   suppress-targeting ;; TODO: make state-based
+   show-directional-splat ;; TODO: make state-based
+   is-combo ;; TODO: probably not needed now that we have `ability-group`
+
+   is-attack
+   is-defense
+
+   is-basic
+   is-special
+   is-ultimate
+   )
+  )
+
+(define *final* 'final)
+(define *initial* 'initial)
+(define *state-a* 'state-a)
+(define *state-b* 'state-b)
+(define *state-c* 'state-c)
+(define *state-d* 'state-d)
+(define *exit* '_exit)
+
+;; represents the data used to populate a single state in the Ability's state machine
+(define-type ability-state-data
+  #:constructor-prefix internal-
+  (
+   (name key #:default *initial* #:constructor name->id)
+   (movement movement-modifier #:default *no-movement-or-rotation*) ;; used to modify movement during this state (e.g., stop movement, or double speed in the forward direction)
+   (activation-owned-tags (array gameplay-tag-data) #:default '()) ;; tags added to the ability's owner while this state is active
+
+   ;; Animation
+   (animation animation-type #:default *no-animation*)
+   (play-rate value #:default (value: 1) #:constructor value:)
+   (sequence sequence #:default (sequence-none:))
+   (pose blend-pose #:default (blend-pose:))
+   (look-ik look-ik #:default (look-ik-none:)) ;; look IK state that is valid for the duration of the state (automatically removed when the state exits)
+   (transition-in-duration float #:default 0.06)
+   (transition-out-duration float #:default 0.2)
+
+   ;; Actions
+   (enter-actions (array action-block) #:default '()) ;; actions run when the state is entered
+   (anim-actions (array action-block) #:default '()) ;; actions run when a notify within the state's montage is hit; if the notify has a specific name set on it, any actions within this list that have the matching `action-block.name` will fire, if the notify parameter is left blank, any unnamed `action-block`s will run
+   (exit-actions (array action-block) #:default '()) ;; actions run when the state is exited
+
+   ;; Transitions
+   (transitions (array ability-state-transition) #:default '()) ;; transitions are OR-ed and listed in priority order - the first transition in the array that evaluates to true will be taken
+
+   ;; Create an array of buttons used in the transitions so we know at runtime what buttons are "reserved" by this state/ability
+   (reserved-buttons (array button-state)
+                     #:default (λ (ht)
+                                  (define transitions (hash-ref ht 'transitions #f))
+                                  (if transitions
+                                      (apply
+                                       append
+                                       (for/list ([transition (value-field-value transitions)])
+                                         (for/list ([condition (condition->condition-list (@-> transition 'condition))]
+                                                    #:when (equal? (value-variant-option condition) 'button))
+                                           (@-> (value-variant-fields condition) 'state)
+                                           )))
+                                    '())
+                                  ))
+   )
+  )
+
+;; trimmed down version of `internal-ability-state-data` that removes the actionable-specific
+;; parameters that don't apply to characters (e.g., binding-animation)
+;; and adds shared ability transitions for early out to locomotion or exiting the ability from the timeline ending
+(define (ability-state-data:
+         #:name (name *initial*)
+         #:movement (movement *no-movement-or-rotation*)
+         #:activation-owned-tags (activation-owned-tags '())
+         #:montage (montage #f)
+         #:shared-animation (shared-animation #f)
+         #:sequence (sequence (sequence-none:))
+         #:pose (pose (blend-pose:))
+         #:look-ik (look-ik (look-ik-none:))
+         #:transition-in-duration (transition-in-duration 0.06)
+         #:transition-out-duration (transition-out-duration 0.2)
+         #:enter-actions (enter-actions '())
+         #:anim-actions (anim-actions '())
+         #:exit-actions (exit-actions '())
+         #:transitions (transitions '())
+         #:exit-ability-when-timeline-ends (exit-ability-when-timeline-ends #t) ;; by default, all ability states have an implicit `timeline-ended` transition (lower pri than all user-specified transitions) that will end the ability when the timeline completes unless this is set to #f
+         )
+  (internal-ability-state-data:
+   #:name name
+   #:movement movement
+   #:activation-owned-tags activation-owned-tags
+
+   #:animation
+   (cond
+    [montage
+     (animation-montage: montage)
+     ]
+    [shared-animation
+     (animation-shared: shared-animation)
+     ]
+    [else
+     *no-animation*
+     ]
+    )
+   #:sequence sequence
+   #:pose pose
+   #:look-ik look-ik
+   #:transition-in-duration transition-in-duration
+   #:transition-out-duration transition-out-duration
+
+   #:enter-actions enter-actions
+   #:anim-actions anim-actions
+   #:exit-actions exit-actions
+
+   ;; these transitions apply to ALL abilities and increase input responsiveness by
+   ;; ending abilities early for locomotion or other queued abilities;
+   ;; listed in priority order (designer-defined transitions first) -
+   ;; the first transition in the array that evaluates to true will be taken
+   #:transitions
+   (append
+    transitions
+    (list *locomotion-exit-ability-transition*)
+    (if exit-ability-when-timeline-ends
+        (list *timeline-ended-exit-ability-transition*)
+        '()
+      )
+    )
+   )
+  )
+
+;; UI-representation of this Ability
+(define-type ability-ui-info
+  #:constructor-prefix internal-
+  (
+   (display-name formatted-text)
+   (description formatted-text)
+   (image u-texture-2d) ;; image to display for this ability
+   (image-ready u-texture-2d) ;; alternate image to display when this ability is ready (cooldown + resource requirements met)
+   (ui-fx (array ui-fx-data)) ;; FX to call attention to an ability (e.g., once it becomes ready to use, or to remind the player that it's ready to use)
+   )
+  )
+(define (ability-ui-info:
+         #:display-name (display-name *loctext-empty*)
+         #:description (description *loctext-empty*)
+         #:image (image "")
+         #:image-ready (image-ready "")
+         #:ui-fx (ui-fx default-ui-particles-ability))
+  (internal-ability-ui-info:
+   #:display-name (format-text: display-name)
+   #:description (format-text: description)
+   #:image image
+   #:image-ready image-ready
+   #:ui-fx ui-fx
+   )
+  )
+
+(define *default-input-buffer-time* 0.2)
+
+;; defines what type of trigger will activate the ability, paired to a tag (see EGameplayAbilityTriggerSource)
+(define-enum trigger-source
+  (
+   (gameplay-event #:tool-tip "triggered from a gameplay event, will come with payload (won't add any tags to the character - useful for event-based ability triggers that are 'fire and forget', e.g., stagger or launch hit reactions)")
+   (owned-tag #:tool-tip "triggered if the ability's owner gets a tag added, and will continue to try to activate so long as the tag is present (useful for 'forcing' an ability to activate until the tag is removed, e.g., defeat)")
+   (owned-tag-added #:tool-tip "triggered if the ability's owner gets a tag added, triggered once whenever it's added (useful for state-based ability triggers that should stay active until the tag is removed, e.g., knockdown hit reaction)")
+   (owned-tag-present #:tool-tip "triggered if the ability's owner gets tag added, removed when the tag is removed (similar to `owned-tag-added`, but automatically cancels the ability when the tag is removed)")
+   )
+  )
+
+;; structure that defines how an ability will be triggered by external events (see FAbilityTriggerData)
+(define-type ability-trigger
+  (
+   (trigger-tag gameplay-tag-data) ;; the tag to respond to
+   (trigger-source trigger-source) ;; the type of trigger to respond to
+   )
+  )
+
+;; top level tag that all abilities share; useful for blocking/cancelling other abilities.
+(define *tag-ability*
+  (tag: 'ability "Root tag that all abilities share."))
+
+;; describes when/how the ability's costs and cooldowns will be applied to the owning actor
+(define-enum ability-commit-mode
+  (
+   (on-ability-activation #:tool-tip "ability cost and cooldown will be committed when ability is activated")
+   (on-ability-action #:tool-tip "resources/cooldown must be committed manually via an `action-commit`")
+   (on-ability-end #:tool-tip "ability cost and cooldown will be committed when ability is ended normally (not when cancelled)")
+   )
+  )
+(define *on-ability-activation* (enum ability-commit-mode on-ability-activation))
+(define *on-ability-action* (enum ability-commit-mode on-ability-action))
+(define *on-ability-end* (enum ability-commit-mode on-ability-end))
+
+;; ability-data is the "meat" of the ability-definition and contains all the data describing how to run the
+;; ability and defines all the states
+(define-type ability-data
+  #:constructor-prefix internal-
+  (
+   (commit ability-commit-mode #:default *on-ability-activation*)
+
+   (tags (array gameplay-tag-data) #:default (list *tag-ability*)) ;; this ability has these tags, which are used for identifying/classifying if this ability is affected by operations such as `cancel-abilities-with-tag` or `block-abilities-with-tag`
+   (triggers (array ability-trigger) #:default '()) ;; triggers to determine if this ability should execute in response to an event, or when tags are added to the owner
+   (cancel-abilities-with-tag (array gameplay-tag-data) #:default '()) ;; abilities with these tags are cancelled when this ability is executed
+   (block-abilities-with-tag (array gameplay-tag-data) #:default '()) ;; abilities with these tags are blocked while this ability is active
+   (activation-owned-tags (array gameplay-tag-data) #:default '()) ;; tags to apply to activating owner while this ability is active
+   (activation-required-tags (array gameplay-tag-data) #:default '()) ;; this ability can only be activated if the activating actor/component has ALL of these tags
+   (activation-blocked-tags (array gameplay-tag-data) #:default '()) ;; this ability is blocked if the activating actor/component has ANY of these tags
+   (source-required-tags (array gameplay-tag-data) #:default '()) ;; do not activate unless the source has ALL of these tags
+   (source-blocked-tags (array gameplay-tag-data) #:default '()) ;; do not activate if the source has ANY of these tags
+   (target-required-tags (array gameplay-tag-data) #:default '()) ;; do not activate unless the target has ALL of these tags
+   (target-blocked-tags (array gameplay-tag-data) #:default '()) ;; do not activate if the target has ANY of these tags
+
+   (combo-input-buffer-time float #:default *default-input-buffer-time*) ;; determines how long inputs to combo abilities will stay buffered; values < 0 are clamped to 0
+   (ability-input-buffer-time float #:default *default-input-buffer-time*) ;; determines how long inputs to other abilities will stay buffered; values < 0 are clamped to 0
+
+   (combat-focus-targeting (array targeting-data) #:default '()) ;; overrides the combat-info combat-focus list of targeting-datas
+   (trigger-defense-data defense-data #:default (defense-data-none:)) ;; This ability activates if incoming damage matches the defense-data.
+   (look-ik look-ik #:default (look-ik-disabled:)) ;; look IK state that is valid for the duration of the ability (automatically removed when the ability ends)
+   (approach approach-data #:default (approach-data-none:))
+
+   (states (array ability-state-data) #:default '())
+   (actions-map (map action-blocks #:key key) #:default '() #:constructor map-name->id) ;; @TODO: john_m JIRA-2169 workaround to allow actions to call other actions
+   (start-actions (array action-block) #:default '()) ;; action-blocks run when the ability activates
+   (end-actions (array action-block) #:default '()) ;; action-blocks run when the ability ends
+   )
+  )
+
+(define (ability-data:
+         #:commit (commit *on-ability-activation*)
+
+         #:tags (tags (list *tag-ability*))
+         #:triggers (triggers '())
+         #:cancel-abilities-with-tag (cancel-abilities-with-tag '())
+         #:block-abilities-with-tag (block-abilities-with-tag '())
+         #:activation-owned-tags (activation-owned-tags '())
+         #:activation-required-tags (activation-required-tags '())
+         #:activation-blocked-tags (activation-blocked-tags '())
+         #:source-required-tags (source-required-tags '())
+         #:source-blocked-tags (source-blocked-tags '())
+         #:target-required-tags (target-required-tags '())
+         #:target-blocked-tags (target-blocked-tags '())
+
+         #:flags (flags (mask ability-flags)) ;; DEPRECATED - flags that last for the full duration of the ability's activation
+         #:combo-input-buffer-time (combo-input-buffer-time *default-input-buffer-time*)
+         #:ability-input-buffer-time (ability-input-buffer-time *default-input-buffer-time*)
+
+         #:combat-focus-targeting (combat-focus-targeting '())
+         #:trigger-defense-data (trigger-defense-data (defense-data-none:))
+         #:look-ik (look-ik (look-ik-disabled:))
+         #:approach (approach (approach-data-none:))
+
+         #:states (states '())
+         #:actions-map (actions-map '())
+         #:start-actions (start-actions '())
+         #:end-actions (end-actions '())
+
+         #:can-activate-while-falling (can-activate-while-falling #f)
+         #:can-activate-while-sliding (can-activate-while-sliding #f)
+         #:can-activate-while-carrying (can-activate-while-carrying #f)
+         )
+  (internal-ability-data:
+   #:commit commit
+
+   #:tags tags
+   #:triggers triggers
+   #:cancel-abilities-with-tag cancel-abilities-with-tag
+   #:block-abilities-with-tag block-abilities-with-tag
+   #:activation-owned-tags activation-owned-tags
+   #:activation-required-tags activation-required-tags
+   #:activation-blocked-tags
+   (append
+    activation-blocked-tags
+    (filter values (list
+                    (if can-activate-while-falling #f *tag-character.movement.falling*)
+                    (if can-activate-while-sliding #f *tag-character.movement.custom.sliding*)
+                    (if can-activate-while-carrying #f *tag-character.block.abilities*)
+                    )))
+   #:source-required-tags source-required-tags
+   #:source-blocked-tags source-blocked-tags
+   #:target-required-tags target-required-tags
+   #:target-blocked-tags target-blocked-tags
+
+   #:combo-input-buffer-time combo-input-buffer-time
+   #:ability-input-buffer-time ability-input-buffer-time
+
+   #:combat-focus-targeting combat-focus-targeting
+   #:trigger-defense-data trigger-defense-data
+   #:look-ik look-ik
+   #:approach approach
+
+   #:states states
+   #:actions-map actions-map
+   #:start-actions start-actions
+   #:end-actions end-actions
+   )
+  )
+
+;; top-level Ability data object that wraps all data sub-objects, including the UI/input information about the ability,
+;; what resources it uses, and the actual data about the ability's states
+(define-type ability-definition
+  #:u-data-asset
+  (
+   (ui-info ability-ui-info #:default (ability-ui-info:))
+
+   (data ability-data #:default (ability-data:))
+
+   (priority int #:default 0) ;; higher values will interrupt active abilities of lower priority, ignoring queuing rules
+   (can-interrupt-self bool #:default #f) ;; can this ability can interrupt itself? t - override the default behaviour of ignoring new abilities with matching priority
+
+  (threat int #:default 10) ;; used for limiting # of abilities targeting an individual
+  (ignore-threat bool #:default #f) ;; if true, this ability will be allowed to activate even if it's threat will push the target's threat meter over max threat
+  (threat-exclusive bool #:default #f) ;; if true, blocks other abilities from activating on the target with this set to true; used for bosses
+
+   (charge-cost int #:default 0) ;; number of charges deducted when committing this ability (raw resource amount is (charge-cost * resource-per-charge)); will assert if used in an ability that doesn't have a corresponding resource
+   (charge-additional-resources (map float #:key resource-type) #:default '()) ;; additional resources required to activate the ability
+   (cooldown-seconds float #:default 0)
+   )
+  )
+
+;; used to declare key/value pairs for dictionaries of `ability-definition`s
+(define (ability-definition-entry keyname ability-definition)
+  (map-entry keyname ability-definition))
+
+;; belongs as a member to `ability-group` and uses the same ability keys as `ability-definition-entry`
+(define-type ability-group-entry
+  #:constructor-prefix internal-
+  (
+   (key key)
+   (condition ability-condition) ;; the condition under which this ability should be considered for selection (activation/display in the UI)
+   )
+  )
+
+;; shim constructor to allow deprecated #:conditions parameter and automatically converts 
+(define-syntax ability-group-entry:
+  (syntax-rules ()
+   [(ability-group-entry: #:key key #:condition condition)
+    (internal-ability-group-entry:
+     #:key (key: key)
+     #:condition condition)]
+   [(ability-group-entry: #:key key #:conditions conditions)
+    (internal-ability-group-entry:
+     #:key (key: key)
+     #:condition (ability-conditions->condition conditions))]
+   [(ability-group-entry: #:key key)
+    (internal-ability-group-entry:
+     #:key (key: key)
+     #:condition (ability-condition-true-value:))]
+   ))
+
+(define *ability-group-priority-base* 0)
+(define *ability-group-priority-held-item* 10)
+
+;; data structure that maps 1:1 to a button in the UI - intended only for abilities activated by user input
+(define-type ability-group
+  #:export-constructor
+  (
+   (default-ability ability-group-entry) ;; if no overrides are valid, this is the ability that will show up on the button
+   (override-abilities (array ability-group-entry) #:default '()) ;; order determines priority - conditions are evaluated every frame to decide if one of these abilities will replace the default-ability
+   (additional-abilities (array key) #:default '()) ;; additional abilities to load along with this ability-group that are used within state transitions
+   (tags (array gameplay-tag-data) #:default '()) ;; this ability-group has these tags, which are used for identifying/classifying this ability when the AI performs attacks (via `ai-ability-entry`)
+   (resource-key key #:default *key-none*) ;; resource pool that this ability utilizes
+
+   (priority int #:default *ability-group-priority-base*) ;; if multiple `ability-group` are loaded into a single slot, the highest priority one will win
+   (condition ability-condition #:default (ability-condition-true-value:)) ;; the condition under which this ability-group should be considered for input selection (activation/display in the UI) - this could be used to equip a "key" tool that only overrides the context/A/B/C inputs if you are within the range of a door by using the `ability-condition` to do a distance check to the door actor
+   )
+  )
+
+(define *action-block-edge-recovery*
+  (action-block-targeted:
+   #:targeting *targeting-self*
+   #:found-actions
+   (list
+    (action-lerp: #:data *lerp-data-edge-recovery*)
+    )
+   )
+  )
+
+(define-type ability-definitions
+  ((definitions (map ability-definition #:key key) #:constructor map-name->id)
+   (projectiles (map projectile-data #:key key))
+   (status-effects (map status-effect-data #:key key))
+   (defense-effects (map defense-data #:key key))
+   (ability-keys ability-keys)
+   (action-block-edge-recovery action-block #:default *action-block-edge-recovery*)
+   (shared-movement-modifiers shared-movement-modifiers #:default (shared-movement-modifiers:))
+   (global-actions-map (map action-blocks #:key key))
+   ))
