@@ -75,7 +75,7 @@ export function createRepl(filePath: string, command: string[]): vscode.Terminal
     const racketExePath = quoteWindowsPath(command[0], true);
     let fullCommand = `${racketExePath} ${command.slice(1).join(' ')}`;
     if (isCmdExeShell()) {
-      fullCommand += ` --eval "(enter! (file ""${filePath}""))"`;
+      fullCommand += ` --eval ^"(enter! (file \\^"${filePath}\\^"))^"`;
     } else if (isPowershellShell()) {
       fullCommand += ` --eval '(enter! (file \\"${filePath}\\"))'`;
     } else {
