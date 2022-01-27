@@ -606,7 +606,7 @@ export async function findKeywordDefinition(
         return [];
     }
 
-    const keyword = getSelectedSymbol(referencingDocument, documentSelection);
+    const keyword = referencingDocument.getText(documentSelection);
     if (!keyword.startsWith(KEYWORD_PREFIX)) {
         return [];
     }
