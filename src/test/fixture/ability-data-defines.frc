@@ -222,7 +222,7 @@
   (
    (on-ability-activation #:tool-tip "ability cost and cooldown will be committed when ability is activated")
    (on-ability-action #:tool-tip "resources/cooldown must be committed manually via an `action-commit`")
-   (on-ability-end #:tool-tip "ability cost and cooldown will be committed when ability is ended normally (not when cancelled)")
+   (on-ability-end #:tool-tip "ability cost and cooldown will be committed when ability is ended normally -- not when cancelled")
    )
   )
 (define *on-ability-activation* (enum ability-commit-mode on-ability-activation))

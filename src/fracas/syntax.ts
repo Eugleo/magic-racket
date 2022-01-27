@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { flatten, mapAsync } from '../containers';
+import { flatten, mapAsync, uniqBy } from '../containers';
 import { 
     findTextInFiles, 
     getRange, 
@@ -95,6 +95,12 @@ function _anyMaskSymbolRx(symbol: string, searchKind = SearchKind.wholeMatch): s
         `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(define-mask)\\s+(${_escapeForRegEx(symbol)}${RX_CHAR_IDENTIFIER}*)`;
 }
 
+function _enumMemberRx(): string {
+    // extract the first identifier in the line, discarding leading whitespace and open parentheses
+    return `^\\s*[${RX_CHARS_OPEN_PAREN}]?\\s*(${RX_CHAR_IDENTIFIER}+)`;
+}
+const ENUM_MEMBER_RX = new RegExp(_enumMemberRx());
+
 function _anyConstructorRx(): string {
     return `(?<=[${RX_CHARS_OPEN_PAREN}])\\s*(${RX_CHAR_IDENTIFIER}+):`;
 }
@@ -125,9 +131,16 @@ function _anyMaskOrEnumRx(): string {
 }
 
 function _anyIdentifierRx(fieldName: string, searchKind = SearchKind.wholeMatch): string {
-    return searchKind === SearchKind.wholeMatch ?
-        `(${_escapeForRegEx(fieldName)})(?!${RX_CHAR_IDENTIFIER})` :
-        `(${_escapeForRegEx(fieldName)}${RX_CHAR_IDENTIFIER}*)`;
+    if (searchKind === SearchKind.wholeMatch) {
+        return `(?<!${RX_CHAR_IDENTIFIER})(${_escapeForRegEx(fieldName)})(?!${RX_CHAR_IDENTIFIER})`;
+    } else {
+        // if the field name isn't empty, find anything starting with the name. Otherwise, find 1 or more identifier chars.
+        const fieldExpr = fieldName ? `(${_escapeForRegEx(fieldName)}${RX_CHAR_IDENTIFIER}*)` : `(${RX_CHAR_IDENTIFIER}+)`;
+        // // This ensures that identifiers appear either at the very beginning of an s-expression, e.g. "(some-identifier...)"
+        // // or are naked identifiers (not enclosed within an s-expression), e.g. "some-identifier another-identifier third-id"
+        // return `(?:[${RX_CHARS_OPEN_PAREN}]\\s*|[^${RX_CHARS_OPEN_PAREN}]*)${fieldExpr}`;
+        return fieldExpr;
+    }
 }
 
 function _variantOptionRx(symbol: string, searchKind = SearchKind.wholeMatch): string {
@@ -415,9 +428,9 @@ function _rangesAtScope(
 ): vscode.Range[] {
     const ranges: vscode.Range[] = [];
     // first rewind to opening bracket
-    const startPos = findOpenBracket(document, pos);
+    const startPos = findOpenBracket(document, pos, false);
     let topExprPos = startPos;
-    let nesting = 0;
+    let nesting = 1; // if we're not including the brackets, we're already one nesting deep
 
     // scan forward looking for s-expressions with an opening bracket at the right nesting depth.
     for (let lineNo = startPos.line; lineNo < document.lineCount; ++lineNo) {
@@ -649,17 +662,22 @@ export async function findEnumOrMaskMembers(
         const enumMembers = await findMembers(enumDef, token, enumMemberOrTypeName, searchKind);
 
         // add the define-enum type definition to the results if it matches.
-        if (enumMemberOrTypeName) {
-            if ((searchKind === SearchKind.wholeMatch && enumDef.symbol === enumMemberOrTypeName) ||
-                (searchKind === SearchKind.partialMatch && enumDef.symbol.startsWith(enumMemberOrTypeName))) 
-            {
-                results.push(enumDef);
-            }
+        if (enumMemberOrTypeName && _symbolsMatch(enumMemberOrTypeName, enumDef.symbol, searchKind)) {
+            results.push(enumDef);
         }
         results.push(...enumMembers);
     });
 
     return results;
+}
+
+function _symbolsMatch(partialSymbol: string | undefined, symbolToMatch: string, searchKind: SearchKind): boolean {
+    if (searchKind === SearchKind.wholeMatch) {
+        return partialSymbol === symbolToMatch;
+    } else {
+        // "undefined" matches anything, otherwise match on the beginning of the symbol
+        return !partialSymbol || symbolToMatch.startsWith(partialSymbol);
+    }
 }
 
 export async function findDefinition(
@@ -754,69 +772,82 @@ export async function findCompletions(
     position: vscode.Position,
     token?: vscode.CancellationToken
 ): Promise<vscode.CompletionItem[] | null> {
-    // get the word at the cursor
+    const completions = await _findCompletionsNonUnique(document, position, token);
+    return completions ? uniqBy(completions, c => c.label) : null; // .sort((a, b) => Number(a > b)) : null;
+}
+async function _findCompletionsNonUnique(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    token?: vscode.CancellationToken
+): Promise<vscode.CompletionItem[] | null> {
+        // get the word at the cursor
     const resolvedSymbol = resolveSymbol(document, position);
-
-    // don't try to complete until at least three characters are typed
-    if (resolvedSymbol && position.character - resolvedSymbol.range.start.character >= 3) {
-        // truncate the partial word at the cursor position
-        const symbolRange = new vscode.Range(resolvedSymbol.range.start, position);
-        const symbol = resolvedSymbol.document.getText(symbolRange);
-
-        // try to auto-complete a member field name
-        if (symbol.startsWith(KEYWORD_PREFIX)) {
-            // do a partial match of all field definitions matching the symbol under the cursor
-            const keywordDefs = await findKeywordDefinition(
-                resolvedSymbol.document, symbolRange, token, SearchKind.partialMatch);
-            if (keywordDefs.length > 0) {
-                const keywordCompletions = await _toCompletionItems(
-                    keywordDefs, KEYWORD_PREFIX, resolvedSymbol.range);
-                console.debug(`Found ${keywordCompletions.length} keywords for ${symbol}`);
-                return keywordCompletions;
-            }
-        } else {
-            // if the symbol is the beginning of (mask foo thing... or (enum bar thing...
-            // then try to auto-complete from the enum/mask definition
-            const enumMatches = await findEnumOrMaskMembers(document, position, symbol, token, SearchKind.partialMatch);
-            if (enumMatches.length > 0) {
-                const enumCompletions = await _toCompletionItems(enumMatches, '', resolvedSymbol.range);
-                return enumCompletions;
-            } 
-            
-            const completionItems: vscode.CompletionItem[] = [];
-            // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
-            const typeDefs = await findSymbolDefinition(symbol, token, SearchKind.partialMatch);
-            if (typeDefs.length > 0) {
-                // add the type definitions as completion items, e.g. "targeting-ga" => "targeting-gather"
-                const typeCompletions = await _toCompletionItems(typeDefs, '', resolvedSymbol.range);
-
-                // also suggest variant options as completions for matching variant types.
-                // e.g., targeting-gat => targeting-gather-self, targeting-gather-saved-actor, etc.
-                const variantDefs = typeDefs.filter(x => x.kind === FracasDefinitionKind.variant);
-                const variantOptionCompletions = flatten(await mapAsync(variantDefs, async variantDef => {
-                    const options = await findMembers(variantDef, token);
-                    const optionCompletions = await _toCompletionItems(options, `${variantDef.symbol}-`, resolvedSymbol.range);
-                    return optionCompletions;
-                }));
-
-                console.debug(`Found ${typeDefs.length} types and ${variantOptionCompletions.length} variant options for ${symbol}`);
-                completionItems.push(...typeCompletions);
-                completionItems.push(...variantOptionCompletions);
-
-                // find variant options matching the symbol, e.g. targeting-gather-sa => targeting-gather-saved-actor
-                const variantOptions = await findVariantOptionDefinition(symbol, token, SearchKind.partialMatch);
-                const variantCompletions = await _toCompletionItems(variantOptions, '', resolvedSymbol.range);
-                console.debug(`Found ${variantOptionCompletions.length} variant options for ${symbol}`);
-
-                completionItems.push(...variantCompletions);
-                return completionItems;
-            }
-        }
-
-        console.debug(`No completion items for ${symbol}`);
+    if (!resolvedSymbol) {
+        return null;
     }
 
-    return null;
+    // truncate the partial word at the cursor position
+    const symbolRange = new vscode.Range(resolvedSymbol.range.start, position);
+    const symbol = resolvedSymbol.document.getText(symbolRange);
+
+    // if the symbol is the beginning of (mask foo thing... or (enum bar thing...
+    // then try to auto-complete from the enum/mask definition
+    const enumMatches = await findEnumOrMaskMembers(document, position, symbol, token, SearchKind.partialMatch);
+    if (enumMatches.length > 0) {
+        const enumCompletions = await _toCompletionItems(enumMatches, '', resolvedSymbol.range);
+        return enumCompletions;
+    } 
+
+    // try to auto-complete a member field name
+    if (symbol.startsWith(KEYWORD_PREFIX)) {
+        // do a partial match of all field definitions matching the symbol under the cursor
+        const keywordDefs = await findKeywordDefinition(
+            resolvedSymbol.document, symbolRange, token, SearchKind.partialMatch);
+        if (keywordDefs.length === 0) {
+            return null;
+        }
+
+        const keywordCompletions = await _toCompletionItems(
+            keywordDefs, KEYWORD_PREFIX, resolvedSymbol.range);
+        console.debug(`Found ${keywordCompletions.length} keywords for ${symbol}`);
+        return keywordCompletions;
+    } 
+
+    // don't try to complete type definitions until at least three characters are typed
+    if (position.character - resolvedSymbol.range.start.character < 3) {
+        return null;
+    }
+
+    const completionItems: vscode.CompletionItem[] = [];
+    // search for an explicit define-xxx matching the token, e.g., given "module-db" find "(define-type module-db"
+    const typeDefs = await findSymbolDefinition(symbol, token, SearchKind.partialMatch);
+    if (typeDefs.length === 0) {
+        return null;
+    }
+    
+    // add the type definitions as completion items, e.g. "targeting-ga" => "targeting-gather"
+    const typeCompletions = await _toCompletionItems(typeDefs, '', resolvedSymbol.range);
+
+    // also suggest variant options as completions for matching variant types.
+    // e.g., targeting-gat => targeting-gather-self, targeting-gather-saved-actor, etc.
+    const variantDefs = typeDefs.filter(x => x.kind === FracasDefinitionKind.variant);
+    const variantOptionCompletions = flatten(await mapAsync(variantDefs, async variantDef => {
+        const options = await findMembers(variantDef, token);
+        const optionCompletions = await _toCompletionItems(options, `${variantDef.symbol}-`, resolvedSymbol.range);
+        return optionCompletions;
+    }));
+
+    console.debug(`Found ${typeDefs.length} types and ${variantOptionCompletions.length} variant options for ${symbol}`);
+    completionItems.push(...typeCompletions);
+    completionItems.push(...variantOptionCompletions);
+
+    // find variant options matching the symbol, e.g. targeting-gather-sa => targeting-gather-saved-actor
+    const variantOptions = await findVariantOptionDefinition(symbol, token, SearchKind.partialMatch);
+    const variantCompletions = await _toCompletionItems(variantOptions, '', resolvedSymbol.range);
+    console.debug(`Found ${variantOptionCompletions.length} variant options for ${symbol}`);
+
+    completionItems.push(...variantCompletions);
+    return completionItems;
 }
 
 async function _toCompletionItems(
@@ -851,18 +882,67 @@ export async function findMembers(
     }
 
     // find members that match the given name
-    const fieldRx = _memberDeclRx(fracasDef.kind, memberName || '', searchKind);
     const members: FracasDefinition[] = [];
-    for (const range of ranges) {
-        const expr = document.getText(range);
-        for (let match = fieldRx.exec(expr); match; match = fieldRx.global ? fieldRx.exec(expr) : null) {
-            const rxGroupIndex = 1;
-            const memberName = match[rxGroupIndex];
-            const loc = regexGroupDocumentLocation(document, match, range.start, rxGroupIndex);
-            members.push(new FracasDefinition(loc, memberName, definitionMemberKind(fracasDef.kind)));
+    if (fracasDef.kind === FracasDefinitionKind.enum || fracasDef.kind === FracasDefinitionKind.mask) 
+    {
+        // short-circuit for enum and mask members: this is a hacky workaround because mask 
+        // members may be naked identifiers, or may be s-expressions that contain a single identifier with 
+        // metadata. It's impossible to write a single regexp that handles both.
+        for (const range of ranges) {
+            const enumMembers = _findEnumMembers(
+                document, range, definitionMemberKind(fracasDef.kind), searchKind, memberName);
+            members.push(...enumMembers);
+        }
+    } else { // for types other than enums and masks, use the regexp to find members
+        const fieldRx = _memberDeclRx(fracasDef.kind, memberName || '', searchKind);
+        for (const range of ranges) {
+            // search at this scope for members
+            const expr = document.getText(range);
+            for (let match = fieldRx.exec(expr); match; match = fieldRx.global ? fieldRx.exec(expr) : null) {
+                const rxGroupIndex = 1;
+                const memberName = match[rxGroupIndex];
+                const loc = regexGroupDocumentLocation(document, match, range.start, rxGroupIndex);
+                members.push(new FracasDefinition(loc, memberName, definitionMemberKind(fracasDef.kind)));
+            }
         }
     }
+
     return members;
+}
+
+function _findEnumMembers(
+    document: vscode.TextDocument,
+    enumBodyRange: vscode.Range,
+    enumMemberKind: FracasDefinitionKind,
+    searchKind: SearchKind,
+    nameToSearchFor?: string
+): FracasDefinition[] {
+    const enumBody = document.getText(enumBodyRange);
+    const newlineRx = /\r?\n/g;
+    const enumMembers = [];
+    let lineMatch;
+    let lineStartPos = 0;
+    do {
+        // extract the next line
+        lineMatch = newlineRx.exec(enumBody);
+        const lineEndPos = lineMatch ? (lineMatch.index + lineMatch[0].length) : enumBody.length;
+        const line = enumBody.substring(lineStartPos, lineEndPos);
+        
+        // extract first identifier from the line. Discard leading space and parentheses
+        const enumMemberMatch = ENUM_MEMBER_RX.exec(line);
+        
+        // if the enum member matches the given memberName, add it to the list of members
+        if (enumMemberMatch && _symbolsMatch(nameToSearchFor, enumMemberMatch[1], searchKind)) {
+            const enumMemberName = enumMemberMatch[1];
+            const enumMemberPos = document.positionAt(document.offsetAt(enumBodyRange.start) + lineStartPos + line.indexOf(enumMemberName));
+            const loc = new vscode.Location(document.uri, new vscode.Range(enumMemberPos, enumMemberPos.translate(0, enumMemberName.length)));
+            enumMembers.push(new FracasDefinition(loc, enumMemberName, enumMemberKind));
+        }
+
+        lineStartPos = lineEndPos;
+    } while (lineMatch);
+
+    return enumMembers;
 }
 
 function _escapeForRegEx(s: string): string {

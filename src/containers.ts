@@ -31,3 +31,18 @@ export async function asyncGetOrDefault<K, V>(map: Map<K, V>, key: K, getDefault
     map.set(key, def);
     return def;
 }
+
+/**
+ * Remove duplicate items from an array.
+ * @param array An array of items possibly containing duplicates.
+ * @param keyfn A callback function that returns a key for each item in the array.
+ * @returns An array of items with duplicates removed.
+ */
+export function uniqBy<K, V>(array: V[], keyfn: (value: V) => K): V[] {
+    return [
+        ...new Map(
+            array.map(x => [keyfn(x), x])
+        ).values()
+    ];
+}
+
