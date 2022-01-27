@@ -1,0 +1,107 @@
+#lang fracas
+
+(import
+ unreal
+ )
+
+(provide (all-defined-out))
+
+(define-enum faction-type
+  ((invalid                  #:tool-tip "Special value to disable the faction override editor property")
+   (neutral                  #:tool-tip "Special value indicating no team")
+   (player-blue              #:tool-tip "Human player and their allies")
+   (player-red               #:tool-tip "Human player and their allies")
+   (npc                      #:tool-tip "Generic NPC team")
+   (npc-border-sunfire       #:tool-tip "Sunfire rebels found in the border")
+   (npc-border-crab          #:tool-tip "Magma crabs found in the border")
+   (npc-msf-beast            #:tool-tip "Forest Beasts found in MSF")
+   (npc-msf-beast-ally       #:tool-tip "Forest Beast Friends found in MSF")
+   (npc-msf-cultist          #:tool-tip "Bloodmoon Cultists found in MSF")
+   (npc-msf-spirits          #:tool-tip "Forest Spirits found in MSF")
+   )
+  )
+
+(define-enum faction-stance
+  (none
+   friendly
+   enemy))
+
+;;           neutral blue  red
+;; neutral                  
+;; blue              f     e
+;; red               e     f
+
+(define-type faction-pair
+  ((type-0 faction-type)
+   (type-1 faction-type)
+   ))
+
+(define-type faction-stances
+  ((stance faction-stance)
+   (pairs (array faction-pair))))
+
+(define-syntax-rule (stance: #:stance s (t0 t1) ...)
+  (faction-stances:
+   #:stance s
+   #:pairs (list (faction-pair: #:type-0 t0 #:type-1 t1) ...)))
+
+(define-type faction
+  ((name string #:default "")
+   (type faction-type)
+   (gizmo-path string #:default asset-faction-neutral-gizmo)))
+
+(define-type factions
+  ((factions (map faction #:key string))
+   (stances (array faction-stances))))
+
+(define *factions*
+  (factions:
+   #:factions
+   `((player-red . ,(faction: #:name "Red Team" #:type (enum faction-type player-red) #:gizmo-path asset-faction-red-gizmo))
+     (player-blue . ,(faction: #:name "Blue Team" #:type (enum faction-type player-blue) #:gizmo-path asset-faction-blue-gizmo))
+
+     (neutral . ,(faction: #:name "Neutral" #:type (enum faction-type neutral)))
+
+     (quirks . ,(faction: #:name "Quirks" #:type (enum faction-type neutral)))
+
+     (npc . ,(faction: #:name "NPCs" #:type (enum faction-type npc) #:gizmo-path asset-faction-red-gizmo))
+     (npc-border-sunfire . ,(faction: #:name "Sunfire Rebels" #:type (enum faction-type npc-border-sunfire) #:gizmo-path asset-faction-red-gizmo))
+     (npc-border-crab . ,(faction: #:name "Magma Crabs" #:type (enum faction-type npc-border-crab) #:gizmo-path asset-faction-red-gizmo))
+     (npc-msf-beast . ,(faction: #:name "Forest Beasts" #:type (enum faction-type npc-msf-beast) #:gizmo-path asset-faction-red-gizmo))
+     (npc-msf-beast-ally . ,(faction: #:name "Forest Friends" #:type (enum faction-type npc-msf-beast-ally) #:gizmo-path asset-faction-red-gizmo))
+     (npc-msf-cultist . ,(faction: #:name "Bloodmoon Cultists" #:type (enum faction-type npc-msf-cultist) #:gizmo-path asset-faction-red-gizmo))
+     (npc-msf-spirits . ,(faction: #:name "Forest Spirits" #:type (enum faction-type npc-msf-spirits) #:gizmo-path asset-faction-red-gizmo))
+     )
+   #:stances
+   (list
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type player-blue) (enum faction-type player-red)))
+    (stance: #:stance (enum faction-stance friendly) ((enum faction-type player-blue) (enum faction-type player-blue)))
+
+    (stance: #:stance (enum faction-stance friendly) ((enum faction-type player-red) (enum faction-type player-red)))
+
+    (stance: #:stance (enum faction-stance friendly) ((enum faction-type neutral) (enum faction-type neutral)))
+
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc) (enum faction-type player-blue)))
+
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc-border-sunfire) (enum faction-type player-blue)))
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc-border-sunfire) (enum faction-type npc-border-crab)))
+
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc-border-crab) (enum faction-type player-blue)))
+
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc-msf-beast) (enum faction-type player-blue)))
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc-msf-beast) (enum faction-type npc-msf-beast-ally)))
+    (stance: #:stance (enum faction-stance friendly) ((enum faction-type npc-msf-beast) (enum faction-type npc-msf-cultist)))
+    (stance: #:stance (enum faction-stance friendly) ((enum faction-type npc-msf-beast) (enum faction-type npc-msf-spirits)))
+
+    (stance: #:stance (enum faction-stance friendly) ((enum faction-type npc-msf-beast-ally) (enum faction-type player-blue)))
+    (stance: #:stance (enum faction-stance friendly) ((enum faction-type npc-msf-beast-ally) (enum faction-type npc-msf-beast-ally)))
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc-msf-beast-ally) (enum faction-type npc-msf-cultist)))
+
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc-msf-cultist) (enum faction-type player-blue)))
+
+    (stance: #:stance (enum faction-stance enemy) ((enum faction-type npc-msf-spirits) (enum faction-type player-blue)))
+    (stance: #:stance (enum faction-stance friendly) ((enum faction-type npc-msf-spirits) (enum faction-type npc-msf-cultist)))
+
+
+    )))
+

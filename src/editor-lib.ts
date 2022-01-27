@@ -58,12 +58,12 @@ export async function findTextInFiles(
 }
 
 export function getSelectedSymbol(
-    document?: vscode.TextDocument, where?: vscode.Range | vscode.Position
+    document?: vscode.TextDocument, where?: vscode.Range | vscode.Position, stripTrailingColon = false
 ): string {
     const resolvedSymbol = resolveSymbol(document, where);
     if (resolvedSymbol) {
         let word = resolvedSymbol.document.getText(resolvedSymbol.range);
-        if (word.endsWith(':')) { // strip trailing ':' for fracas constructors (hacky)
+        if (stripTrailingColon && word.endsWith(':')) { // strip trailing ':' for fracas constructors (hacky)
             word = word.substring(0, word.length - 1);
         }
         return word;

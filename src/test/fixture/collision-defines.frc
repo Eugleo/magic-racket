@@ -1,0 +1,129 @@
+#lang fracas
+
+(import
+ (utils ws-math)
+
+ unreal-defines
+ )
+
+(provide (all-defined-out))
+
+;; ------------------------------------------------------ ;;
+;;  Collision
+;; ------------------------------------------------------ ;;
+
+;; Corresponds to Project Settings -> Collision -> Preset
+;; @see DefaultEngine.ini
+(define-enum collision-preset
+  (
+   no-collision
+   block-all
+   player
+   pet
+   pawn
+   actionable ;; objects that the player can interact with @TODO: john_m split up into actionable-combat and actionable-interact
+   destructible ;; reserved for fragments of broken objects, purely visual physics objects
+   physics-actor
+   ;; overlap-combat @TODO: make another for projectiles/vortex that overlaps with actionables, players, pawns, etc. and blocked by environment
+   trigger ;; overlap-only with players
+   world-overlap ;; creates overlap events with world geometry (both static and dynamic) - useful for projectiles that can pass through walls (e.g., magic)
+   world-block ;; creates hit events with world geometry (both static and dynamic) - useful for projectiles that are blocked by walls (e.g., arrows)
+   projectile ;; creates overlap events with actors relevant to projectiles (incl. actionables, players, pawns)
+   overlap-only-pawn
+   )
+  )
+
+;; NOTE - This elements in this mask need to match the ECollisionChannel enum in EngineTypes.h and Data.h.
+;; That way we can use the bitmasks without converting.
+(define-mask phys-collision-channel
+  (
+   world-static
+   world-dynamic
+   pawn
+   visibility
+   camera
+   physics-body
+   vehicle
+   destructible
+
+   engine-1
+   engine-2
+   engine-3
+   engine-4
+   engine-5
+   engine-6
+
+   player ;; ECC_GameTraceChannel1
+   trigger ;; ECC_GameTraceChannel2
+   actionable ;; ECC_GameTraceChannel3
+   weapon ;; ECC_GameTraceChannel4
+   projectile ;; ECC_GameTraceChannel5
+   pushable ;; ECC_GameTraceChannel6
+   invisible-wall ;; ECC_GameTraceChannel7
+   pet ;; ECC_GameTraceChannel8
+   )
+  )
+
+(define *phys-channel-world-static* (mask phys-collision-channel world-static))
+(define *phys-channel-world-dynamic* (mask phys-collision-channel world-dynamic))
+(define *phys-channel-pawn* (mask phys-collision-channel pawn))
+(define *phys-channel-visibility* (mask phys-collision-channel visibility))
+(define *phys-channel-camera* (mask phys-collision-channel camera))
+(define *phys-channel-physics-body* (mask phys-collision-channel physics-body))
+(define *phys-channel-physics-vehicle* (mask phys-collision-channel vehicle))
+(define *phys-channel-physics-destructible* (mask phys-collision-channel destructible))
+(define *phys-channel-physics-player* (mask phys-collision-channel player))
+(define *phys-channel-physics-trigger* (mask phys-collision-channel trigger))
+(define *phys-channel-physics-actionable* (mask phys-collision-channel actionable))
+
+(define-enum phys-collision-response
+  (
+   ignore
+   overlap
+   block
+   )
+  )
+
+(define *phys-response-ignore* (enum phys-collision-response ignore))
+(define *phys-response-overlap* (enum phys-collision-response overlap))
+(define *phys-response-block* (enum phys-collision-response block))
+
+;; all shape dimensions are measured in METERS (engine-agnostic); conversion to engine units happens at runtime
+(define-variant shape
+  (box
+   (
+    (half-extents vector3 #:default (size:))
+    )
+   )
+  (capsule
+   (
+    (half-height float)
+    (radius float)
+    )
+   )
+  (sphere
+   (
+    (radius float)
+    )
+   )
+  (line ())
+  )
+
+(define-type collision-data
+  (
+   (draw-debug bool #:default #f) ;; enable to draw the collision shape at runtime - useful when prototyping and checking overlap sizes, or if you don't have art yet indicating the collision size
+   (shape shape)
+   (preset collision-preset)
+   )
+  )
+
+(define *collision-default-pawn*
+  (collision-data:
+   #:shape
+   (shape-capsule:
+    #:half-height 70
+    #:radius 40
+    )
+   #:preset (enum collision-preset pawn)
+   )
+  )

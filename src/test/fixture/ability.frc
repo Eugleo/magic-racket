@@ -46,3 +46,18 @@
    *self-destruct*
    )
   )
+
+(define ability-hero-amaya-basic-1-damage-hit-actions
+  (ability-hero-shared-hit-actions:
+   #:res-a-add *ability-hero-amaya-basic-res-gain-amount*
+   #:res-b-add *ability-hero-amaya-basic-res-gain-amount*
+   #:res-u-add *ability-hero-amaya-basic-1-res-u-gain-amount*
+   #:hit-tag *tag-cue.ability.basic.first.hitspark*
+   #:contextual-actions
+   (list
+    (action-flinch:)
+    (action-status-effect-add: #:key status-effect-key-silent-taunt)
+    ;;(action-knockback: #:distance 0.5)
+    )
+   )
+  )
