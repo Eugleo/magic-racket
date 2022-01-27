@@ -50,6 +50,28 @@ suite("Editor Lib Tests", () => {
 suite("Find Definition Tests", () => {
     vscode.window.showInformationMessage("Start findDefinition tests.");
 
+    test("findDefinition resolves a named parameter", async () => {
+        const { document } = await showFracasDocument(abilityFrc);
+        const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(42, 38)); // cursor within "#:net-playback-mode"
+        assert.strictEqual(defs.length, 1, "single definition not found");
+        assert.strictEqual(defs[0].kind, FracasDefinitionKind.keyword, "type definition kind is not 'keyword'");
+        assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.Keyword, "type completion kind is not 'Keyword'");
+        assert.strictEqual(defs[0].symbol, "net-playback-mode");
+        assert.strictEqual(defs[0].location.uri.fsPath, abilityActionDefinesFrc);
+        assert.deepStrictEqual(defs[0].location.range, new vscode.Range(26, 32, 26, 49), "location of named parameter is not correct");
+    });
+
+    test("findDefinition resolves a #:contextual-actions (JIRA-12970)", async () => {
+        const { document } = await showFracasDocument(abilityFrc);
+        const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(55, 20)); // cursor within "#:contextual-actions"
+        assert.strictEqual(defs.length, 1, "single definition not found");
+        assert.strictEqual(defs[0].kind, FracasDefinitionKind.keyword, "type definition kind is not 'keyword'");
+        assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.Keyword, "type completion kind is not 'Keyword'");
+        assert.strictEqual(defs[0].symbol, "contextual-actions");
+        assert.strictEqual(defs[0].location.uri.fsPath, abilityActionDefinesFrc);
+        assert.deepStrictEqual(defs[0].location.range, new vscode.Range(60, 11, 60, 29), "location of named parameter is not correct");
+    });
+
     test("findDefinition resolves an enum member at scope depth 2", async () => {
         const { document } = await showFracasDocument(abilityDataDefinesFrc);
         const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(228,64)); // cursor within "on-ability-action" ability-commit-mode
@@ -103,17 +125,6 @@ suite("Find Definition Tests", () => {
         assert.strictEqual(defs[0].symbol, "destructible");
         assert.strictEqual(defs[0].location.uri.fsPath, collisionDefinesFrc);
         assert.deepStrictEqual(defs[0].location.range, new vscode.Range(46, 3, 46, 15), "location of mask member is not correct");
-    });
-
-    test("findDefinition resolves a named parameter", async () => {
-        const { document } = await showFracasDocument(abilityFrc);
-        const defs: FracasDefinition[] = await findDefinition(document, new vscode.Position(42, 38)); // cursor within "#:net-playback-mode"
-        assert.strictEqual(defs.length, 1, "single definition not found");
-        assert.strictEqual(defs[0].kind, FracasDefinitionKind.keyword, "type definition kind is not 'parameter'");
-        assert.strictEqual(defs[0].completionKind, vscode.CompletionItemKind.Keyword, "type completion kind is not 'Keyword'");
-        assert.strictEqual(defs[0].symbol, "net-playback-mode");
-        assert.strictEqual(defs[0].location.uri.fsPath, abilityActionDefinesFrc);
-        assert.deepStrictEqual(defs[0].location.range, new vscode.Range(26, 32, 26, 49), "location of named parameter is not correct");
     });
 
     test("findDefinition resolves a field def", async () => {

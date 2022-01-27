@@ -606,7 +606,7 @@ export async function findKeywordDefinition(
         return [];
     }
 
-    const keyword = referencingDocument.getText(documentSelection);
+    const keyword = getSelectedSymbol(referencingDocument, documentSelection);
     if (!keyword.startsWith(KEYWORD_PREFIX)) {
         return [];
     }
@@ -693,7 +693,7 @@ export async function findDefinition(
     }
 
     // git the symbol at the cursor
-    const symbol = getSelectedSymbol(document, position);
+    const symbol = getSelectedSymbol(document, position, true);
 
     // if the cursor is within a (mask ...) or (enum ...) declaration, search for matching enum members
     const enumMembers = await findEnumOrMaskMembers(document, position, symbol, token, searchKind);

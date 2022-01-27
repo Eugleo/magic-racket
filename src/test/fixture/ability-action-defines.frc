@@ -49,3 +49,50 @@
    )
   )
   
+  (define (ability-hero-shared-hit-actions:
+         #:res-a-add (res-a 0) ;; Amount of resource added for ability A
+         #:res-b-add (res-b 0) ;; Amount of resource added for ability B
+         #:res-c-add (res-c 0) ;; Amount of resource added for ability C
+         #:res-u-add (res-u 0) ;; Amount of resource added for ultimate ability
+         #:hit-tag (hit-tag *tag-cue.character.shared.hitspark.light*) ;; Gameplay tag used in this character's effects list to play hit vfx/audio
+         #:hit-tag-target (hit-tag-target *tag-cue.character.shared.hitspark.light.target*) ;; Gameplay tag used in the victim's effects list to play hit vfx/audio
+         #:camera-shake (camera-shake *camera-shake-small*) ;; Camera shake to play on a successful hit
+         #:self-actions (self-actions '()) ;; Additional actions you may want to run on self for a successful hit
+         #:contextual-actions (contextual-actions '()) ;; Additional actions you may want to run on the victim on a successful hit
+         #:other-actions (other-actions '()) ;; Any other actions you may want to run that are not explicitly targeted at self or victim
+         )
+  (append
+   other-actions
+   (list
+    (action-block-targeted:
+     #:targeting *targeting-self-instigator*
+     #:found-actions
+     (append
+      (list
+       (action-add-to-resources:
+        #:resources
+        (list
+         (resource-pair: #:type *res-a* #:amount res-a)
+         (resource-pair: #:type *res-b* #:amount res-b)
+         (resource-pair: #:type *res-c* #:amount res-c)
+         (resource-pair: #:type *res-u* #:amount res-u)
+         ))
+       (action-camera-shake: #:net-playback-mode *net-local-client* #:data camera-shake)
+       )
+      self-actions
+      )
+     )
+    (action-block-targeted:
+     #:targeting *targeting-contextual*
+     #:found-actions
+     (append
+      (list
+       (action-cue-tag: hit-tag #:target-tag hit-tag-target)
+       )
+      contextual-actions
+      )
+     )
+    )
+   )
+  )
+  
