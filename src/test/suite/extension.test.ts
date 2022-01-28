@@ -29,8 +29,6 @@ const abilityFrc = path.join(testFixtureDir, 'ability.frc');
 const abilityDataDefinesFrc = path.join(testFixtureDir, 'ability-data-defines.frc');
 const abilityActionDefinesFrc = path.join(testFixtureDir, 'ability-action-defines.frc');
 
-
-
 suite("Editor Lib Tests", () => {
     vscode.window.showInformationMessage("Start editor lib tests.");
 
@@ -170,54 +168,70 @@ suite("Find Definition Tests", () => {
         assert.strictEqual(defs[0].location.uri.fsPath, abilityActionDefinesFrc);
         assert.deepStrictEqual(defs[0].location.range, new vscode.Range(5, 3, 5, 11), "location of definition is not correct");
     });
+});
 
-    suite("Auto-Completion Tests", () => {
-        vscode.window.showInformationMessage("Start findDefinition tests.");
-    
-        test("findCompletions resolves all mask members", async () => {
-            const { document } = await showFracasDocument(collisionDefinesFrc);
-            const completions = await findCompletions(document, new vscode.Position(67, 66)); // cursor just after "(mask phys-collision-channel "
-            assert.ok(completions, "findCompletions for (mask phys-collision-channel... returned null");
-            const expectedMembers = ["world-static", "world-dynamic", "pawn", "visibility", "camera", "physics-body", "vehicle", "destructible", "engine-1", "engine-2", "engine-3", "engine-4", "engine-5", "engine-6", "player", "trigger", "actionable", "weapon", "projectile", "pushable", "invisible-wall", "pet"];
-            for (const member of expectedMembers) {
-                assert.ok(completions.find(c => c.label === member), `Expected completion for ${member}`);
-            }
-            assert.strictEqual(completions.length, expectedMembers.length, "completion count incorrect");
-            for (const completion of completions) {
-                assert.strictEqual(completion.kind, vscode.CompletionItemKind.EnumMember, "completion kind is not 'EnumMember'");
-            }
-            const playerCompletion = completions.find(x => x.label === "player");
-            assert.strictEqual(playerCompletion?.documentation, "ECC_GameTraceChannel1", "completion documentation for (mask phys-collision-channel player) is not 'ECC_GameTraceChannel1'");
-        });
-    
-        test("findCompletions resolves all enum members", async () => {
-            const { document } = await showFracasDocument(abilityDataDefinesFrc);
-            const completions = await findCompletions(document, new vscode.Position(228,54)); // cursor just after "(enum ability-commit-mode "
-            assert.ok(completions, "findCompletions for enum ability-commit-mode `on-ability`... returned null");
-            const expectedMembers = ["on-ability-activation", "on-ability-action", "on-ability-end"];
-            for (const member of expectedMembers) {
-                assert.ok(completions.find(c => c.label === member), `Expected completion for ${member}`);
-            }
-            assert.strictEqual(completions.length, expectedMembers.length, "completion count incorrect");
-            for (const completion of completions) {
-                assert.strictEqual(completion.kind, vscode.CompletionItemKind.EnumMember, "completion kind is not 'EnumMember'");
-                assert.strictEqual(completion.documentation, "", "completion documentation is not ''");
-            }
-        });
-    
-        test("findCompletions filters non-matching enum members", async () => {
-            const { document } = await showFracasDocument(abilityDataDefinesFrc);
-            const completions = await findCompletions(document, new vscode.Position(228,66)); // cursor after "on-ability-a" within ability-commit-mode
-            assert.ok(completions, "findCompletions for enum ability-commit-mode `on-ability`... returned null");
-            const expectedMembers = ["on-ability-activation", "on-ability-action"];
-            for (const member of expectedMembers) {
-                assert.ok(completions.find(c => c.label === member), `Expected completion for ${member}`);
-            }
-            assert.strictEqual(completions.length, expectedMembers.length, "completion count incorrect");
-            for (const completion of completions) {
-                assert.strictEqual(completion.kind, vscode.CompletionItemKind.EnumMember, "completion kind is not 'EnumMember'");
-                assert.strictEqual(completion.documentation, "", "completion documentation is not ''");
-            }
-        });
+suite("Auto-Completion Tests", () => {
+    vscode.window.showInformationMessage("Start findDefinition tests.");
+
+    test("findCompletions resolves all mask members for empty text", async () => {
+        const { document } = await showFracasDocument(collisionDefinesFrc);
+        const completions = await findCompletions(document, new vscode.Position(68, 57)); // cursor within empty parens "(mask phys-collision-channel )"
+        assert.ok(completions, "findCompletions for (mask phys-collision-channel... returned null");
+        const expectedMembers = ["world-static", "world-dynamic", "pawn", "visibility", "camera", "physics-body", "vehicle", "destructible", "engine-1", "engine-2", "engine-3", "engine-4", "engine-5", "engine-6", "player", "trigger", "actionable", "weapon", "projectile", "pushable", "invisible-wall", "pet"];
+        for (const member of expectedMembers) {
+            assert.ok(completions.find(c => c.label === member), `Expected completion for ${member}`);
+        }
+        assert.strictEqual(completions.length, expectedMembers.length, "completion count incorrect");
+        for (const completion of completions) {
+            assert.strictEqual(completion.kind, vscode.CompletionItemKind.EnumMember, "completion kind is not 'EnumMember'");
+        }
+        const playerCompletion = completions.find(x => x.label === "player");
+        assert.strictEqual(playerCompletion?.documentation, "ECC_GameTraceChannel1", "completion documentation for (mask phys-collision-channel player) is not 'ECC_GameTraceChannel1'");
+    });
+
+    test("findCompletions resolves all mask members", async () => {
+        const { document } = await showFracasDocument(collisionDefinesFrc);
+        const completions = await findCompletions(document, new vscode.Position(67, 66)); // cursor just after "(mask phys-collision-channel "
+        assert.ok(completions, "findCompletions for (mask phys-collision-channel... returned null");
+        const expectedMembers = ["world-static", "world-dynamic", "pawn", "visibility", "camera", "physics-body", "vehicle", "destructible", "engine-1", "engine-2", "engine-3", "engine-4", "engine-5", "engine-6", "player", "trigger", "actionable", "weapon", "projectile", "pushable", "invisible-wall", "pet"];
+        for (const member of expectedMembers) {
+            assert.ok(completions.find(c => c.label === member), `Expected completion for ${member}`);
+        }
+        assert.strictEqual(completions.length, expectedMembers.length, "completion count incorrect");
+        for (const completion of completions) {
+            assert.strictEqual(completion.kind, vscode.CompletionItemKind.EnumMember, "completion kind is not 'EnumMember'");
+        }
+        const playerCompletion = completions.find(x => x.label === "player");
+        assert.strictEqual(playerCompletion?.documentation, "ECC_GameTraceChannel1", "completion documentation for (mask phys-collision-channel player) is not 'ECC_GameTraceChannel1'");
+    });
+
+    test("findCompletions resolves all enum members", async () => {
+        const { document } = await showFracasDocument(abilityDataDefinesFrc);
+        const completions = await findCompletions(document, new vscode.Position(228,54)); // cursor just after "(enum ability-commit-mode "
+        assert.ok(completions, "findCompletions for enum ability-commit-mode `on-ability`... returned null");
+        const expectedMembers = ["on-ability-activation", "on-ability-action", "on-ability-end"];
+        for (const member of expectedMembers) {
+            assert.ok(completions.find(c => c.label === member), `Expected completion for ${member}`);
+        }
+        assert.strictEqual(completions.length, expectedMembers.length, "completion count incorrect");
+        for (const completion of completions) {
+            assert.strictEqual(completion.kind, vscode.CompletionItemKind.EnumMember, "completion kind is not 'EnumMember'");
+            assert.strictEqual(completion.documentation, "", "completion documentation is not ''");
+        }
+    });
+
+    test("findCompletions filters non-matching enum members", async () => {
+        const { document } = await showFracasDocument(abilityDataDefinesFrc);
+        const completions = await findCompletions(document, new vscode.Position(228,66)); // cursor after "on-ability-a" within ability-commit-mode
+        assert.ok(completions, "findCompletions for enum ability-commit-mode `on-ability`... returned null");
+        const expectedMembers = ["on-ability-activation", "on-ability-action"];
+        for (const member of expectedMembers) {
+            assert.ok(completions.find(c => c.label === member), `Expected completion for ${member}`);
+        }
+        assert.strictEqual(completions.length, expectedMembers.length, "completion count incorrect");
+        for (const completion of completions) {
+            assert.strictEqual(completion.kind, vscode.CompletionItemKind.EnumMember, "completion kind is not 'EnumMember'");
+            assert.strictEqual(completion.documentation, "", "completion documentation is not ''");
+        }
     });
 });

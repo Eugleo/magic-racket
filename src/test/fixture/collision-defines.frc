@@ -66,7 +66,7 @@
 
 (define *phys-channel-world-static* (mask phys-collision-channel world-static))
 (define *phys-channel-world-dynamic* (mask phys-collision-channel world-dynamic))
-(define *phys-channel-pawn* (mask phys-collision-channel pawn))
+(define *phys-channel-pawn* (mask phys-collision-channel ))
 (define *phys-channel-visibility* (mask phys-collision-channel visibility))
 (define *phys-channel-camera* (mask phys-collision-channel camera))
 (define *phys-channel-physics-body* (mask phys-collision-channel physics-body))

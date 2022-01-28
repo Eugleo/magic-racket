@@ -99,14 +99,17 @@ export function resolveSymbol(
     // default to current editor selection if no document or range is provided
     const activeEditor = vscode.window.activeTextEditor;
     document = document || activeEditor?.document;
+    where = where || activeEditor?.selection; // use the given value or the active editor selection
+    let range: vscode.Range | undefined = where ? resolveRange(where) : undefined;
     
-    if (document) {
+    if (document && range) {
         // default to the word under the cursor if no range is provided
-        let range: vscode.Range | undefined = // use the given value or the active editor selection
-            resolveRange(where || activeEditor?.selection || new vscode.Position(0, 0));
-        if (range.isEmpty) {
-            range = document.getWordRangeAtPosition(
+        if (range?.isEmpty) {
+            const wordRange = document.getWordRangeAtPosition(
                 range?.start || where as vscode.Position, /[#:\w\-+*.>]+/);
+            if (wordRange) {
+                range = wordRange;
+            }
         }
 
         // where is now a range, so get the text from it
