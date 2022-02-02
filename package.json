@@ -4,7 +4,6 @@
     "displayName": "Fracas",
     "description": "Syntax highlighting, code navigation, document formatting, and REPL support for the Fracas and Racket programming languages",
     "version": "0.1.8",
-    "enableProposedApi": true,
     "enabledApiProposals": [
         "textSearchProvider",
         "findTextInFiles"
