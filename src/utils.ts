@@ -57,7 +57,7 @@ export function getRacket(server = false) : [string,string[]] {
         .get<string[]>("racketCollectionPaths") || [];
     const racketArgs = [];
     for (const path of collectPaths) {
-        racketArgs.push("-S", normalizeFilePath(`${projectDir}\\${path}`));
+        racketArgs.push("-S", normalizeFilePath(`${projectDir}/${path}`));
     }
     return [racket, racketArgs];
 }
