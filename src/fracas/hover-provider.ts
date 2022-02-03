@@ -17,10 +17,10 @@ export class FracasHoverProvider implements vscode.HoverProvider {
     ): Promise<vscode.Hover | null> {
         // search for comments preceding the definition for the symbol at the cursor
         const definitions = await findDefinition(document, position, token);
-        const comments_raw = await mapAsync(definitions, async (definition) => {
+        const commentsRaw = await mapAsync(definitions, async (definition) => {
             return await findComment(definition.location.uri, definition.location.range.end);
         });
-        const comments = comments_raw.join("\n").trim();
+        const comments = commentsRaw.join("\n").trim();
 
         // return a hover containing the comments, if any.
         const positionAsRange = new vscode.Range(position, position);

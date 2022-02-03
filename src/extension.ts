@@ -82,7 +82,7 @@ function configurationChanged() {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
-    //setupLSP();
+    setupLSP();
     configurationChanged();
 
     // Each file has one output terminal and one repl
