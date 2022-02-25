@@ -170,17 +170,23 @@ export function definitionKind(defToken: string): FracasDefinitionKind {
             return FracasDefinitionKind.key;
         case 'define-text':
             return FracasDefinitionKind.text;
+        case 'define-string-table':
+            return FracasDefinitionKind.text;
         case 'define-mask':
             return FracasDefinitionKind.mask;
         case 'define-type-optional':
             return FracasDefinitionKind.typeOptional;
         case 'define-syntax':
             return FracasDefinitionKind.syntax;
+        case 'define-syntax-rule':
+            return FracasDefinitionKind.syntax;
         case 'define-type':
             return FracasDefinitionKind.type;
         case 'define-variant':
             return FracasDefinitionKind.variant;
         case 'define':
+            return FracasDefinitionKind.define;
+        case 'define-list':
             return FracasDefinitionKind.define;
         default:
             return FracasDefinitionKind.unknown;

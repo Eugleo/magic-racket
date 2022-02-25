@@ -58,7 +58,7 @@
       "patterns": [
         {
           "name": "keyword.define.fracas",
-          "match": "(?x) (?<=[\\(|\\{|\\[]) (define-enum|define-game-data|define-key|define-text|define-mask|define-type-optional|define-syntax|define-type|define-variant|define) (?=[\\)|\\}|\\]|\\s])\n"
+          "match": "(?x) (?<=[\\(|\\{|\\[]) (define-enum|define-game-data|define-key|define-text|define-string-table|define-mask|define-type-optional|define-syntax|define-syntax-rule|define-type|define-variant|define|define-list) (?=[\\)|\\}|\\]|\\s])\n"
         }
       ]
     },
