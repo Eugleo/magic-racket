@@ -1570,7 +1570,12 @@
                 "name": "punctuation.definition.string.end.racket"
               }
             ]
-          }
+          },
+          "patterns": [
+            {
+              "include": "#escape-char-base"
+            }
+          ]
         }
       ]
     },
@@ -1593,7 +1598,12 @@
                 "name": "punctuation.definition.string.end.racket"
               }
             ]
-          }
+          },
+          "patterns": [
+            {
+              "include": "#escape-char-base"
+            }
+          ]
         }
       ]
     },

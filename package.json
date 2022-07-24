@@ -2,7 +2,7 @@
   "name": "magic-racket",
   "displayName": "Magic Racket",
   "description": "LSP support, REPL integration, and top notch syntax highlighting for the coolest of LISPs!",
-  "version": "0.5.8",
+  "version": "0.6.4",
   "activationEvents": [
     "onCommand:magic-racket.loadFileInRepl",
     "onCommand:magic-racket.runFile",
@@ -77,17 +77,31 @@
     "configuration": {
       "title": "Magic Racket",
       "properties": {
-        "magic-racket.general.REPLRacketPath": {
+        "magicRacket.languageServer.enabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable language server support. It is recommended to leave this turned on.",
+          "order": 0
+        },
+        "magicRacket.languageServer.command": {
           "type": "string",
           "default": "racket",
-          "markdownDescription": "Specifies the path to the `racket` executable used to open the REPL and run the file."
+          "markdownDescription": "Path to the executable that is used to launch the Racket language server.",
+          "order": 1
         },
-        "magic-racket.general.racketPath": {
-          "type": "string",
-          "default": "racket",
-          "markdownDescription": "Specifies the path to the `racket` executable used to launch the Racket language server."
+        "magicRacket.languageServer.arguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "--lib",
+            "racket-langserver"
+          ],
+          "markdownDescription": "Arguments passed to the language server executable set in `#magicRacket.languageServer.command#`.",
+          "order": 2
         },
-        "magic-racket.trace.server": {
+        "magicRacket.languageServer.trace": {
           "scope": "window",
           "type": "string",
           "enum": [
@@ -96,9 +110,35 @@
             "verbose"
           ],
           "default": "off",
-          "description": "Traces the communication between VS Code and the language server."
+          "description": "Enable tracing of the communication between VS Code and the language server.",
+          "order": 3
         },
-        "magic-racket.outputTerminal.numberOfOutputTerminals": {
+        "magicRacket.general.racketPath": {
+          "type": "string",
+          "default": "racket",
+          "markdownDescription": "Path to the Racket executable that is used both to open REPLs and to run files."
+        },
+        "magicRacket.general.racoPath": {
+          "type": "string",
+          "default": "raco",
+          "markdownDescription": "Path to the `raco` executable that is used to run tests."
+        },
+        "magicRacket.REPL.arguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "--repl"
+          ],
+          "markdownDescription": "Arguments passed into `#magicRacket.general.racketPath#` when launching a REPL."
+        },
+        "magicRacket.REPL.title": {
+          "type": "string",
+          "default": "REPL ($name)",
+          "markdownDescription": "Template string for the title of Racket REPLs. Variable `$name` will get replaced by the file name."
+        },
+        "magicRacket.outputTerminal.numberOfOutputTerminals": {
           "type": "string",
           "enum": [
             "one",
@@ -110,25 +150,15 @@
             "Runs each file in its own output terminal"
           ]
         },
-        "magic-racket.outputTerminal.sharedOutputTerminalTitle": {
+        "magicRacket.outputTerminal.sharedOutputTerminalTitle": {
           "type": "string",
           "default": "Racket Output",
           "markdownDescription": "Specifies the title of the the shared output terminal."
         },
-        "magic-racket.outputTerminal.outputTerminalTitle": {
+        "magicRacket.outputTerminal.outputTerminalTitle": {
           "type": "string",
           "default": "Output ($name)",
           "markdownDescription": "Specifies the template string for the title of the file-specific output terminal. Substring `$name` will get replaced by the file name."
-        },
-        "magic-racket.repl.replTitle": {
-          "type": "string",
-          "default": "REPL ($name)",
-          "markdownDescription": "Specifies the template string for the title of racket REPLs. Substring `$name` will get replaced by the file name."
-        },
-        "magic-racket.lsp.enabled": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Enables language server support"
         }
       }
     },
@@ -223,6 +253,7 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.2.2",
     "@types/node": "14.x",
+    "@types/shell-quote": "^1.7.1",
     "@types/vscode": "^1.59.0",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
@@ -241,6 +272,7 @@
     "vscode-test": "^1.5.2"
   },
   "dependencies": {
+    "shell-quote": "^1.7.3",
     "vscode-languageclient": "^7.0.0"
   }
 }
