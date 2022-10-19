@@ -355,6 +355,9 @@
           "include": "#dot"
         },
         {
+          "include": "#comment"
+        },
+        {
           "include": "#args"
         }
       ]
@@ -505,6 +508,9 @@
           "include": "#keyword"
         },
         {
+          "include": "#comment"
+        },
+        {
           "include": "#default-args"
         },
         {
@@ -652,6 +658,9 @@
             }
           },
           "patterns": [
+            {
+              "include": "#comment"
+            },
             {
               "include": "#default-args-struct"
             },
@@ -1051,6 +1060,9 @@
     },
     "hash-content": {
       "patterns": [
+        {
+          "include": "#comment"
+        },
         {
           "include": "#pairing"
         }
