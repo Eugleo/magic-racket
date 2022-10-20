@@ -231,6 +231,7 @@ repository:
     patterns:
       - include: '#function-name'
       - include: '#dot'
+      - include: '#comment'
       - include: '#args'
 
   function-name:
@@ -332,6 +333,7 @@ repository:
   args:
     patterns:
       - include: '#keyword'
+      - include: '#comment'
       - include: '#default-args'
       - name: variable.parameter.racket
         match: "[^(\\#)\\[\\]{}\",'`;\\s][^()\\[\\]{}\",'`;\\s]*"
@@ -423,6 +425,7 @@ repository:
           '0':
             name: punctuation.section.fields.end.racket
         patterns:
+          - include: '#comment'
           - include: '#default-args-struct'
           - include: '#struct-field'
       - name: meta.struct.fields.racket
@@ -655,6 +658,7 @@ repository:
 
   hash-content:
     patterns:
+      - include: '#comment'
       - include: '#pairing'
 
   pairing:
