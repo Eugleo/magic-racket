@@ -12,13 +12,22 @@ function fileName(filePath: string) {
 }
 
 export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.TextEditor): void {
-  editor.selections.forEach((sel) => {
-    const trimmed = editor.document.getText(sel).trim();
-    if (trimmed) {
-      repl.show();
+  const send = (s: string) => {
+    const trimmed = s.trim();
+    if(trimmed) {
+      repl.show(true);
       repl.sendText(trimmed);
     }
-  });
+  };
+
+  if(editor.selections.length === 1 && editor.selection.isEmpty) {
+    send(editor.document.lineAt(editor.selection.active.line).text);
+    return;
+  }
+
+  editor.selections.forEach((sel) =>
+    send(editor.document.getText(sel))
+  );
 }
 
 export function runFileInTerminal(
@@ -27,7 +36,7 @@ export function runFileInTerminal(
   terminal: vscode.Terminal,
 ): void {
   terminal.show();
- 
+
   if (isWindowsOS()) {
     terminal.sendText(isPowershellShell() || isCmdExeShell() ? `cls` : `clear`);
     const racketExePath = quoteWindowsPath(command[0], true);
