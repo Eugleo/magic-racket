@@ -181,7 +181,7 @@
       },
       {
         "command": "magic-racket.executeSelectionInRepl",
-        "title": "Racket: Execute selection in REPL"
+        "title": "Racket: Execute line or selection in REPL"
       },
       {
         "command": "magic-racket.openRepl",
@@ -217,7 +217,7 @@
       {
         "command": "magic-racket.executeSelectionInRepl",
         "key": "Alt+Enter",
-        "when": "resourceLangId == racket && editorHasSelection"
+        "when": "resourceLangId == racket && editorTextFocus"
       },
       {
         "key": "Alt+\\",
