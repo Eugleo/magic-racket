@@ -86,7 +86,7 @@ export function createRepl(filePath: string, command: string[]): vscode.Terminal
     if (isCmdExeShell()) {
       fullCommand += ` --eval ^"(enter! (file \\^"${filePath}\\^"))^"`;
     } else if (isPowershellShell()) {
-      fullCommand += ` --eval '(enter! (file \\"${filePath}\\"))'`;
+      fullCommand += ` --eval '(enter! (file "${filePath}"))'`;
     } else {
       fullCommand += ` --eval '(enter! (file "${filePath}"))'`;
     }
