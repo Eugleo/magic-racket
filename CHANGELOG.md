@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed: Incorrect quoting of racket paths on Windows (thanks, @shocoman)
 - Fixed: Incorrect folding of code (thanks, @shocoman)
-- Fixed: Errortrace causing the REPL to be unuseable
+- Fixed: Errortrace causing the REPL to be unusable
 
 ## 0.6.1 (26th December 2021)
 
@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 0.5.8 (1st September 2021)
 
 - Added two separate settings for Racket path, one used for the LSP, other of the REPL
-- Fixed potential vurneabilities by updating npm packages
+- Fixed potential vulnerabilities by updating npm packages
 
 ## 0.5.7 (20th January 2021)
 
@@ -143,7 +143,7 @@ From now on, if your number isn't getting highlighted, it's most likely due to i
 
 ## 0.1.1 (30th January 2019)
 
-- Minor changes. Bigger comming up.
+- Minor changes. Bigger coming up.
 
 ## 0.1.0 (30th January 2019)
 
