@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.6.5 (11th March 2023)
+
+### Added
+- When nothing is selected, send to REPL sends the current line (@suhr)
+
+### Fixed
+- Sending code to REPL no longer changes focus away from editor (@suhr)
+- Fixed various comment syntax highlighting cases (@jryans)
+- Updated dependencies
+
 ## 0.6.4 (2nd March 2022)
 - Updated dependencies
 - Hopefully finally packaged the correct code
