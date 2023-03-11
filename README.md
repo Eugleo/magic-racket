@@ -27,7 +27,7 @@ Magic Racket **does**
 
 - Support Racket LSP through [racket-langserver](https://github.com/jeapostrophe/racket-langserver), which brings jump to definition, hover information and more
 - Have nearly complete support for every valid Racket syntax: byte strings, regexps, define clauses, vectors... You name it, we have it
-- Support highlighting of all of the standart functions in `#lang racket`
+- Support highlighting of all of the standard functions in `#lang racket`
 - Turn many little VS Code knobs and switches to provide you the best possible Racket-writing experience
 
 ...but at the same time **doesn't**:
@@ -59,7 +59,7 @@ As you can see, Magic Racket strives to be _correct_ and _consistent_ — and it
 
 You can load and execute files in Magic Racket by using the icons in the top right corner of your editor (see the image below), or from the commands console in VS Code. You can open the list of all commands by pressing <kbd>`Cmd+Shift+P`</kbd> (or <kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows) and then search through them by typing. All of Magic Racket's commands are prefixed by `Racket:` to make the searching easier.
 
-In Magic Racket, each file will have its own REPL in which it'll load everytime you use the `Racket: Load file in REPL` command. You can choose to mimic this behavior also for `Racket: Run file in terminal`, or you can run all files in one output terminal.
+In Magic Racket, each file will have its own REPL in which it'll load every time you use the `Racket: Load file in REPL` command. You can choose to mimic this behavior also for `Racket: Run file in terminal`, or you can run all files in one output terminal.
 
 ![REPL showcase](images/repl.gif)
 
