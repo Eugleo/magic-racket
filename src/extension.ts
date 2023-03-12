@@ -51,7 +51,7 @@ function setupLSP() {
 
     // Create the language client and start the client.
     langClient = new LanguageClient(
-      "magic-racket",
+      "magicRacket",
       "Racket Language Client",
       serverOptions,
       clientOptions,
