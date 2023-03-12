@@ -39,10 +39,6 @@ function setupLSP() {
     const clientOptions: LanguageClientOptions = {
       // Register the server for racket documents
       documentSelector: [{ scheme: "file", language: "racket" }],
-      synchronize: {
-        // Notify the server about file changes to '.clientrc files contained in the workspace
-        fileEvents: vscode.workspace.createFileSystemWatcher("**/.clientrc"),
-      },
       uriConverters: {
         code2Protocol: (uri) => uri.toString(true),
         protocol2Code: (str) => vscode.Uri.parse(str),
