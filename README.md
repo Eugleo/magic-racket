@@ -25,7 +25,7 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
 
 Magic Racket **does**
 
-- Support Racket LSP through [racket-langserver](https://github.com/jeapostrophe/racket-langserver), which brings jump to definition, hover information and more
+- Support Racket LSP through [racket-langserver](https://github.com/jeapostrophe/racket-langserver), which brings jump to definition, hover information, formatting, and more
 - Have nearly complete support for every valid Racket syntax: byte strings, regexps, define clauses, vectors... You name it, we have it
 - Support highlighting of all of the standard functions in `#lang racket`
 - Turn many little VS Code knobs and switches to provide you the best possible Racket-writing experience
