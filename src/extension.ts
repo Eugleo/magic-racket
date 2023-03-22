@@ -37,8 +37,9 @@ function setupLSP() {
 
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
-      // Register the server for racket documents
+      // Register the server for Racket documents
       documentSelector: [{ scheme: "file", language: "racket" }],
+      // Fix URI encoding on Windows (#13)
       uriConverters: {
         code2Protocol: (uri) => uri.toString(true),
         protocol2Code: (str) => vscode.Uri.parse(str),
