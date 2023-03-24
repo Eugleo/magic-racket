@@ -57,7 +57,7 @@ As you can see, Magic Racket strives to be _correct_ and _consistent_ — and it
 
 ### REPL support
 
-You can load and execute files in Magic Racket by using the icons in the top right corner of your editor (see the image below), or from the commands console in VS Code. You can open the list of all commands by pressing <kbd>`Cmd+Shift+P`</kbd> (or <kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows) and then search through them by typing. All of Magic Racket's commands are prefixed by `Racket:` to make the searching easier.
+You can load and execute files in Magic Racket by using the icons in the top right corner of your editor (see the image below), or from the commands console in VS Code. You can open the list of all commands by pressing <kbd>`Cmd+Shift+P`</kbd> (<kbd>`Ctrl+Shift+P`</kbd> if you're on Linux or Windows) and then search through them by typing. All of Magic Racket's commands are prefixed by `Racket:` to make the searching easier.
 
 In Magic Racket, each file will have its own REPL in which it'll load every time you use the `Racket: Load file in REPL` command. You can choose to mimic this behavior also for `Racket: Run file in terminal`, or you can run all files in one output terminal.
 
@@ -82,8 +82,12 @@ You can set the names of the REPLs and output terminals in the settings.
 
 These aren't game-changers, but they certainly help.
 
-- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut <kbd>Option+\\</kbd> (or <kbd>Alt+\\</kbd> on Windows and Linux)
-- VS Code recognizes the "words" in Racket correctly, meaning that moving among words using <kbd>Ctrl+Left</kbd> and <kbd>Ctrl+Right</kbd> works as expected, and so does the double-click word selection
+- You can write a λ (lambda) by using the included snippet `lmb` or the shortcut
+  <kbd>Option+\\</kbd> (<kbd>Alt+\\</kbd> on Windows and Linux)
+- VS Code recognizes the "words" in Racket correctly, meaning that moving among
+  words using <kbd>Option+Left</kbd> and <kbd>Option+Right</kbd>
+  (<kbd>Ctrl+Left</kbd> and <kbd>Ctrl+Right</kbd> on Windows and Linux) works as
+  expected, and so does the double-click word selection
 
 ## Configuration
 
