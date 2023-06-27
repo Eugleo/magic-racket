@@ -1,6 +1,12 @@
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
-import { isCmdExeShell, isPowershellShell, isWindowsOS, quoteWindowsPath } from "./utils";
+import {
+  isCmdExeShell,
+  isPowershellShell,
+  isVersion5Powershell,
+  isWindowsOS,
+  quoteWindowsPath,
+} from "./utils";
 
 function fileName(filePath: string) {
   const match = filePath.match(/^.*\/([^/]+\.[^/]+)$/);
@@ -14,20 +20,18 @@ function fileName(filePath: string) {
 export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.TextEditor): void {
   const send = (s: string) => {
     const trimmed = s.trim();
-    if(trimmed) {
+    if (trimmed) {
       repl.show(true);
       repl.sendText(trimmed);
     }
   };
 
-  if(editor.selections.length === 1 && editor.selection.isEmpty) {
+  if (editor.selections.length === 1 && editor.selection.isEmpty) {
     send(editor.document.lineAt(editor.selection.active.line).text);
     return;
   }
 
-  editor.selections.forEach((sel) =>
-    send(editor.document.getText(sel))
-  );
+  editor.selections.forEach((sel) => send(editor.document.getText(sel)));
 }
 
 export function runFileInTerminal(
@@ -41,7 +45,7 @@ export function runFileInTerminal(
     terminal.sendText(isPowershellShell() || isCmdExeShell() ? `cls` : `clear`);
     const racketExePath = quoteWindowsPath(command[0], true);
     filePath = quoteWindowsPath(filePath, false);
-    terminal.sendText(`${racketExePath} ${command.slice(1).join(' ')} ${filePath}`);
+    terminal.sendText(`${racketExePath} ${command.slice(1).join(" ")} ${filePath}`);
   } else {
     terminal.sendText(`clear`);
     terminal.sendText(quote([...command, filePath]));
@@ -82,10 +86,10 @@ export function createRepl(filePath: string, command: string[]): vscode.Terminal
 
   if (isWindowsOS()) {
     const racketExePath = quoteWindowsPath(command[0], true);
-    let fullCommand = `${racketExePath} ${command.slice(1).join(' ')}`;
+    let fullCommand = `${racketExePath} ${command.slice(1).join(" ")}`;
     if (isCmdExeShell()) {
       fullCommand += ` --eval ^"(enter! (file \\^"${filePath}\\^"))^"`;
-    } else if (isPowershellShell()) {
+    } else if (isPowershellShell() && isVersion5Powershell()) {
       fullCommand += ` --eval '(enter! (file \\"${filePath}\\"))'`;
     } else {
       fullCommand += ` --eval '(enter! (file "${filePath}"))'`;
