@@ -104,7 +104,25 @@ However, if you would like to change some VSCode option _only_ for Racket (e.g. 
 
 ## Troubleshooting
 
-If you're trying to use Magic Racket on Windows, especially under Docker or WSL, you might be getting some errors regarding Gtk. This is caused by the langserver depending on Gtk to function properly, please see issue https://github.com/Eugleo/magic-racket/issues/51 for a workaround. Similar problems can be sometimes encountered on Linux. On both Linux and WSL, there is sometimes error about header being required to have a content-length property. For a fix, see issue https://github.com/Eugleo/magic-racket/issues/77.
+### GTK, other GUI dependencies
+
+If you're trying to use Magic Racket on Windows, especially under Docker or WSL,
+you might be getting some errors regarding GTK or other missing dynamic
+libraries. This is caused by the langserver
+depending on GTK to function properly, please see issue
+https://github.com/Eugleo/magic-racket/issues/51 for a workaround.
+
+Similar problems can be sometimes encountered on Linux, especially if your
+Racket installation is sandboxed via Snap or a similar style of alternative
+packaging. See https://github.com/Eugleo/magic-racket/issues/109 for more info.
+These issues likely indicate a packaging issue, so you may want to try
+installing Racket without any sandboxing layers like this.
+
+### `content-length` header
+
+On both Linux and WSL, there is sometimes error about header being required to
+have a content-length property. For a fix, see issue
+https://github.com/Eugleo/magic-racket/issues/77.
 
 ### Setting up `raco` properly
 
