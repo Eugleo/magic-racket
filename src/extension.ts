@@ -98,9 +98,11 @@ export function activate(context: vscode.ExtensionContext): void {
 
   const loadInRepl = reg("loadFileInRepl", () => com.loadInRepl(repls));
   const runInTerminal = reg("runFile", () => com.runInTerminal(terminals));
+  const testInTerminal = reg("testFile", () => com.testInTerminal(terminals));
   const executeSelection = reg("executeSelectionInRepl", () => com.executeSelection(repls));
   const openRepl = reg("openRepl", () => com.openRepl(repls));
   const showOutput = reg("showOutputTerminal", () => com.showOutput(terminals));
 
-  context.subscriptions.push(loadInRepl, runInTerminal, executeSelection, openRepl, showOutput);
+  context.subscriptions.push(
+    loadInRepl, runInTerminal, testInTerminal, executeSelection, openRepl, showOutput);
 }

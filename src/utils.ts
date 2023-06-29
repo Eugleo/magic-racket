@@ -52,6 +52,17 @@ export function withRacket(func: (command: string[]) => void): void {
   }
 }
 
+export function withRaco(func: (command: string[]) => void): void {
+  const raco = vscode.workspace.getConfiguration("magicRacket.general").get<string>("racoPath");
+  if (raco !== undefined && raco !== "") {
+    func([raco]);
+  } else {
+    vscode.window.showErrorMessage(
+      "Please configure the path to the Racket executable in settings.",
+    );
+  }
+}
+
 export function withREPL(func: (command: string[]) => void): void {
   const racket = vscode.workspace.getConfiguration("magicRacket.general").get<string>("racketPath");
   const args = vscode.workspace.getConfiguration("magicRacket.REPL").get<string[]>("arguments");
