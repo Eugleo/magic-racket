@@ -1,15 +1,11 @@
 import * as vscode from "vscode";
-import { exec } from "child_process";
 
 export const isWindowsOS: () => boolean = () => process.platform === "win32";
 export const isCmdExeShell: () => boolean = () => vscode.env.shell.endsWith("cmd.exe");
 export const isPowershellShell: () => boolean = () =>
   ["powershell.exe", "pwsh.exe", "pwsh"].some((p) => vscode.env.shell.endsWith(p));
-export const isVersion5Powershell = (): boolean => {
-  const command = 'powershell -Command "$PSVersionTable.PSVersion.Major"';
-  const majorVersion = parseInt(exec(command).toString());
-  return majorVersion === 5;
-};
+export const isVersion5Powershell = (): boolean =>
+  ["powershell.exe"].some((p) => vscode.env.shell.endsWith(p));
 
 export function quoteWindowsPath(path: string, isRacketExe: boolean): string {
   if (/\s/.test(path)) {
