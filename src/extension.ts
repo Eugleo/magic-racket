@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 // eslint-disable-next-line no-unused-vars
 import { LanguageClient, LanguageClientOptions } from "vscode-languageclient/node";
+import * as os from "os";
 import * as com from "./commands";
 import { TaskProvider } from "./tasks";
 import { withLanguageServer } from "./utils";
@@ -19,6 +20,20 @@ export function deactivate(): Promise<void> {
     return Promise.reject(new Error("There is no language server client to be deactivated"));
   }
   return langClient.stop();
+}
+
+function printEnvironmentInfo() {
+  const channel = vscode.window.createOutputChannel("Racket");
+  channel.appendLine("Magic Racket environment info");
+  channel.appendLine("");
+  channel.appendLine(`os.arch:            ${os.arch}`);
+  channel.appendLine(`os.platform:        ${os.platform}`);
+  channel.appendLine(`os.release:         ${os.release}`);
+  channel.appendLine(`os.version:         ${os.version}`);
+  channel.appendLine(`process.version:    ${process.version}`);
+  channel.appendLine(`vscode.env.appHost: ${vscode.env.appHost}`);
+  channel.appendLine(`vscode.env.appName: ${vscode.env.appName}`);
+  channel.appendLine(`vscode.env.shell:   ${vscode.env.shell}`);
 }
 
 function setupLSP() {
@@ -78,6 +93,7 @@ function configurationChanged() {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
+  printEnvironmentInfo();
   setupLSP();
   configurationChanged();
 
