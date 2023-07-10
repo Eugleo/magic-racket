@@ -2,7 +2,7 @@
   "name": "magic-racket",
   "displayName": "Magic Racket",
   "description": "LSP support, REPL integration, and top notch syntax highlighting for the coolest of Lisps!",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "activationEvents": [
     "onCommand:magic-racket.loadFileInRepl",
     "onCommand:magic-racket.runFile",
