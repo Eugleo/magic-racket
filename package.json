@@ -6,6 +6,7 @@
   "activationEvents": [
     "onCommand:magic-racket.loadFileInRepl",
     "onCommand:magic-racket.runFile",
+    "onCommand:magic-racket.testFile",
     "onCommand:magic-racket.executeSelectionInRepl",
     "onCommand:magic-racket.openRepl",
     "onCommand:magic-racket.showOutputTerminal",
@@ -180,6 +181,14 @@
         }
       },
       {
+        "command": "magic-racket.testFile",
+        "title": "Racket: Test file in terminal",
+        "icon": {
+          "light": "images/test.svg",
+          "dark": "images/test.svg"
+        }
+      },
+      {
         "command": "magic-racket.executeSelectionInRepl",
         "title": "Racket: Execute line or selection in REPL"
       },
@@ -197,6 +206,11 @@
         {
           "when": "editorLangId == racket",
           "command": "magic-racket.runFile",
+          "group": "navigation"
+        },
+        {
+          "when": "editorLangId == racket",
+          "command": "magic-racket.testFile",
           "group": "navigation"
         },
         {
