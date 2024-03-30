@@ -64,6 +64,10 @@
         "extensions": [
           ".rkt"
         ],
+        "icon": {
+          "light": "images/icon.png",
+          "dark": "images/icon.png"
+        },
         "configuration": "language-configuration.json"
       }
     ],
