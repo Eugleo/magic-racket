@@ -1164,7 +1164,7 @@ repository:
               (?: U[0-9a-fA-F]{1,6}) |
               (?:
                 (?:
-                  null? | newline | linefeed | backspace | vtab | page |
+                  null? | newline | linefeed | backspace | v?tab | page |
                   return | space | rubout | (?: [^\w\s] | \d)
                 )
                 (?![a-zA-Z])
