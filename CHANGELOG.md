@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.6.7 (2024-05-29)
+
+### Added
+
+- Extension now activates for all documents using the Racket language (even
+  those without files, such as unsaved buffers) (@jryans)
+- Extension icon now also used as the Racket language icon (@samestep)
+
+### Fixed
+
+- Character constants (e.g. `#\(`) are now marked as strings and no longer
+  confuse parenthesis matching (@xiaoyu2006)
+- Character constants list updated to include `#\tab` (@jryans)
+
 ## 0.6.6 (2023-07-10)
 
 ### Added
