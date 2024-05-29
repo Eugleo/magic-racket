@@ -1155,7 +1155,7 @@ repository:
 
   character:
     patterns:
-      - name: constant.character.racket
+      - name: string.quoted.single.racket
         match: |
           (?x) \#\\
             (?:
