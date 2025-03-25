@@ -12,6 +12,7 @@ patterns:
   - include: '#keyword'
   - include: '#symbols'
   - include: '#annotations'
+  - include: '#definitions'
   - name: keyword.other.rhombus
     match: "^#lang"
 
@@ -427,7 +428,7 @@ repository:
   base-keywords:
     patterns:
       - name: keyword.other.rhombus
-        match: (?<=^|\W)(import|export|open|defn|macro|block|println|print|values)(?=\W|$)
+        match: (?<=^|\W)(import|export|open|defn|macro|class|interface|nonfinal|implements|extends|override|field|constructor|immutable|private|internal|mutable|property|method|is_a|this|super|block|println|print|values|all_defined|use_static|together|annot|fun)(?=\W|$)
 
   control-keywords:
     patterns:
