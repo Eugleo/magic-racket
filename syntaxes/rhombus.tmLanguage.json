@@ -335,7 +335,7 @@
       "patterns": [
         {
           "name": "constant.language.rhombus",
-          "match": "(?x)\n  (?<=^|[()\\[\\]{}\",'`;\\s]) (\\#true|\\#false)\n  (?=[()\\[\\]{}\",'`;\\s])\n"
+          "match": "(?<=^|\\W)(\\#true|\\#false)(?=\\W|$)"
         }
       ]
     },

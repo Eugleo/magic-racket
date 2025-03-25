@@ -442,10 +442,7 @@ repository:
   bool:
     patterns:
       - name: constant.language.rhombus
-        match: |
-          (?x)
-            (?<=^|[()\[\]{}",'`;\s]) (\#true|\#false)
-            (?=[()\[\]{}",'`;\s])
+        match: (?<=^|\W)(\#true|\#false)(?=\W|$)
 
   character:
     patterns:
