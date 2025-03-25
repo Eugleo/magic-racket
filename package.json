@@ -69,6 +69,20 @@
           "dark": "images/icon.png"
         },
         "configuration": "language-configuration.json"
+      },{
+        "id": "rhombus",
+        "aliases": [
+          "Rhombus",
+          "rhombus"
+        ],
+        "extensions": [
+          ".rhm"
+        ],
+        "icon": {
+          "light": "images/icon.png",
+          "dark": "images/icon.png"
+        },
+        "configuration": "language-configuration-rhombus.json"
       }
     ],
     "grammars": [
@@ -76,6 +90,11 @@
         "language": "racket",
         "scopeName": "source.racket",
         "path": "./syntaxes/racket.tmLanguage.json"
+      }, 
+      {
+        "language": "rhombus",
+        "scopeName": "source.rhombus",
+        "path": "./syntaxes/rhombus.tmLanguage.json"
       }
     ],
     "configuration": {
@@ -238,6 +257,10 @@
       {
         "language": "racket",
         "path": "./snippets/racket.json"
+      },
+      {
+        "language": "rhombus",
+        "path": "./snippets/rhombus.json"
       }
     ]
   },
@@ -245,6 +268,8 @@
     "vscode:prepublish": "npm run build-base -- --minify",
     "package": "vsce package -o magic-racket.vsix",
     "build-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node --target=node16",
+    "build-syntax": "js-yaml syntaxes/src/racket.yaml > syntaxes/racket.tmLanguage.json && js-yaml syntaxes/src/rhombus.yaml > syntaxes/rhombus.tmLanguage.json",
+    "build-package": "npm run build-syntax && npm run package",
     "build": "npm run build-base -- --sourcemap",
     "watch": "npm run build-base -- --sourcemap --watch",
     "compile": "tsc -p ./",

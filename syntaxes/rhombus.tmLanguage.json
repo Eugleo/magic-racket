@@ -1,0 +1,478 @@
+{
+  "name": "Rhombus",
+  "scopeName": "source.rhombus",
+  "filetypes": [
+    "rhm"
+  ],
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#atom"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#keyword"
+    },
+    {
+      "include": "#symbols"
+    },
+    {
+      "include": "#annotations"
+    },
+    {
+      "name": "keyword.other.rhombus",
+      "match": "^#lang"
+    }
+  ],
+  "repository": {
+    "atom": {
+      "patterns": [
+        {
+          "include": "#bool"
+        },
+        {
+          "include": "#number"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "include": "#character"
+        },
+        {
+          "include": "#list"
+        },
+        {
+          "include": "#definitions"
+        }
+      ]
+    },
+    "definitions": {
+      "patterns": [
+        {
+          "match": "(?x) (?<=^|\\s)(def|let|fun)(\\s+mutable)?\\s+([\\p{L}_\\p{S}][\\p{L}\\p{N}\\p{Pc}\\p{S}]*)\n",
+          "captures": {
+            "1": {
+              "name": "storage.type.rhombus"
+            },
+            "2": {
+              "name": "storage.modifier.rhombus"
+            },
+            "3": {
+              "name": "variable.name.rhombus"
+            }
+          }
+        }
+      ]
+    },
+    "annotations": {
+      "patterns": [
+        {
+          "match": "(?x) ([\\p{L}_\\p{S}][\\p{L}\\p{N}\\p{Pc}\\p{S}]*)\\s*::\\s*([\\p{L}_\\p{S}][\\p{L}\\p{N}\\p{Pc}.()\\p{S}]*)\n",
+          "captures": {
+            "1": {
+              "name": "variable.name.rhombus"
+            },
+            "2": {
+              "name": "storage.type.rhombus"
+            }
+          }
+        }
+      ]
+    },
+    "symbols": {
+      "patterns": [
+        {
+          "name": "keyword.symbol.rhombus",
+          "match": "(?<=^|\\W)(\\#'[\\p{L}_\\p{S}][\\p{L}\\p{N}\\p{Pc}\\p{S}]*)(?=\\W|$)",
+          "captures": {
+            "1": {
+              "name": "keyword.operator.rhombus"
+            }
+          }
+        }
+      ]
+    },
+    "list": {
+      "patterns": [
+        {
+          "name": "meta.list.rhombus",
+          "begin": "\\(",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.list.begin.rhombus"
+            }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.list.end.rhombus"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#list-content"
+            }
+          ]
+        },
+        {
+          "name": "meta.list.rhombus",
+          "begin": "\\[",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.list.begin.rhombus"
+            }
+          },
+          "end": "\\]",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.list.end.rhombus"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#list-content"
+            }
+          ]
+        },
+        {
+          "name": "meta.list.rhombus",
+          "begin": "{",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.list.begin.rhombus"
+            }
+          },
+          "end": "}",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.list.end.rhombus"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#list-content"
+            }
+          ]
+        }
+      ]
+    },
+    "list-content": {
+      "patterns": [
+        {
+          "include": "$base"
+        }
+      ]
+    },
+    "number": {
+      "patterns": [
+        {
+          "include": "#number-dec"
+        },
+        {
+          "include": "#number-oct"
+        },
+        {
+          "include": "#number-bin"
+        },
+        {
+          "include": "#number-hex"
+        }
+      ]
+    },
+    "number-dec": {
+      "patterns": [
+        {
+          "name": "constant.numeric.rhombus",
+          "match": "(?x)\n  (?<=^|[()\\[\\]{}\",'`;\\s])\n  (?: (?: \\#[dD])?(?: \\#[eEiI])? | (?: \\#[eEiI])?(?: \\#[dD])?)\n  (?:\n    # Complex numbers with @\n    (?:\n      (?:\n        (?:\n          (?:\n            (?: [+-]? \\d+ \\#* \\/ \\d+ \\#*)|\n            (?: [+-]? \\d+ \\. \\d+ \\#*) |\n            (?: [+-]? \\d+ \\#* \\. \\#*) |\n            (?: [+-]? \\d+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? \\d+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      ) @\n      (?:\n        (?:\n          (?:\n            (?: [+-]? \\d+ \\#* \\/ \\d+ \\#*)|\n            (?: [+-]? \\d+ \\. \\d+ \\#*) |\n            (?: [+-]? \\d+ \\#* \\. \\#*) |\n            (?: [+-]? \\d+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? \\d+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      )\n    ) |\n    # Complex numbers\n    (?:\n      (?:\n        (?:\n          (?:\n            (?: [+-]? \\d+ \\#* \\/ \\d+ \\#*)|\n            (?: [+-]? \\d+ \\. \\d+ \\#*) |\n            (?: [+-]? \\d+ \\#* \\. \\#*) |\n            (?: [+-]? \\d+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? \\d+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      )? [+-]\n      (?:\n        (?:\n          (?:\n            (?: [+-]? \\d+ \\#* \\/ \\d+ \\#*)|\n            (?: [+-]? \\d+ \\. \\d+ \\#*) |\n            (?: [+-]? \\d+ \\#* \\. \\#*) |\n            (?: [+-]? \\d+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? \\d+)?\n        ) |\n        (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f]) |\n      ) i\n    ) |\n    [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f]) |\n    # Real numbers\n    (?:\n      (?: [+-]? \\d+ \\#* \\/ \\d+ \\#*)|\n      (?: [+-]? \\d* \\. \\d+ \\#*) |\n      (?: [+-]? \\d+ \\#* \\. \\#*) |\n      (?: [+-]? \\d+ \\#*)\n    ) (?: [sldefSLDEF] [+-]? \\d+)?\n  ) (?=$|[()\\[\\]{}\",'`;\\s])\n"
+        }
+      ]
+    },
+    "number-oct": {
+      "patterns": [
+        {
+          "name": "constant.numeric.octal.rhombus",
+          "match": "(?x)\n  (?<=^|[()\\[\\]{}\",'`;\\s])\n  (?: \\#[oO](?: \\#[eEiI])? | (?: \\#[eEiI])?\\#[oO])\n  (?:\n    # Complex numbers with @\n    (?:\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [0-7]+ \\#* \\/ [0-7]+ \\#*)|\n            (?: [+-]? [0-7]+ \\. [0-7]+ \\#*) |\n            (?: [+-]? [0-7]+ \\#* \\. \\#*) |\n            (?: [+-]? [0-7]+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? [0-7]+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      ) @\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [0-7]+ \\#* \\/ [0-7]+ \\#*)|\n            (?: [+-]? [0-7]+ \\. [0-7]+ \\#*) |\n            (?: [+-]? [0-7]+ \\#* \\. \\#*) |\n            (?: [+-]? [0-7]+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? [0-7]+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      )\n    ) |\n    # Complex numbers\n    (?:\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [0-7]+ \\#* \\/ [0-7]+ \\#*)|\n            (?: [+-]? [0-7]+ \\. [0-7]+ \\#*) |\n            (?: [+-]? [0-7]+ \\#* \\. \\#*) |\n            (?: [+-]? [0-7]+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? [0-7]+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      )? [+-]\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [0-7]+ \\#* \\/ [0-7]+ \\#*)|\n            (?: [+-]? [0-7]+ \\. [0-7]+ \\#*) |\n            (?: [+-]? [0-7]+ \\#* \\. \\#*) |\n            (?: [+-]? [0-7]+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? [0-7]+)?\n        ) |\n        (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f]) |\n      ) i\n    ) |\n    [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f]) |\n    # Real numbers\n    (?:\n      (?: [+-]? [0-7]+ \\#* \\/ [0-7]+ \\#*)|\n      (?: [+-]? [0-7]* \\. [0-7]+ \\#*) |\n      (?: [+-]? [0-7]+ \\#* \\. \\#*) |\n      (?: [+-]? [0-7]+ \\#*)\n    ) (?: [sldefSLDEF] [+-]? [0-7]+)?\n  ) (?=$|[()\\[\\]{}\",'`;\\s])\n"
+        }
+      ]
+    },
+    "number-bin": {
+      "patterns": [
+        {
+          "name": "constant.numeric.bin.rhombus",
+          "match": "(?x)\n  (?<=^|[()\\[\\]{}\",'`;\\s])\n  (?: \\#[bB](?: \\#[eEiI])? | (?: \\#[eEiI])?\\#[bB])\n  (?:\n    # Complex numbers with @\n    (?:\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [01]+ \\#* \\/ [01]+ \\#*)|\n            (?: [+-]? [01]+ \\. [01]+ \\#*) |\n            (?: [+-]? [01]+ \\#* \\. \\#*) |\n            (?: [+-]? [01]+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? [01]+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      ) @\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [01]+ \\#* \\/ [01]+ \\#*)|\n            (?: [+-]? [01]+ \\. [01]+ \\#*) |\n            (?: [+-]? [01]+ \\#* \\. \\#*) |\n            (?: [+-]? [01]+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? [01]+)?\n        ) |\n        (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      )\n    ) |\n    # Complex numbers\n    (?:\n      (?:\n        (?:\n         (?:\n            (?: [+-]? [01]+ \\#* \\/ [01]+ \\#*)|\n            (?: [+-]? [01]+ \\. [01]+ \\#*) |\n            (?: [+-]? [01]+ \\#* \\. \\#*) |\n            (?: [+-]? [01]+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? [01]+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      )? [+-]\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [01]+ \\#* \\/ [01]+ \\#*)|\n            (?: [+-]? [01]+ \\. [01]+ \\#*) |\n            (?: [+-]? [01]+ \\#* \\. \\#*) |\n            (?: [+-]? [01]+ \\#*)\n          ) (?: [sldefSLDEF] [+-]? [01]+)?\n        ) |\n        (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f]) |\n      ) i\n    ) |\n    [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f]) |\n    # Real numbers\n    (?:\n      (?: [+-]? [01]+ \\#* \\/ [01]+ \\#*)|\n      (?: [+-]? [01]* \\. [01]+ \\#*) |\n      (?: [+-]? [01]+ \\#* \\. \\#*) |\n      (?: [+-]? [01]+ \\#*)\n    ) (?: [sldefSLDEF] [+-]? [01]+)?\n  ) (?=$|[()\\[\\]{}\",'`;\\s])\n"
+        }
+      ]
+    },
+    "number-hex": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.rhombus",
+          "match": "(?x)\n  (?<=^|[()\\[\\]{}\",'`;\\s])\n  (?: \\#[xX](?: \\#[eEiI])? | (?: \\#[eEiI])?\\#[xX])\n  (?:\n    # Complex numbers with @\n    (?:\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [0-9a-fA-F]+ \\#* \\/ [0-9a-fA-F]+ \\#*)|\n            (?: [+-]? [0-9a-fA-F] \\. [0-9a-fA-F]+ \\#*) |\n            (?: [+-]? [0-9a-fA-F]+ \\#* \\. \\#*) |\n            (?: [+-]? [0-9a-fA-F]+ \\#*)\n          ) (?: [slSL] [+-]? [0-9a-fA-F]+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      ) @\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [0-9a-fA-F]+ \\#* \\/ [0-9a-fA-F]+ \\#*)|\n            (?: [+-]? [0-9a-fA-F]+ \\. [0-9a-fA-F]+ \\#*) |\n            (?: [+-]? [0-9a-fA-F]+ \\#* \\. \\#*) |\n            (?: [+-]? [0-9a-fA-F]+ \\#*)\n          ) (?: [slSL] [+-]? [0-9a-fA-F]+)?\n        ) |\n        (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      )\n    ) |\n    # Complex numbers\n    (?:\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [0-9a-fA-F]+ \\#* \\/ [0-9a-fA-F]+ \\#*)|\n            (?: [+-]? [0-9a-fA-F]+ \\. [0-9a-fA-F]+ \\#*) |\n            (?: [+-]? [0-9a-fA-F]+ \\#* \\. \\#*) |\n            (?: [+-]? [0-9a-fA-F]+ \\#*)\n          ) (?: [slSL] [+-]? [0-9a-fA-F]+)?\n        ) |\n        [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f])\n      )? [+-]\n      (?:\n        (?:\n          (?:\n            (?: [+-]? [0-9a-fA-F]+ \\#* \\/ [0-9a-fA-F]+ \\#*)|\n            (?: [+-]? [0-9a-fA-F]+ \\. [0-9a-fA-F]+ \\#*) |\n            (?: [+-]? [0-9a-fA-F]+ \\#* \\. \\#*) |\n            (?: [+-]? [0-9a-fA-F]+ \\#*)\n          ) (?: [slSL] [+-]? [0-9a-fA-F]+)?\n        ) |\n        (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f]) |\n      ) i\n    ) |\n    [+-] (?: (?: [iI][nN][fF])\\.[0f] | (?: [nN][aA][nN])\\.[0f]) |\n    # Real numbers\n    (?:\n      (?: [+-]? [0-9a-fA-F]+ \\#* \\/ [0-9a-fA-F]+ \\#*)|\n      (?: [+-]? [0-9a-fA-F]* \\. [0-9a-fA-F]+ \\#*) |\n      (?: [+-]? [0-9a-fA-F]+ \\#* \\. \\#*) |\n      (?: [+-]? [0-9a-fA-F]+ \\#*)\n    ) (?: [slSL] [+-]? [0-9a-fA-F]+)?\n  ) (?=$|[()\\[\\]{}\",'`;\\s])\n"
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "include": "#comment-line"
+        },
+        {
+          "include": "#comment-block"
+        },
+        {
+          "include": "#comment-group"
+        }
+      ]
+    },
+    "comment-group": {
+      "patterns": [
+        {
+          "name": "comment.group.rhombus",
+          "match": "(?<=^|[()\\[\\]{}\",'`;\\s])#//"
+        }
+      ]
+    },
+    "comment-line": {
+      "patterns": [
+        {
+          "name": "comment.line.unix.rhombus",
+          "match": "(#!)[ /].*$",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.comment.rhombus"
+            }
+          }
+        },
+        {
+          "name": "comment.line.rhombus",
+          "match": "(?x) (//) .* $",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.comment.rhombus"
+            }
+          }
+        }
+      ]
+    },
+    "comment-block": {
+      "patterns": [
+        {
+          "name": "comment.block.rhombus",
+          "begin": "\\/\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.begin.rhombus"
+            }
+          },
+          "end": "\\*\\/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.end.rhombus"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comment-block"
+            }
+          ]
+        }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "name": "keyword.other.rhombus",
+          "match": "(?x) (?<=\\p{Z}|^)(~[\\p{L}_\\p{S}][\\p{L}\\p{N}\\p{Pc}\\p{S}]*)(?=\\p{Z}|\\W|$)\n"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "include": "#base-keywords"
+        },
+        {
+          "include": "#control-keywords"
+        },
+        {
+          "include": "#operator-keywords"
+        }
+      ]
+    },
+    "base-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.other.rhombus",
+          "match": "(?<=^|\\W)(import|export|open|defn|macro|block|println|print|values)(?=\\W|$)"
+        }
+      ]
+    },
+    "control-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.rhombus",
+          "match": "(?<=^|\\W)(match|cond|for|if|each|keep_when)(?=\\W|$)"
+        }
+      ]
+    },
+    "operator-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.operator.rhombus",
+          "match": "(\\.\\.\\.)(?=\\W|$)"
+        }
+      ]
+    },
+    "bool": {
+      "patterns": [
+        {
+          "name": "constant.language.rhombus",
+          "match": "(?x)\n  (?<=^|[()\\[\\]{}\",'`;\\s]) (\\#true|\\#false)\n  (?=[()\\[\\]{}\",'`;\\s])\n"
+        }
+      ]
+    },
+    "character": {
+      "patterns": [
+        {
+          "name": "string.quoted.single.rhombus",
+          "match": "(?x) \\#\\\\\n  (?:\n    (?: [0-7]{3}) |\n    (?: u[0-9a-fA-F]{1,4}) |\n    (?: U[0-9a-fA-F]{1,6}) |\n    (?:\n      (?:\n        null? | newline | linefeed | backspace | v?tab | page |\n        return | space | rubout | (?: [^\\w\\s] | \\d)\n      )\n      (?![a-zA-Z])\n    ) |\n    (?: [^\\W\\d](?=[\\W\\d]) | \\W )\n  )\n"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "include": "#byte-string"
+        },
+        {
+          "include": "#regexp-string"
+        },
+        {
+          "include": "#base-string"
+        }
+      ]
+    },
+    "base-string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.rhombus",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": [
+              {
+                "name": "punctuation.definition.string.begin.rhombus"
+              }
+            ]
+          },
+          "end": "\"",
+          "endCaptures": {
+            "0": [
+              {
+                "name": "punctuation.definition.string.end.rhombus"
+              }
+            ]
+          },
+          "patterns": [
+            {
+              "include": "#escape-char"
+            }
+          ]
+        }
+      ]
+    },
+    "byte-string": {
+      "patterns": [
+        {
+          "name": "string.byte.rhombus",
+          "begin": "#\"",
+          "beginCaptures": {
+            "0": [
+              {
+                "name": "punctuation.definition.string.begin.rhombus"
+              }
+            ]
+          },
+          "end": "\"",
+          "endCaptures": {
+            "0": [
+              {
+                "name": "punctuation.definition.string.end.rhombus"
+              }
+            ]
+          },
+          "patterns": [
+            {
+              "include": "#escape-char-base"
+            }
+          ]
+        }
+      ]
+    },
+    "regexp-string": {
+      "patterns": [
+        {
+          "name": "string.regexp.rhombus",
+          "begin": "#rx'",
+          "beginCaptures": {
+            "0": [
+              {
+                "name": "punctuation.definition.string.begin.rhombus"
+              }
+            ]
+          },
+          "end": "'",
+          "endCaptures": {
+            "0": [
+              {
+                "name": "punctuation.definition.string.end.rhombus"
+              }
+            ]
+          },
+          "patterns": [
+            {
+              "include": "#escape-char-base"
+            }
+          ]
+        }
+      ]
+    },
+    "escape-char": {
+      "patterns": [
+        {
+          "include": "#escape-char-base"
+        },
+        {
+          "name": "constant.character.escape.rhombus",
+          "match": "(?x) \\\\\n  (?:\n   (?: u[\\da-fA-F]{1,4}) |\n   (?: U[\\da-fA-F]{1,8})\n  )\n"
+        },
+        {
+          "include": "#escape-char-error"
+        }
+      ]
+    },
+    "escape-char-base": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.rhombus",
+          "match": "(?x) \\\\\n  (?:\n   (?: [abtnvfre\"'\\\\]) |\n   (?: [0-7]{1,3}) |\n   (?: x[\\da-fA-F]{1,2})\n )\n"
+        }
+      ]
+    },
+    "escape-char-error": {
+      "patterns": [
+        {
+          "name": "invalid.illegal.escape.rhombus",
+          "match": "\\\\."
+        }
+      ]
+    }
+  }
+}
