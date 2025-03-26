@@ -53,7 +53,7 @@ function setupLSP() {
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
       // Register the server for Racket documents
-      documentSelector: [{ language: "racket" }],
+      documentSelector: [{ language: "racket" }, { language: "rhombus" }],
       // Fix URI encoding on Windows (#13)
       uriConverters: {
         code2Protocol: (uri) => uri.toString(true),

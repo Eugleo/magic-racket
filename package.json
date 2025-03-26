@@ -218,19 +218,19 @@
     "menus": {
       "editor/title": [
         {
-          "when": "editorLangId == racket",
+          "when": "editorLangId == racket || editorLangId == rhombus",
           "command": "magic-racket.runFile",
           "group": "navigation"
         },
         {
-          "when": "editorLangId == racket",
+          "when": "editorLangId == racket || editorLangId == rhombus",
           "command": "magic-racket.loadFileInRepl",
           "group": "navigation"
         }
       ],
       "editor/context": [
         {
-          "when": "resourceLangId == racket && editorHasSelection",
+          "when": "(resourceLangId == racket || resourceLangId == rhombus) && editorHasSelection",
           "command": "magic-racket.executeSelectionInRepl",
           "group": "z_commands"
         }
@@ -240,7 +240,7 @@
       {
         "command": "magic-racket.executeSelectionInRepl",
         "key": "Alt+Enter",
-        "when": "resourceLangId == racket && editorTextFocus"
+        "when": "(resourceLangId == racket || resourceLangId == rhombus) && editorTextFocus"
       },
       {
         "key": "Alt+\\",
@@ -269,7 +269,7 @@
     "package": "vsce package -o magic-racket.vsix",
     "build-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node --target=node16",
     "build-syntax": "js-yaml syntaxes/src/racket.yaml > syntaxes/racket.tmLanguage.json && js-yaml syntaxes/src/rhombus.yaml > syntaxes/rhombus.tmLanguage.json",
-    "build-package": "npm run build-syntax && npm run package",
+    "build-package": "npm run build && npm run build-syntax && npm run package",
     "build": "npm run build-base -- --sourcemap",
     "watch": "npm run build-base -- --sourcemap --watch",
     "compile": "tsc -p ./",
