@@ -268,7 +268,7 @@
     "vscode:prepublish": "npm run build-base -- --minify",
     "package": "vsce package -o magic-racket.vsix",
     "build-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node --target=node16",
-    "build-syntax": "js-yaml syntaxes/src/racket.yaml > syntaxes/racket.tmLanguage.json && js-yaml syntaxes/src/rhombus.yaml > syntaxes/rhombus.tmLanguage.json",
+    "build-syntax": "js-yaml syntaxes/src/racket.yaml > syntaxes/racket.tmLanguage.json && js-yaml syntaxes/src/rhombus.yaml > syntaxes/rhombus.tmLanguage.json && node syntaxes/postprocess.js ",
     "build-package": "npm run build && npm run build-syntax && npm run package",
     "build": "npm run build-base -- --sourcemap",
     "watch": "npm run build-base -- --sourcemap --watch",
