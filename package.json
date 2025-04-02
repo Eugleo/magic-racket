@@ -302,6 +302,7 @@
   },
   "dependencies": {
     "shell-quote": "^1.8.0",
-    "vscode-languageclient": "^7.0.0"
+    "vscode-languageclient": "^7.0.0",
+    "js-yaml": "^4.1.0"
   }
 }
