@@ -295,6 +295,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^5.1.0",
     "glob": "^7.1.7",
+    "js-yaml": "^4.1.0",
     "mocha": "^10.2.0",
     "prettier": "^2.3.2",
     "typescript": "^4.3.2",
@@ -302,7 +303,6 @@
   },
   "dependencies": {
     "shell-quote": "^1.8.0",
-    "vscode-languageclient": "^7.0.0",
-    "js-yaml": "^4.1.0"
+    "vscode-languageclient": "^7.0.0"
   }
 }
