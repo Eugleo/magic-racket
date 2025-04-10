@@ -68,7 +68,7 @@
           "light": "images/icon.png",
           "dark": "images/icon.png"
         },
-        "configuration": "language-configuration.json"
+        "configuration": "./language-configurations/racket.json"
       },{
         "id": "rhombus",
         "aliases": [
@@ -82,7 +82,7 @@
           "light": "images/icon.png",
           "dark": "images/icon.png"
         },
-        "configuration": "language-configuration-rhombus.json"
+        "configuration": "./language-configurations/rhombus.json"
       }
     ],
     "grammars": [
