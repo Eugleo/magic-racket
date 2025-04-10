@@ -1,0 +1,542 @@
+---
+name: Rhombus
+scopeName: source.rhombus
+
+filetypes:
+  - rhm
+
+patterns:
+  - include: '#comment'
+  - include: '#atom'
+  - include: '#keywords'
+  - include: '#keyword'
+  - include: '#symbols'
+  - include: '#annotations'
+  - include: '#definitions'
+  - name: keyword.other.rhombus
+    match: "^#lang"
+
+repository:
+  atom:
+    patterns:
+      - include: '#bool'
+      - include: '#number'
+      - include: '#string'
+      - include: '#keyword'
+      - include: '#character'
+      - include: '#list'
+      - include: '#definitions'
+
+  definitions:
+    patterns:
+      - match: | 
+          (?x) (?<=^|\s)(def|let|fun)(\s+mutable)?\s+([\p{L}_\p{S}][\p{L}\p{N}\p{Pc}\p{S}]*)
+        captures:
+          '1':
+            name: storage.type.rhombus
+          '2':
+            name: storage.modifier.rhombus
+          '3':
+            name: variable.name.rhombus
+
+  annotations:
+    patterns:
+      - match: |
+          (?x) ([\p{L}_\p{S}][\p{L}\p{N}\p{Pc}\p{S}]*)\s*::\s*([\p{L}_\p{S}][\p{L}\p{N}\p{Pc}.()\p{S}]*)
+        captures:
+          '1':
+            name: variable.name.rhombus
+          '2':
+            name: storage.type.rhombus
+  
+  symbols:
+    patterns: 
+      - name: keyword.symbol.rhombus
+        match: (?<=^|\W)(\#'[\p{L}_\p{S}][\p{L}\p{N}\p{Pc}\p{S}]*)(?=\W|$)
+        captures:
+          '1':
+            name: keyword.operator.rhombus
+  list:
+    patterns:
+      - name: meta.list.rhombus
+        begin: "\\("
+        beginCaptures:
+          '0':
+            name: punctuation.section.list.begin.rhombus
+        end: "\\)"
+        endCaptures:
+          '0':
+            name: punctuation.section.list.end.rhombus
+        patterns:
+          - include: '#list-content'
+      - name: meta.list.rhombus
+        begin: "\\["
+        beginCaptures:
+          '0':
+            name: punctuation.section.list.begin.rhombus
+        end: "\\]"
+        endCaptures:
+          '0':
+            name: punctuation.section.list.end.rhombus
+        patterns:
+          - include: '#list-content'
+      - name: meta.list.rhombus
+        begin: "{"
+        beginCaptures:
+          '0':
+            name: punctuation.section.list.begin.rhombus
+        end: "}"
+        endCaptures:
+          '0':
+            name: punctuation.section.list.end.rhombus
+        patterns:
+          - include: '#list-content'
+
+  list-content:
+    patterns:
+      - include: $base
+
+  number:
+    patterns:
+      - include: '#number-dec'
+      - include: '#number-oct'
+      - include: '#number-bin'
+      - include: '#number-hex'
+
+  number-dec:
+    patterns:
+      - name: constant.numeric.rhombus
+        match: |
+          (?x)
+            (?<=^|[()\[\]{}",'`;\s])
+            (?: (?: \#[dD])?(?: \#[eEiI])? | (?: \#[eEiI])?(?: \#[dD])?)
+            (?:
+              # Complex numbers with @
+              (?:
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? \d+ \#* \/ \d+ \#*)|
+                      (?: [+-]? \d+ \. \d+ \#*) |
+                      (?: [+-]? \d+ \#* \. \#*) |
+                      (?: [+-]? \d+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? \d+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                ) @
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? \d+ \#* \/ \d+ \#*)|
+                      (?: [+-]? \d+ \. \d+ \#*) |
+                      (?: [+-]? \d+ \#* \. \#*) |
+                      (?: [+-]? \d+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? \d+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                )
+              ) |
+              # Complex numbers
+              (?:
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? \d+ \#* \/ \d+ \#*)|
+                      (?: [+-]? \d+ \. \d+ \#*) |
+                      (?: [+-]? \d+ \#* \. \#*) |
+                      (?: [+-]? \d+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? \d+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                )? [+-]
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? \d+ \#* \/ \d+ \#*)|
+                      (?: [+-]? \d+ \. \d+ \#*) |
+                      (?: [+-]? \d+ \#* \. \#*) |
+                      (?: [+-]? \d+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? \d+)?
+                  ) |
+                  (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f]) |
+                ) i
+              ) |
+              [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f]) |
+              # Real numbers
+              (?:
+                (?: [+-]? \d+ \#* \/ \d+ \#*)|
+                (?: [+-]? \d* \. \d+ \#*) |
+                (?: [+-]? \d+ \#* \. \#*) |
+                (?: [+-]? \d+ \#*)
+              ) (?: [sldefSLDEF] [+-]? \d+)?
+            ) (?=$|[()\[\]{}",'`;\s])
+
+  number-oct:
+    patterns:
+      - name: constant.numeric.octal.rhombus
+        match: |
+          (?x)
+            (?<=^|[()\[\]{}",'`;\s])
+            (?: \#[oO](?: \#[eEiI])? | (?: \#[eEiI])?\#[oO])
+            (?:
+              # Complex numbers with @
+              (?:
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [0-7]+ \#* \/ [0-7]+ \#*)|
+                      (?: [+-]? [0-7]+ \. [0-7]+ \#*) |
+                      (?: [+-]? [0-7]+ \#* \. \#*) |
+                      (?: [+-]? [0-7]+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? [0-7]+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                ) @
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [0-7]+ \#* \/ [0-7]+ \#*)|
+                      (?: [+-]? [0-7]+ \. [0-7]+ \#*) |
+                      (?: [+-]? [0-7]+ \#* \. \#*) |
+                      (?: [+-]? [0-7]+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? [0-7]+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                )
+              ) |
+              # Complex numbers
+              (?:
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [0-7]+ \#* \/ [0-7]+ \#*)|
+                      (?: [+-]? [0-7]+ \. [0-7]+ \#*) |
+                      (?: [+-]? [0-7]+ \#* \. \#*) |
+                      (?: [+-]? [0-7]+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? [0-7]+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                )? [+-]
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [0-7]+ \#* \/ [0-7]+ \#*)|
+                      (?: [+-]? [0-7]+ \. [0-7]+ \#*) |
+                      (?: [+-]? [0-7]+ \#* \. \#*) |
+                      (?: [+-]? [0-7]+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? [0-7]+)?
+                  ) |
+                  (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f]) |
+                ) i
+              ) |
+              [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f]) |
+              # Real numbers
+              (?:
+                (?: [+-]? [0-7]+ \#* \/ [0-7]+ \#*)|
+                (?: [+-]? [0-7]* \. [0-7]+ \#*) |
+                (?: [+-]? [0-7]+ \#* \. \#*) |
+                (?: [+-]? [0-7]+ \#*)
+              ) (?: [sldefSLDEF] [+-]? [0-7]+)?
+            ) (?=$|[()\[\]{}",'`;\s])
+
+  number-bin:
+    patterns:
+      - name: constant.numeric.bin.rhombus
+        match: |
+          (?x)
+            (?<=^|[()\[\]{}",'`;\s])
+            (?: \#[bB](?: \#[eEiI])? | (?: \#[eEiI])?\#[bB])
+            (?:
+              # Complex numbers with @
+              (?:
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [01]+ \#* \/ [01]+ \#*)|
+                      (?: [+-]? [01]+ \. [01]+ \#*) |
+                      (?: [+-]? [01]+ \#* \. \#*) |
+                      (?: [+-]? [01]+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? [01]+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                ) @
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [01]+ \#* \/ [01]+ \#*)|
+                      (?: [+-]? [01]+ \. [01]+ \#*) |
+                      (?: [+-]? [01]+ \#* \. \#*) |
+                      (?: [+-]? [01]+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? [01]+)?
+                  ) |
+                  (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                )
+              ) |
+              # Complex numbers
+              (?:
+                (?:
+                  (?:
+                   (?:
+                      (?: [+-]? [01]+ \#* \/ [01]+ \#*)|
+                      (?: [+-]? [01]+ \. [01]+ \#*) |
+                      (?: [+-]? [01]+ \#* \. \#*) |
+                      (?: [+-]? [01]+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? [01]+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                )? [+-]
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [01]+ \#* \/ [01]+ \#*)|
+                      (?: [+-]? [01]+ \. [01]+ \#*) |
+                      (?: [+-]? [01]+ \#* \. \#*) |
+                      (?: [+-]? [01]+ \#*)
+                    ) (?: [sldefSLDEF] [+-]? [01]+)?
+                  ) |
+                  (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f]) |
+                ) i
+              ) |
+              [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f]) |
+              # Real numbers
+              (?:
+                (?: [+-]? [01]+ \#* \/ [01]+ \#*)|
+                (?: [+-]? [01]* \. [01]+ \#*) |
+                (?: [+-]? [01]+ \#* \. \#*) |
+                (?: [+-]? [01]+ \#*)
+              ) (?: [sldefSLDEF] [+-]? [01]+)?
+            ) (?=$|[()\[\]{}",'`;\s])
+
+  number-hex:
+    patterns:
+      - name: constant.numeric.hex.rhombus
+        match: |
+          (?x)
+            (?<=^|[()\[\]{}",'`;\s])
+            (?: \#[xX](?: \#[eEiI])? | (?: \#[eEiI])?\#[xX])
+            (?:
+              # Complex numbers with @
+              (?:
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [0-9a-fA-F]+ \#* \/ [0-9a-fA-F]+ \#*)|
+                      (?: [+-]? [0-9a-fA-F] \. [0-9a-fA-F]+ \#*) |
+                      (?: [+-]? [0-9a-fA-F]+ \#* \. \#*) |
+                      (?: [+-]? [0-9a-fA-F]+ \#*)
+                    ) (?: [slSL] [+-]? [0-9a-fA-F]+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                ) @
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [0-9a-fA-F]+ \#* \/ [0-9a-fA-F]+ \#*)|
+                      (?: [+-]? [0-9a-fA-F]+ \. [0-9a-fA-F]+ \#*) |
+                      (?: [+-]? [0-9a-fA-F]+ \#* \. \#*) |
+                      (?: [+-]? [0-9a-fA-F]+ \#*)
+                    ) (?: [slSL] [+-]? [0-9a-fA-F]+)?
+                  ) |
+                  (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                )
+              ) |
+              # Complex numbers
+              (?:
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [0-9a-fA-F]+ \#* \/ [0-9a-fA-F]+ \#*)|
+                      (?: [+-]? [0-9a-fA-F]+ \. [0-9a-fA-F]+ \#*) |
+                      (?: [+-]? [0-9a-fA-F]+ \#* \. \#*) |
+                      (?: [+-]? [0-9a-fA-F]+ \#*)
+                    ) (?: [slSL] [+-]? [0-9a-fA-F]+)?
+                  ) |
+                  [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f])
+                )? [+-]
+                (?:
+                  (?:
+                    (?:
+                      (?: [+-]? [0-9a-fA-F]+ \#* \/ [0-9a-fA-F]+ \#*)|
+                      (?: [+-]? [0-9a-fA-F]+ \. [0-9a-fA-F]+ \#*) |
+                      (?: [+-]? [0-9a-fA-F]+ \#* \. \#*) |
+                      (?: [+-]? [0-9a-fA-F]+ \#*)
+                    ) (?: [slSL] [+-]? [0-9a-fA-F]+)?
+                  ) |
+                  (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f]) |
+                ) i
+              ) |
+              [+-] (?: (?: [iI][nN][fF])\.[0f] | (?: [nN][aA][nN])\.[0f]) |
+              # Real numbers
+              (?:
+                (?: [+-]? [0-9a-fA-F]+ \#* \/ [0-9a-fA-F]+ \#*)|
+                (?: [+-]? [0-9a-fA-F]* \. [0-9a-fA-F]+ \#*) |
+                (?: [+-]? [0-9a-fA-F]+ \#* \. \#*) |
+                (?: [+-]? [0-9a-fA-F]+ \#*)
+              ) (?: [slSL] [+-]? [0-9a-fA-F]+)?
+            ) (?=$|[()\[\]{}",'`;\s])
+
+  comment:
+    patterns:
+      - include: '#comment-line'
+      - include: '#comment-block'
+      - include: '#comment-group'
+
+  comment-group:
+    patterns:
+      - name: comment.group.rhombus
+        match: "(?<=^|[()\\[\\]{}\",'`;\\s])#//"
+
+  comment-line:
+    patterns:
+      - name: comment.line.unix.rhombus
+        match: "(#!)[ \/].*$"
+        beginCaptures:
+          '1':
+            name: punctuation.definition.comment.rhombus
+      - name: comment.line.rhombus
+        match: (?x) (//) .* $
+        captures:
+          '1':
+            name: punctuation.definition.comment.rhombus
+
+  comment-block:
+    patterns:
+      - name: comment.block.rhombus
+        begin: "\\/\\*"
+        beginCaptures:
+          '0':
+            name: punctuation.definition.comment.begin.rhombus
+        end: "\\*\\/"
+        endCaptures:
+          '0':
+            name: punctuation.definition.comment.end.rhombus
+        patterns:
+          - include: '#comment-block'
+
+  keyword:
+    patterns:
+      - name: keyword.other.rhombus
+        match: |
+          (?x) (?<=\p{Z}|^)(~[\p{L}_\p{S}][\p{L}\p{N}\p{Pc}\p{S}]*)(?=\p{Z}|\W|$)
+  
+  keywords:
+    patterns:
+      - include: '#base-keywords'
+      - include: '#control-keywords'
+      - include: '#operator-keywords'
+  
+  base-keywords:
+    patterns:
+      - name: keyword.other.rhombus
+        match: (?<=^|\W)(import|export|open|defn|macro|class|interface|nonfinal|implements|extends|override|field|constructor|immutable|private|internal|mutable|property|method|is_a|this|super|block|println|print|values|all_defined|use_static|together|annot|fun)(?=\W|$)
+
+  control-keywords:
+    patterns:
+      - name: keyword.control.rhombus
+        match: (?<=^|\W)(match|cond|for|if|each|keep_when)(?=\W|$)
+  
+  operator-keywords:
+    patterns:
+      - name: keyword.operator.rhombus
+        match: (\.\.\.)(?=\W|$)
+
+  bool:
+    patterns:
+      - name: constant.language.rhombus
+        match: (?<=^|\W)(\#true|\#false)(?=\W|$)
+
+  character:
+    patterns:
+      - name: string.quoted.single.rhombus
+        match: |
+          (?x) \#\\
+            (?:
+              (?: [0-7]{3}) |
+              (?: u[0-9a-fA-F]{1,4}) |
+              (?: U[0-9a-fA-F]{1,6}) |
+              (?:
+                (?:
+                  null? | newline | linefeed | backspace | v?tab | page |
+                  return | space | rubout | (?: [^\w\s] | \d)
+                )
+                (?![a-zA-Z])
+              ) |
+              (?: [^\W\d](?=[\W\d]) | \W )
+            )
+
+  string:
+    patterns:
+      - include: '#byte-string'
+      - include: '#regexp-string'
+      - include: '#base-string'
+
+  base-string:
+    patterns:
+      - name: string.quoted.double.rhombus
+        begin: "\""
+        beginCaptures:
+          '0':
+            - name: punctuation.definition.string.begin.rhombus
+        end: "\""
+        endCaptures:
+          '0':
+            - name: punctuation.definition.string.end.rhombus
+        patterns:
+          - include: '#escape-char'
+
+  byte-string:
+    patterns:
+      - name: string.byte.rhombus
+        begin: "#\""
+        beginCaptures:
+          '0':
+            - name: punctuation.definition.string.begin.rhombus
+        end: "\""
+        endCaptures:
+          '0':
+            - name: punctuation.definition.string.end.rhombus
+        patterns:
+          - include: '#escape-char-base'
+
+  regexp-string:
+    patterns:
+      - name: string.regexp.rhombus
+        begin: "#rx'"
+        beginCaptures:
+          '0':
+            - name: punctuation.definition.string.begin.rhombus
+        end: "'"
+        endCaptures:
+          '0':
+            - name: punctuation.definition.string.end.rhombus
+        patterns:
+          - include: '#escape-char-base'
+
+  escape-char:
+    patterns:
+      - include: '#escape-char-base'
+      - name: constant.character.escape.rhombus
+        match: |
+         (?x) \\
+           (?:
+            (?: u[\da-fA-F]{1,4}) |
+            (?: U[\da-fA-F]{1,8})
+           )
+      - include: '#escape-char-error'
+
+  escape-char-base:
+    patterns:
+      - name: constant.character.escape.rhombus
+        match: |
+         (?x) \\
+           (?:
+            (?: [abtnvfre"'\\]) |
+            (?: [0-7]{1,3}) |
+            (?: x[\da-fA-F]{1,2})
+          )
+
+  escape-char-error:
+    patterns:
+      - name: invalid.illegal.escape.rhombus
+        match: '\\.'
+...

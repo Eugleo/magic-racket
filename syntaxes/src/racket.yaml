@@ -1054,7 +1054,7 @@ repository:
   comment-sexp:
     patterns:
       - name: comment.sexp.racket
-        match: "(?<=^|[()\[\]{}\",'`;\s])#;"
+        match: (?<=^|[()\[\]{}",'`;\s])#;
 
   comment-line:
     patterns:

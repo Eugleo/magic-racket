@@ -1,0 +1,7 @@
+{
+  "lambda": {
+    "scope": "rhombus",
+    "prefix": "fn",
+    "body": "fun($1): $2"
+  }
+}
