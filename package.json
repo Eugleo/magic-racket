@@ -3,14 +3,6 @@
   "displayName": "Magic Racket",
   "description": "LSP support, REPL integration, and top notch syntax highlighting for the coolest of Lisps!",
   "version": "0.6.7",
-  "activationEvents": [
-    "onCommand:magic-racket.loadFileInRepl",
-    "onCommand:magic-racket.runFile",
-    "onCommand:magic-racket.executeSelectionInRepl",
-    "onCommand:magic-racket.openRepl",
-    "onCommand:magic-racket.showOutputTerminal",
-    "onLanguage:racket"
-  ],
   "main": "./out/main.js",
   "galleryBanner": {
     "color": "#405DA7",
@@ -18,7 +10,7 @@
   },
   "icon": "images/icon.png",
   "engines": {
-    "vscode": "^1.59.0"
+    "vscode": "^1.74.0"
   },
   "licence": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/Eugleo/magic-racket/",
