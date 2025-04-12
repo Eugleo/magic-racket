@@ -45,6 +45,11 @@
           102
         ],
         "editor.wordSeparators": "()[]{}\",'`;#|"
+      },
+      "[rhombus]": {
+        "editor.rulers": [
+          102
+        ]
       }
     },
     "languages": [
