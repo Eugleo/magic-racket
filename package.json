@@ -2,7 +2,7 @@
   "name": "magic-racket",
   "displayName": "Magic Racket",
   "description": "LSP support, REPL integration, and top notch syntax highlighting for the coolest of Lisps!",
-  "version": "0.6.7",
+  "version": "0.7.0",
   "main": "./out/main.js",
   "galleryBanner": {
     "color": "#405DA7",
