@@ -1,9 +1,12 @@
+.direnv/**
 .github/**
 .vscode/**
 .vscode-test/**
 out/test/**
 node_modules/**
 src/**
+.envrc
 .eslintrc.js
 .gitignore
+flake.*
 tsconfig.json
