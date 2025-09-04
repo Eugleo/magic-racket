@@ -42,6 +42,7 @@ export function expandMacroStepSelectionInRepl(
     const trimmed = s.trim();
     if (trimmed) {
       repl.show(true);
+      repl.sendText("(require macro-debugger/stepper)");
       repl.sendText(`(expand/step #'${trimmed})`);
     }
   };
