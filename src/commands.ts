@@ -5,6 +5,7 @@ import {
   createRepl,
   loadFileInRepl,
   executeSelectionInRepl,
+  expandMacroStepSelectionInRepl,
 } from "./repl";
 import { withFilePath, withRacket, withEditor, withREPL } from "./utils";
 
@@ -61,6 +62,17 @@ export function executeSelection(repls: Map<string, vscode.Terminal>): void {
       withREPL((command: string[]) => {
         const repl = getOrDefault(repls, filePath, () => createRepl(filePath, command));
         executeSelectionInRepl(repl, editor);
+      });
+    });
+  });
+}
+
+export function expandMacroStepSelection(repls: Map<string, vscode.Terminal>): void {
+  withEditor((editor: vscode.TextEditor) => {
+    withFilePath((filePath: string) => {
+      withREPL((command: string[]) => {
+        const repl = getOrDefault(repls, filePath, () => createRepl(filePath, command));
+        expandMacroStepSelectionInRepl(repl, editor);
       });
     });
   });
