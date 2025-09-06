@@ -77,6 +77,11 @@ The list of commands added by Magic Racket:
 - `Racket: Show the output terminal for the current file`
   - Similarly to the command above, this one shows the output terminal of the current file.
 
+### Macro Stepper
+
+- `Racket: Open line or selection in macro stepper`
+  - For selected syntax, open a macro stepper for it. Available by using the shortcut <kbd>Alt+Shift+Enter</kbd>
+
 You can set the names of the REPLs and output terminals in the settings.
 
 ### Minor QoL features

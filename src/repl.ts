@@ -34,6 +34,24 @@ export function executeSelectionInRepl(repl: vscode.Terminal, editor: vscode.Tex
   editor.selections.forEach((sel) => send(editor.document.getText(sel)));
 }
 
+export function openMacroStepperForSelection(
+  repl: vscode.Terminal,
+  editor: vscode.TextEditor,
+): void {
+  const send = (s: string) => {
+    const trimmed = s.trim();
+    if (trimmed) {
+      repl.sendText("(require macro-debugger/stepper)");
+      repl.sendText(`(expand/step #'${trimmed})`);
+    }
+  };
+
+  if (editor.selections.length === 1 && editor.selection.isEmpty) {
+    send(editor.document.lineAt(editor.selection.active.line).text);
+  }
+  // else we do nothing, don't jump out tons of macro steppers
+}
+
 export function runFileInTerminal(
   command: string[],
   filePath: string,
