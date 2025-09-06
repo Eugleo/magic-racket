@@ -206,8 +206,8 @@
         "title": "Racket: Execute line or selection in REPL"
       },
       {
-        "command": "magic-racket.openMacroStepper",
-        "title": "Racket: Open macro stepper of line or selection as a syntax"
+        "command": "magic-racket.openSelectionInMacroStepper",
+        "title": "Racket: Open line or selection in macro stepper"
       },
       {
         "command": "magic-racket.openRepl",
@@ -246,7 +246,7 @@
         "when": "(resourceLangId == racket || resourceLangId == rhombus) && editorTextFocus"
       },
       {
-        "command": "magic-racket.openMacroStepper",
+        "command": "magic-racket.openSelectionInMacroStepper",
         "key": "Alt+Shift+Enter",
         "when": "(resourceLangId == racket || resourceLangId == rhombus) && editorTextFocus"
       },

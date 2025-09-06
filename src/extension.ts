@@ -115,7 +115,9 @@ export function activate(context: vscode.ExtensionContext): void {
   const loadInRepl = reg("loadFileInRepl", () => com.loadInRepl(repls));
   const runInTerminal = reg("runFile", () => com.runInTerminal(terminals));
   const executeSelection = reg("executeSelectionInRepl", () => com.executeSelection(repls));
-  const expandMacroStepSelection = reg("openMacroStepper", () => com.openMacroStepper(repls));
+  const expandMacroStepSelection = reg("openSelectionInMacroStepper", () =>
+    com.openMacroStepper(repls),
+  );
   const openRepl = reg("openRepl", () => com.openRepl(repls));
   const showOutput = reg("showOutputTerminal", () => com.showOutput(terminals));
 

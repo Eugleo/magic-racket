@@ -80,7 +80,7 @@ The list of commands added by Magic Racket:
 
 ### Macro Stepper
 
-- `Racket: Open macro stepper of line or selection as a syntax`
+- `Racket: Open line or selection in macro stepper`
   - For selected syntax, open a macro stepper for it. Available by using the shortcut <kbd>Alt+Shift+Enter</kbd>
 
 You can set the names of the REPLs and output terminals in the settings.
