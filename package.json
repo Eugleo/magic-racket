@@ -67,7 +67,8 @@
           "dark": "images/icon.png"
         },
         "configuration": "./language-configurations/racket.json"
-      },{
+      },
+      {
         "id": "rhombus",
         "aliases": [
           "Rhombus",
@@ -88,7 +89,7 @@
         "language": "racket",
         "scopeName": "source.racket",
         "path": "./syntaxes/racket.tmLanguage.json"
-      }, 
+      },
       {
         "language": "rhombus",
         "scopeName": "source.rhombus",
@@ -205,6 +206,10 @@
         "title": "Racket: Execute line or selection in REPL"
       },
       {
+        "command": "magic-racket.openSelectionInMacroStepper",
+        "title": "Racket: Open line or selection in macro stepper"
+      },
+      {
         "command": "magic-racket.openRepl",
         "title": "Racket: Open the REPL for the current file"
       },
@@ -238,6 +243,11 @@
       {
         "command": "magic-racket.executeSelectionInRepl",
         "key": "Alt+Enter",
+        "when": "(resourceLangId == racket || resourceLangId == rhombus) && editorTextFocus"
+      },
+      {
+        "command": "magic-racket.openSelectionInMacroStepper",
+        "key": "Alt+Shift+Enter",
         "when": "(resourceLangId == racket || resourceLangId == rhombus) && editorTextFocus"
       },
       {
