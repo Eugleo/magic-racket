@@ -19,7 +19,6 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
     ```
 
     If don't want to use the lang-server at all, you don't have to. Just set `"magicRacket.languageServer.enabled": false` in your configuration file. But note that if you do so, you won't get the “smart” features like autocomplete, formatting, etc.
-
 4. If you are running VSCode on WSL or a headless Linux server, please see the Troubleshooting section below.
 
 ## Features
