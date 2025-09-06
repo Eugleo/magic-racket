@@ -8,17 +8,17 @@ This extension adds support for [Racket](http://www.racket-lang.org) to VS Code.
 2. Make sure you have `raco` on your path (see section Troubleshooting)
 3. Install the [racket-langserver](https://github.com/jeapostrophe/racket-langserver) by running the following command in the terminal:
 
-   ```bash
-   raco pkg install racket-langserver
-   ```
+    ```bash
+    raco pkg install racket-langserver
+    ```
 
-   Or update it using
+    Or update it using
 
-   ```bash
-   raco pkg update racket-langserver
-   ```
+    ```bash
+    raco pkg update racket-langserver
+    ```
 
-   If don't want to use the lang-server at all, you don't have to. Just set `"magicRacket.languageServer.enabled": false` in your configuration file. But note that if you do so, you won't get the “smart” features like autocomplete, formatting, etc.
+    If don't want to use the lang-server at all, you don't have to. Just set `"magicRacket.languageServer.enabled": false` in your configuration file. But note that if you do so, you won't get the “smart” features like autocomplete, formatting, etc.
 
 4. If you are running VSCode on WSL or a headless Linux server, please see the Troubleshooting section below.
 
@@ -140,15 +140,15 @@ However, after the installation, your computer doesn't _know_ where the command 
 - **(recommended)** add the directory where `raco` is located ([instructions for Unix](https://stackoverflow.com/questions/14637979/how-to-permanently-set-path-on-linux-unix), and something like [this for PowerShell on Windows](https://stackoverflow.com/questions/714877/setting-windows-powershell-environment-variables))
 - first move to the directory where `raco` is located (by using `cd`, for example), and then run it by prefixing the `raco` command with `./` (Unix) or `.\` (Windows), like this:
 
-  ```bash
-  ./raco pkg update racket-langserver
-  ```
+    ```bash
+    ./raco pkg update racket-langserver
+    ```
 
-  or, on Windows,
+    or, on Windows,
 
-  ```bash
-  .\raco pkg update racket-langserver
-  ```
+    ```bash
+    .\raco pkg update racket-langserver
+    ```
 
 ## Release notes
 
