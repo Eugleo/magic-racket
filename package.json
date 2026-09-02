@@ -60,7 +60,9 @@
           "racket"
         ],
         "extensions": [
-          ".rkt"
+          ".rkt",
+          ".rktd",
+          ".rktl"
         ],
         "icon": {
           "light": "images/icon.png",
