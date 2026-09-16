@@ -98,94 +98,137 @@
         "path": "./syntaxes/rhombus.tmLanguage.json"
       }
     ],
-    "configuration": {
-      "title": "Magic Racket",
-      "properties": {
-        "magicRacket.languageServer.enabled": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Enable language server support. It is recommended to leave this turned on.",
-          "order": 0
-        },
-        "magicRacket.languageServer.command": {
-          "type": "string",
-          "default": "racket",
-          "markdownDescription": "Path to the executable that is used to launch the Racket language server.",
-          "order": 1
-        },
-        "magicRacket.languageServer.arguments": {
-          "type": "array",
-          "items": {
-            "type": "string"
+    "configuration": [
+      {
+        "title": "Magic Racket",
+        "properties": {
+          "magicRacket.languageServer.enabled": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Enable language server support. It is recommended to leave this turned on.",
+            "order": 0
           },
-          "default": [
-            "--lib",
-            "racket-langserver"
-          ],
-          "markdownDescription": "Arguments passed to the language server executable set in `#magicRacket.languageServer.command#`.",
-          "order": 2
-        },
-        "magicRacket.trace.server": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "default": "off",
-          "description": "Enable tracing of the communication between VS Code and the language server.",
-          "order": 3
-        },
-        "magicRacket.general.racketPath": {
-          "type": "string",
-          "default": "racket",
-          "markdownDescription": "Path to the Racket executable that is used both to open REPLs and to run files."
-        },
-        "magicRacket.general.racoPath": {
-          "type": "string",
-          "default": "raco",
-          "markdownDescription": "Path to the `raco` executable that is used to run tests."
-        },
-        "magicRacket.REPL.arguments": {
-          "type": "array",
-          "items": {
-            "type": "string"
+          "magicRacket.languageServer.command": {
+            "type": "string",
+            "default": "racket",
+            "markdownDescription": "Path to the executable that is used to launch the Racket language server.",
+            "order": 1
           },
-          "default": [
-            "--repl"
-          ],
-          "markdownDescription": "Arguments passed into `#magicRacket.general.racketPath#` when launching a REPL."
-        },
-        "magicRacket.REPL.title": {
-          "type": "string",
-          "default": "REPL ($name)",
-          "markdownDescription": "Template string for the title of Racket REPLs. Variable `$name` will get replaced by the file name."
-        },
-        "magicRacket.outputTerminal.numberOfOutputTerminals": {
-          "type": "string",
-          "enum": [
-            "one",
-            "many"
-          ],
-          "default": "one",
-          "enumDescriptions": [
-            "Runs every file in the same output terminal",
-            "Runs each file in its own output terminal"
-          ]
-        },
-        "magicRacket.outputTerminal.sharedOutputTerminalTitle": {
-          "type": "string",
-          "default": "Racket Output",
-          "markdownDescription": "Specifies the title of the the shared output terminal."
-        },
-        "magicRacket.outputTerminal.outputTerminalTitle": {
-          "type": "string",
-          "default": "Output ($name)",
-          "markdownDescription": "Specifies the template string for the title of the file-specific output terminal. Substring `$name` will get replaced by the file name."
+          "magicRacket.languageServer.arguments": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "--lib",
+              "racket-langserver"
+            ],
+            "markdownDescription": "Arguments passed to the language server executable set in `#magicRacket.languageServer.command#`.",
+            "order": 2
+          },
+          "magicRacket.trace.server": {
+            "scope": "window",
+            "type": "string",
+            "enum": [
+              "off",
+              "messages",
+              "verbose"
+            ],
+            "default": "off",
+            "description": "Enable tracing of the communication between VS Code and the language server.",
+            "order": 3
+          },
+          "magicRacket.general.racketPath": {
+            "type": "string",
+            "default": "racket",
+            "markdownDescription": "Path to the Racket executable that is used both to open REPLs and to run files."
+          },
+          "magicRacket.general.racoPath": {
+            "type": "string",
+            "default": "raco",
+            "markdownDescription": "Path to the `raco` executable that is used to run tests."
+          },
+          "magicRacket.REPL.arguments": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "--repl"
+            ],
+            "markdownDescription": "Arguments passed into `#magicRacket.general.racketPath#` when launching a REPL."
+          },
+          "magicRacket.REPL.title": {
+            "type": "string",
+            "default": "REPL ($name)",
+            "markdownDescription": "Template string for the title of Racket REPLs. Variable `$name` will get replaced by the file name."
+          },
+          "magicRacket.outputTerminal.numberOfOutputTerminals": {
+            "type": "string",
+            "enum": [
+              "one",
+              "many"
+            ],
+            "default": "one",
+            "enumDescriptions": [
+              "Runs every file in the same output terminal",
+              "Runs each file in its own output terminal"
+            ]
+          },
+          "magicRacket.outputTerminal.sharedOutputTerminalTitle": {
+            "type": "string",
+            "default": "Racket Output",
+            "markdownDescription": "Specifies the title of the the shared output terminal."
+          },
+          "magicRacket.outputTerminal.outputTerminalTitle": {
+            "type": "string",
+            "default": "Output ($name)",
+            "markdownDescription": "Specifies the template string for the title of the file-specific output terminal. Substring `$name` will get replaced by the file name."
+          }
+        }
+      },
+      {
+        "title": "racket-langserver",
+        "properties": {
+          "racket-langserver.resyntax.enable": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Analyse code with `resyntax` (if installed) and show refactoring actions."
+          },
+          "racket-langserver.formatting.documentFormatter": {
+            "type": "string",
+            "enum": [
+              "fixw",
+              "drracket",
+              "fmt"
+            ],
+            "default": "fixw",
+            "markdownDescription": "The formatter to use when formatting whole documents."
+          },
+          "racket-langserver.formatting.indentationFormatter": {
+            "type": "string",
+            "enum": [
+              "fixw",
+              "drracket"
+            ],
+            "default": "fixw",
+            "markdownDescription": "The formatter to use when formatting selections / ranges and also for on-type indentation."
+          },
+          "racket-langserver.formatting.fmtSettings.width": {
+            "type": "integer",
+            "markdownDescription": "Width when using `fmt` as document formatter. `fmt`'s own default will be used if unset."
+          },
+          "racket-langserver.formatting.fmtSettings.indent": {
+            "type": "integer",
+            "markdownDescription": "Indent when using `fmt` as document formatter. `fmt`'s own default will be used if unset."
+          },
+          "racket-langserver.formatting.fmtSettings.maxBlankLines": {
+            "type": "integer",
+            "markdownDescription": "Max blank lines when using `fmt` as document formatter. `fmt`'s own default will be used if unset."
+          }
         }
       }
-    },
+    ],
     "commands": [
       {
         "command": "magic-racket.loadFileInRepl",
